@@ -33,7 +33,7 @@ application {
     mainClass.set("hu.matemagyar.wge.ApplicationKt")
 }
 java {
-    sourceCompatibility = JavaVersion.toVersion("21")
+    sourceCompatibility = JavaVersion.toVersion("20")
 }
 
 
