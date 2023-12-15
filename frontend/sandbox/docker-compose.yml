@@ -1,0 +1,11 @@
+version: '3'
+services:
+  node-sandbox:
+    container_name: node-sandbox
+    build: .
+    volumes:
+      - ../:/export
+    tty: true
+    ports:
+      - "4200:4200"
+      - "48080:8080"
