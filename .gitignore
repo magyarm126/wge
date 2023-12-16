@@ -13,6 +13,8 @@ out/
 .settings
 .classpath
 .factorypath
-
 # Custom
 /frontend/sandbox/volume/
+/frontend/.angular/
+/frontend/dist/
+/frontend/node_modules/
