@@ -79,4 +79,12 @@ tasks {
         inputs.dir(fileTree("frontend/node_modules").exclude(".cache"))
         outputs.dir("frontend/dist")
     }
+
+    val copyFrontend by creating(Copy::class) {
+        group = "frontend"
+        dependsOn(buildAngularApp)
+        from("frontend/dist")
+        into("${layout.buildDirectory.get()}/resources/main/static")
+    }
+    processResources.get().dependsOn(copyFrontend)
 }
