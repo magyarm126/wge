@@ -87,4 +87,10 @@ tasks {
         into("${layout.buildDirectory.get()}/resources/main/static")
     }
     processResources.get().dependsOn(copyFrontend)
+
+    clean {
+        delete("frontend/node_modules")
+        delete("frontend/dist")
+        delete("frontend/.angular")
+    }
 }
