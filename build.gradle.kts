@@ -78,6 +78,9 @@ tasks {
         outputs.file("frontend/package-lock.json")
         inputs.dir(fileTree("frontend/node_modules").exclude(".cache"))
         outputs.dir("frontend/dist")
+        doLast{
+            println("Built frontend distribution!")
+        }
     }
 
     val copyFrontend by creating(Copy::class) {
@@ -85,12 +88,21 @@ tasks {
         dependsOn(buildAngularApp)
         from("frontend/dist")
         into("${layout.buildDirectory.get()}/resources/main/static")
+        doLast{
+            println("Copied frontend distribution to static resources!")
+        }
     }
-    processResources.get().dependsOn(copyFrontend)
+
+    processResources{
+        dependsOn(copyFrontend)
+    }
 
     clean {
         delete("frontend/node_modules")
         delete("frontend/dist")
         delete("frontend/.angular")
+        doLast{
+            println("Cleaned frontend caches!")
+        }
     }
 }
