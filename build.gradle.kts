@@ -1,4 +1,4 @@
-import com.github.gradle.node.npm.task.NpmTask
+import com.github.gradle.node.npm.task.NpxTask
 
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.9.20"
@@ -14,7 +14,7 @@ plugins {
 version = "0.1"
 group = "hu.matemagyar.wge"
 
-val kotlinVersion=project.properties.get("kotlinVersion")
+val kotlinVersion= project.properties["kotlinVersion"]
 repositories {
     mavenCentral()
 }
@@ -65,74 +65,44 @@ micronaut {
 node {
     version = "21.4.0"
     download = true
-}
-
-val commonNpmTask: NpmTask.() -> Unit = {
-    workingDir = file("frontend")
+    nodeProjectDir = file("frontend")
 }
 
 tasks {
-    val flagFile = layout.buildDirectory.file("cleanNodeModulesFlag.txt")
-
-    // Defining a task to install npm dependencies
-    val npmInstallAngular by creating(NpmTask::class) {
-        group = "Frontend"
-        commonNpmTask()
+    val buildAngularApp by creating(NpxTask::class) {
+        group = "frontend"
+        dependsOn(npmInstall)
+        command = "ng"
+        args.set(listOf("build", "--configuration", "production"))
         inputs.file("frontend/package.json")
         outputs.file("frontend/package-lock.json")
-        args.set(listOf("install"))
+        inputs.dir(fileTree("frontend/node_modules").exclude(".cache"))
+        outputs.dir("frontend/dist")
+        doLast{
+            println("Built frontend distribution!")
+        }
     }
 
-    // Angular build task
-    val ngBuild by creating(NpmTask::class) {
-        group = "Frontend"
-        dependsOn(npmInstallAngular)
-        commonNpmTask()
-        args.set(listOf("run", "build","--prod"))
+    val copyFrontend by creating(Copy::class) {
+        group = "frontend"
+        dependsOn(buildAngularApp)
+        from("frontend/dist")
+        into("${layout.buildDirectory.get()}/resources/main/static")
+        doLast{
+            println("Copied frontend distribution to static resources!")
+        }
     }
 
-    // Angular serve task
-    val ngServe by creating(NpmTask::class) {
-        group = "Frontend"
-        dependsOn(npmInstallAngular)
-        commonNpmTask()
-        args.set(listOf("start"))
+    processResources{
+        dependsOn(copyFrontend)
     }
 
-    val killEsbuild by registering(Exec::class) {
-        group = "Frontend"
-        commandLine("cmd", "/c", "tasklist | find /i \"esbuild.exe\" && taskkill /F /IM esbuild.exe || echo Process not found, moving on")
-        isIgnoreExitValue = true
-    }
-
-    val killEsbuildLinux by registering(Exec::class) {
-        group = "Frontend"
-        commandLine("bash", "-c", "pkill -f esbuild || true") //might not work
-    }
-
-    val cleanNodeModules by registering(Delete::class) {
-        group = "Frontend"
-        description = "Clean the node modules folder"
+    clean {
         delete("frontend/node_modules")
-        doLast {
-            println("Cleaned node_modules directory")
-            flagFile.get().asFile.writeText("cleaned")
-        }
-    }
-
-    val cleanNodeDist by registering(Delete::class) {
-        group = "Frontend"
-        description = "Clean the node dist folder"
         delete("frontend/dist")
-        doLast {
-            println("Cleaned dist directory")
+        delete("frontend/.angular")
+        doLast{
+            println("Cleaned frontend caches!")
         }
     }
-
-    npmInstallAngular.mustRunAfter(cleanNodeModules)
-    npmInstallAngular.doLast {
-        flagFile.get().asFile.delete()
-    }
-
-    cleanNodeModules.get().dependsOn(killEsbuild)
 }
