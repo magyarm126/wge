@@ -1,9 +1,9 @@
 import com.github.gradle.node.npm.task.NpxTask
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.9.20"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.9.20"
-    id("com.google.devtools.ksp") version "1.9.20-1.0.14"
+    id("org.jetbrains.kotlin.jvm") version "1.9.21"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.9.21"
+    id("com.google.devtools.ksp") version "1.9.21-1.0.16"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.micronaut.application") version "4.2.0"
     id("io.micronaut.aot") version "4.2.0"
@@ -38,7 +38,7 @@ application {
     mainClass.set("hu.matemagyar.wge.ApplicationKt")
 }
 java {
-    sourceCompatibility = JavaVersion.toVersion("20")
+    sourceCompatibility = JavaVersion.toVersion("21")
 }
 
 
