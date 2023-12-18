@@ -1,0 +1,10 @@
+micronaut:
+  application:
+    name: wge
+
+  router:
+    static-resources:
+      default:
+        enabled: true
+        mapping: /static/**
+        paths: classpath:data
