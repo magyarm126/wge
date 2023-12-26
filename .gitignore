@@ -5,7 +5,8 @@ build/
 target/
 out/
 .micronaut/
-.idea
+.idea/
+/.idea/
 *.iml
 *.ipr
 *.iws
@@ -14,7 +15,7 @@ out/
 .classpath
 .factorypath
 # Custom
-/frontend/sandbox/volume/
-/frontend/.angular/
-/frontend/dist/
-/frontend/node_modules/
+/web/frontend/sandbox/volume/
+/web/frontend/.angular/
+/web/frontend/dist/
+/web/frontend/node_modules/

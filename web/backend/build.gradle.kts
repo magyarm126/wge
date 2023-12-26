@@ -1,9 +1,9 @@
 import com.github.gradle.node.npm.task.NpxTask
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.9.20"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.9.20"
-    id("com.google.devtools.ksp") version "1.9.20-1.0.14"
+    id("org.jetbrains.kotlin.jvm") version "1.9.21"
+    id("org.jetbrains.kotlin.plugin.allopen") version "1.9.21"
+    id("com.google.devtools.ksp") version "1.9.21-1.0.16"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("io.micronaut.application") version "4.2.0"
     id("io.micronaut.aot") version "4.2.0"
@@ -30,6 +30,7 @@ dependencies {
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
     testImplementation("io.micronaut:micronaut-http-client")
+    runtimeOnly("org.yaml:snakeyaml")
 }
 
 
@@ -37,7 +38,7 @@ application {
     mainClass.set("hu.matemagyar.wge.ApplicationKt")
 }
 java {
-    sourceCompatibility = JavaVersion.toVersion("20")
+    sourceCompatibility = JavaVersion.toVersion("21")
 }
 
 
@@ -65,7 +66,7 @@ micronaut {
 node {
     version = "21.4.0"
     download = true
-    nodeProjectDir = file("frontend")
+    nodeProjectDir = file("../frontend")
 }
 
 tasks {
@@ -74,10 +75,10 @@ tasks {
         dependsOn(npmInstall)
         command = "ng"
         args.set(listOf("build", "--configuration", "production"))
-        inputs.file("frontend/package.json")
-        outputs.file("frontend/package-lock.json")
-        inputs.dir(fileTree("frontend/node_modules").exclude(".cache"))
-        outputs.dir("frontend/dist")
+        inputs.file("../frontend/package.json")
+        outputs.file("../frontend/package-lock.json")
+        inputs.dir(fileTree("../frontend/node_modules").exclude(".cache"))
+        outputs.dir("../frontend/dist")
         doLast{
             println("Built frontend distribution!")
         }
@@ -86,7 +87,7 @@ tasks {
     val copyFrontend by creating(Copy::class) {
         group = "frontend"
         dependsOn(buildAngularApp)
-        from("frontend/dist")
+        from("../frontend/dist")
         into("${layout.buildDirectory.get()}/resources/main/static")
         doLast{
             println("Copied frontend distribution to static resources!")
@@ -98,9 +99,9 @@ tasks {
     }
 
     clean {
-        delete("frontend/node_modules")
-        delete("frontend/dist")
-        delete("frontend/.angular")
+        delete("../frontend/node_modules")
+        delete("../frontend/dist")
+        delete("../frontend/.angular")
         doLast{
             println("Cleaned frontend caches!")
         }
