@@ -1,28 +1,43 @@
-## Micronaut 4.2.0 Documentation
+# Web game engine
 
-- [User Guide](https://docs.micronaut.io/4.2.0/guide/index.html)
-- [API Reference](https://docs.micronaut.io/4.2.0/api/index.html)
-- [Configuration Reference](https://docs.micronaut.io/4.2.0/guide/configurationreference.html)
-- [Micronaut Guides](https://guides.micronaut.io/index.html)
----
+## System dependency graph
 
-- [Shadow Gradle Plugin](https://plugins.gradle.org/plugin/com.github.johnrengelman.shadow)
-- [Micronaut Gradle Plugin documentation](https://micronaut-projects.github.io/micronaut-gradle-plugin/latest/)
-- [GraalVM Gradle Plugin documentation](https://graalvm.github.io/native-build-tools/latest/gradle-plugin.html)
-## Feature ksp documentation
+```mermaid
+flowchart
+    subgraph Server[Server]
+        subgraph native_server [Native C++ Engine Server]
+        end
+        subgraph web_server [Kotlin web server]
+        end
+    end
 
-- [Micronaut Kotlin Symbol Processing (KSP) documentation](https://docs.micronaut.io/latest/guide/#kotlin)
+    subgraph Middleware[Middleware]
+        subgraph web_library [Typescript library]
+        end
+        subgraph kotlin_library [Kotlin library]
+        end
+        subgraph native_library [Native C++ library]
+        end
+        native_library-.managed in parity.->kotlin_library
+        kotlin_library-.compiled.->web_library
+    end
+    
+    subgraph client[Client]
+        subgraph native_client [Native C++ Client]
+        end
+        subgraph java_client [Java OpenGl]
+        end
+        subgraph web_client [Web Angular Frontend]
+        end
+    end
+    
+    native_client-->native_library
+    native_server-->native_library
 
-- [https://kotlinlang.org/docs/ksp-overview.html](https://kotlinlang.org/docs/ksp-overview.html)
-
-
-## Feature serialization-jackson documentation
-
-- [Micronaut Serialization Jackson Core documentation](https://micronaut-projects.github.io/micronaut-serialization/latest/guide/)
-
-
-## Feature micronaut-aot documentation
-
-- [Micronaut AOT documentation](https://micronaut-projects.github.io/micronaut-aot/latest/guide/)
-
-
+    web_client-->web_library
+    web_server-->kotlin_library
+    
+    java_client-->kotlin_library
+    
+    web_server-.publishes.->web_client
+```
