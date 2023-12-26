@@ -66,7 +66,7 @@ micronaut {
 node {
     version = "21.4.0"
     download = true
-    nodeProjectDir = file("frontend")
+    nodeProjectDir = file("../frontend")
 }
 
 tasks {
@@ -75,10 +75,10 @@ tasks {
         dependsOn(npmInstall)
         command = "ng"
         args.set(listOf("build", "--configuration", "production"))
-        inputs.file("frontend/package.json")
-        outputs.file("frontend/package-lock.json")
-        inputs.dir(fileTree("frontend/node_modules").exclude(".cache"))
-        outputs.dir("frontend/dist")
+        inputs.file("../frontend/package.json")
+        outputs.file("../frontend/package-lock.json")
+        inputs.dir(fileTree("../frontend/node_modules").exclude(".cache"))
+        outputs.dir("../frontend/dist")
         doLast{
             println("Built frontend distribution!")
         }
@@ -87,7 +87,7 @@ tasks {
     val copyFrontend by creating(Copy::class) {
         group = "frontend"
         dependsOn(buildAngularApp)
-        from("frontend/dist")
+        from("../frontend/dist")
         into("${layout.buildDirectory.get()}/resources/main/static")
         doLast{
             println("Copied frontend distribution to static resources!")
@@ -99,9 +99,9 @@ tasks {
     }
 
     clean {
-        delete("frontend/node_modules")
-        delete("frontend/dist")
-        delete("frontend/.angular")
+        delete("../frontend/node_modules")
+        delete("../frontend/dist")
+        delete("../frontend/.angular")
         doLast{
             println("Cleaned frontend caches!")
         }
