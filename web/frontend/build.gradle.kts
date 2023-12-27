@@ -34,9 +34,9 @@ tasks {
     }
 
     clean {
-        delete("../frontend/node_modules")
-        delete("../frontend/dist")
-        delete("../frontend/.angular")
+        delete("node_modules")
+        delete("dist")
+        delete(".angular")
         doLast{
             println("Cleaned frontend caches!")
         }
