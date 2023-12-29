@@ -2,7 +2,7 @@
 // ReSharper disable CppParameterMayBeConst
 // ReSharper disable CppDFAConstantFunctionResult
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR lpCmdLine, int nShowCmd) {
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nShowCmd) {
     constexpr wchar_t CLASS_NAME[] = L"Native wge client";
 
     WNDCLASS wc = {};
