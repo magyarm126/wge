@@ -1,4 +1,4 @@
-#include "../headers/MainDXWindow.h"
+#include <MainDXWindow.h>
 
 MainDXWindow::~MainDXWindow() = default;
 

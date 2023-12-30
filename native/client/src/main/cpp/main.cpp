@@ -1,4 +1,4 @@
-#include "../headers/Win32Application.h"
+#include <Win32Application.h>
 
 /**
  * \brief Every Windows program includes an entry-point function named either WinMain or wWinMain.

@@ -1,5 +1,5 @@
 #pragma once
-#include "DXWindow.h"
+#include <DXWindow.h>
 
 class MainDXWindow final : DXWindow {
 public:

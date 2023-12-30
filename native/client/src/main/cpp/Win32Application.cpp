@@ -1,5 +1,5 @@
-#include "../headers/Win32Application.h"
-#include "../headers/MainDXWindow.h"
+#include <Win32Application.h>
+#include <MainDXWindow.h>
 
 Win32Application::Win32Application(HINSTANCE instance_handler, const int show_command_flag) {
     _instance_handler = instance_handler;
