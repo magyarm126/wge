@@ -1,11 +1,8 @@
-#ifndef STDAFX_H
-#define STDAFX_H
-#endif //STDAFX_H
+#pragma once
+#pragma comment(lib,"user32.lib")
 
 #ifndef UNICODE
 #define UNICODE
 #endif
 
 #include <windows.h>
-
-#pragma comment(lib,"user32.lib")
