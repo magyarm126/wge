@@ -9,6 +9,7 @@
  * \return
  */
 // ReSharper disable CppParameterMayBeConst
+// ReSharper disable CppParameterNeverUsed
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine, int nShowCmd) {
     const auto winApp = new Win32Application(hInstance, nShowCmd);
     return winApp->Run();

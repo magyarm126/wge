@@ -1,14 +1,14 @@
 #include <Win32Application.h>
 #include <MainDXWindow.h>
 
-Win32Application::Win32Application(HINSTANCE instance_handler, const int show_command_flag) {
+Win32Application::Win32Application(const HINSTANCE instance_handler, const int show_command_flag) {
     _instance_handler = instance_handler;
     _show_command_flag = show_command_flag;
     _dx_window = reinterpret_cast<DXWindow*>(new MainDXWindow());
 }
 
 // ReSharper disable CppDFAConstantFunctionResult
-int Win32Application::Run(){
+int Win32Application::Run() const {
     constexpr wchar_t CLASS_NAME[] = L"Native wge client";
 
     WNDCLASS wc = {};
