@@ -4,7 +4,7 @@
 Win32Application::Win32Application(const HINSTANCE instance_handler, const int show_command_flag) {
     _instance_handler = instance_handler;
     _show_command_flag = show_command_flag;
-    _dx_window = reinterpret_cast<DXWindow*>(new MainDXWindow());
+    _dx_window = reinterpret_cast<DXWindow*>(new MainDXWindow(1280, 720, L"D3D12 Hello Triangle"));
 }
 
 // ReSharper disable CppDFAConstantFunctionResult
@@ -39,6 +39,7 @@ int Win32Application::Run() const {
     }
 
     _dx_window->init();
+    _dx_window->setWindowHandler(hwnd);
 
     ShowWindow(hwnd, _show_command_flag);
 

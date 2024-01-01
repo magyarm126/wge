@@ -3,6 +3,9 @@
 
 class MainDXWindow final : DXWindow {
 public:
+
+    MainDXWindow(UINT width, UINT height, std::wstring name);
+
     ~MainDXWindow() override;
 
     void init() override;
@@ -14,6 +17,25 @@ public:
     void keyDown(UINT8 key) override;
 
     void keyUp(UINT8 key) override;
+
+    void setWindowHandler(HWND hwnd) override;
+    HWND getWindowHandler() override;
+
+    UINT GetWidth() const           { return m_width; }
+    UINT GetHeight() const          { return m_height; }
+    const WCHAR* GetTitle() const   { return m_title.c_str(); }
+
+
+protected:
+    // Viewport dimensions.
+    UINT m_width;
+    UINT m_height;
+    float m_aspectRatio;
+
+    // Adapter info.
+    bool m_useWarpDevice;
+
+    std::wstring GetAssetFullPath(LPCWSTR assetName);
 private:
     static const UINT FrameCount = 2;
 
@@ -51,4 +73,12 @@ private:
     void LoadAssets();
     void PopulateCommandList();
     void WaitForPreviousFrame();
+
+    HWND _window_handler = nullptr;
+
+    // Root assets path.
+    std::wstring m_assetsPath;
+
+    // Window title.
+    std::wstring m_title;
 };

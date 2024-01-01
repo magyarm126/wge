@@ -10,4 +10,7 @@ public:
     virtual void render() = 0;
     virtual void keyDown(UINT8 key) = 0;
     virtual void keyUp(UINT8 key) = 0;
+
+    virtual void setWindowHandler(HWND hwnd) = 0;
+    virtual HWND getWindowHandler() = 0;
 };
