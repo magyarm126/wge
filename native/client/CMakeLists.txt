@@ -8,6 +8,7 @@ set(SOURCES
         src/Win32Application.cpp
         src/MainDXWindow.cpp
         src/stdafx.cpp
+        src/DXHelper.cpp
 )
 
 add_executable(client WIN32 ${SOURCES})
