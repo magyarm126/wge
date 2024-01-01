@@ -9,7 +9,7 @@ public:
     int Run() const;
     HWND GetWindowHandler() const { return _windowHandler; }
 protected:
-    static LRESULT CALLBACK Win32Application::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 private:
     HWND _windowHandler = nullptr;
     HINSTANCE _instance_handler = nullptr;
