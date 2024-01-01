@@ -15,6 +15,7 @@ int Win32Application::Run() const {
     wc.lpfnWndProc = WindowProc;
     wc.hInstance = _instance_handler;
     wc.lpszClassName = CLASS_NAME;
+    wc.style = CS_HREDRAW | CS_VREDRAW;
 
     RegisterClass(&wc);
 
@@ -30,12 +31,15 @@ int Win32Application::Run() const {
         nullptr, // Parent window
         nullptr, // Menu
         _instance_handler, // Instance handle
-        nullptr // Additional application data
+        _dx_window // Additional application data
     );
 
     if (hwnd == nullptr) {
         return 0;
     }
+
+    _dx_window->init();
+
     ShowWindow(hwnd, _show_command_flag);
 
     MSG msg = {};
@@ -43,6 +47,8 @@ int Win32Application::Run() const {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
+
+    delete _dx_window;
 
     return 0;
 }
@@ -57,18 +63,39 @@ int Win32Application::Run() const {
  */
 // ReSharper disable CppParameterMayBeConst
 LRESULT CALLBACK Win32Application::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+
+    auto* dx_window = reinterpret_cast<DXWindow*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+
     switch (uMsg) {
+        case WM_CREATE:
+        {
+            // Save context, so dx_window is available for other events.
+            const auto pCreateStruct = reinterpret_cast<LPCREATESTRUCT>(lParam);
+            SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pCreateStruct->lpCreateParams));
+        }
+        return 0;
+
         case WM_DESTROY:
             PostQuitMessage(0);
         return 0;
 
-        case WM_PAINT: {
-            PAINTSTRUCT ps;
-            const HDC &hdc = BeginPaint(hwnd, &ps);
+        case WM_KEYDOWN:
+            if (dx_window) {
+                dx_window->keyDown(static_cast<UINT8>(wParam));
+            }
+        return 0;
 
-            // All painting occurs here, between BeginPaint and EndPaint.
-            FillRect(hdc, &ps.rcPaint, reinterpret_cast<HBRUSH>((COLOR_WINDOW + 1)));
-            EndPaint(hwnd, &ps);
+        case WM_KEYUP:
+            if (dx_window) {
+                dx_window->keyUp(static_cast<UINT8>(wParam));
+            }
+        return 0;
+
+        case WM_PAINT: {
+            if (dx_window) {
+                dx_window->update();
+                dx_window->render();
+            }
         }
         return 0;
         default: break;
