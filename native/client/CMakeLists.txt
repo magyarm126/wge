@@ -16,3 +16,9 @@ target_include_directories(client
         PRIVATE
         ${PROJECT_SOURCE_DIR}/include
 )
+
+target_link_libraries(client
+        dxgi.lib
+        d3d12.lib
+        d3dcompiler.lib
+)
