@@ -53,7 +53,7 @@ HWND MainDXWindow::getWindowHandler() {
 
 std::wstring MainDXWindow::GetAssetFullPath(LPCWSTR assetName) {
     // Helper function for resolving the full path of assets.
-    return m_assetsPath + assetName;
+    return m_assetsPath + L"assets\\" + assetName;
 }
 
 // Load the rendering pipeline dependencies.

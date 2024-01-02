@@ -23,3 +23,13 @@ target_link_libraries(client
         d3d12.lib
         d3dcompiler.lib
 )
+
+ADD_CUSTOM_TARGET(
+        copy_shader_files ALL
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${PROJECT_SOURCE_DIR}/assets
+        ${PROJECT_BINARY_DIR}/assets
+        COMMENT "Copying assets for client" VERBATIM
+)
+
+ADD_DEPENDENCIES ( client copy_shader_files )
