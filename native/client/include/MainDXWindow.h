@@ -8,7 +8,7 @@ public:
 
     ~MainDXWindow() override;
 
-    void init() override;
+    void init(HWND hwnd) override;
 
     void update() override;
 
@@ -18,7 +18,6 @@ public:
 
     void keyUp(UINT8 key) override;
 
-    void setWindowHandler(HWND hwnd) override;
     HWND getWindowHandler() override;
 
     UINT GetWidth() const           { return m_width; }
@@ -35,6 +34,7 @@ protected:
     // Adapter info.
     bool m_useWarpDevice;
 
+    void setWindowHandler(HWND hwnd);
     std::wstring GetAssetFullPath(LPCWSTR assetName);
 private:
     static const UINT FrameCount = 2;

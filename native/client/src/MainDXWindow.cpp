@@ -7,6 +7,10 @@ MainDXWindow::MainDXWindow(UINT width, UINT height, std::wstring name) {
     m_width = width;
     m_height = height;
     m_title = name;
+
+    WCHAR assetsPath[512];
+    GetAssetsPath(assetsPath, _countof(assetsPath));
+    m_assetsPath = assetsPath;
 }
 
 MainDXWindow::~MainDXWindow() {
@@ -26,7 +30,8 @@ void MainDXWindow::keyDown(UINT8 key) {
 void MainDXWindow::keyUp(UINT8 key) {
 }
 
-void MainDXWindow::init() {
+void MainDXWindow::init(HWND hwnd) {
+    setWindowHandler(hwnd);
     LoadPipeline();
     LoadAssets();
 }

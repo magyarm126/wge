@@ -7,7 +7,6 @@ Win32Application::Win32Application(const HINSTANCE instance_handler, const int s
     _dx_window = reinterpret_cast<DXWindow*>(new MainDXWindow(1280, 720, L"D3D12 Hello Triangle"));
 }
 
-// ReSharper disable CppDFAConstantFunctionResult
 int Win32Application::Run() const {
     constexpr wchar_t CLASS_NAME[] = L"Native wge client";
 
@@ -38,8 +37,7 @@ int Win32Application::Run() const {
         return 0;
     }
 
-    _dx_window->init();
-    _dx_window->setWindowHandler(hwnd);
+    _dx_window->init(hwnd);
 
     ShowWindow(hwnd, _show_command_flag);
 
@@ -53,6 +51,8 @@ int Win32Application::Run() const {
 
     return 0;
 }
+
+// ReSharper disable CppDFAConstantFunctionResult
 
 /**
  * \brief A callback function, which you define in your application, that processes messages sent to a window. The WNDPROC type defines a pointer to this callback function. The WndProc name is a placeholder for the name of the function that you define in your application.
