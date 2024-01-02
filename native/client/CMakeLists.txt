@@ -1,6 +1,35 @@
 cmake_minimum_required(VERSION 3.27)
-project(wge_client)
+project(client)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(wge_client client.cpp)
+set(SOURCES
+        src/main.cpp
+        src/Win32Application.cpp
+        src/MainDXWindow.cpp
+        src/stdafx.cpp
+        src/DXHelper.cpp
+)
+
+add_executable(client WIN32 ${SOURCES})
+
+target_include_directories(client
+        PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+)
+
+target_link_libraries(client
+        dxgi.lib
+        d3d12.lib
+        d3dcompiler.lib
+)
+
+ADD_CUSTOM_TARGET(
+        copy_shader_files ALL
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${PROJECT_SOURCE_DIR}/assets
+        ${PROJECT_BINARY_DIR}/assets
+        COMMENT "Copying assets for client" VERBATIM
+)
+
+ADD_DEPENDENCIES ( client copy_shader_files )

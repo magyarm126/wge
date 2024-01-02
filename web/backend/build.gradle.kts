@@ -1,5 +1,3 @@
-import com.github.gradle.node.npm.task.NpxTask
-
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.9.21"
     id("org.jetbrains.kotlin.plugin.allopen") version "1.9.21"
@@ -8,7 +6,6 @@ plugins {
     id("io.micronaut.application") version "4.2.0"
     id("io.micronaut.aot") version "4.2.0"
     id("java")
-    id("com.github.node-gradle.node") version "3.0.1"
 }
 
 version = "0.1"
@@ -60,50 +57,5 @@ micronaut {
         optimizeClassLoading.set(true)
         deduceEnvironment.set(true)
         optimizeNetty.set(true)
-    }
-}
-// Node.js and NPM configuration
-node {
-    version = "21.4.0"
-    download = true
-    nodeProjectDir = file("../frontend")
-}
-
-tasks {
-    val buildAngularApp by creating(NpxTask::class) {
-        group = "frontend"
-        dependsOn(npmInstall)
-        command = "ng"
-        args.set(listOf("build", "--configuration", "production"))
-        inputs.file("../frontend/package.json")
-        outputs.file("../frontend/package-lock.json")
-        inputs.dir(fileTree("../frontend/node_modules").exclude(".cache"))
-        outputs.dir("../frontend/dist")
-        doLast{
-            println("Built frontend distribution!")
-        }
-    }
-
-    val copyFrontend by creating(Copy::class) {
-        group = "frontend"
-        dependsOn(buildAngularApp)
-        from("../frontend/dist")
-        into("${layout.buildDirectory.get()}/resources/main/static")
-        doLast{
-            println("Copied frontend distribution to static resources!")
-        }
-    }
-
-    processResources{
-        dependsOn(copyFrontend)
-    }
-
-    clean {
-        delete("../frontend/node_modules")
-        delete("../frontend/dist")
-        delete("../frontend/.angular")
-        doLast{
-            println("Cleaned frontend caches!")
-        }
     }
 }
