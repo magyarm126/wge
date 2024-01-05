@@ -13,7 +13,9 @@ set(SOURCES
         src/d3dx12/CD3DX12_RECT.cpp
         src/d3dx12/CD3DX12_RESOURCE_BARRIER.cpp
         src/d3dx12/HrException.cpp
-
+        src/d3dx12/CD3DX12_CPU_DESCRIPTOR_HANDLE.cpp
+        src/d3dx12/CD3DX12_SHADER_BYTECODE.cpp
+        src/d3dx12/CD3DX12_RASTERIZER_DESC.cpp
 )
 
 add_executable(client WIN32 ${SOURCES})

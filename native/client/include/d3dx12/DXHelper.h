@@ -3,143 +3,15 @@
 #include <iostream>
 #include <stdafx.h>
 
+struct CD3DX12_DEFAULT {};
+extern const DECLSPEC_SELECTANY CD3DX12_DEFAULT D3D12_DEFAULT;
+
 class DXHelper {
 public:
     static IDXGIAdapter1 * GetHardwareAdapter(IDXGIFactory1 *pFactory);
     static std::string HrToString(HRESULT hr);
     static void ThrowIfFailed(HRESULT hr);
     static void GetAssetsPath(_Out_writes_(pathSize) WCHAR* path, UINT pathSize);
-};
-
-struct CD3DX12_DEFAULT {};
-extern const DECLSPEC_SELECTANY CD3DX12_DEFAULT D3D12_DEFAULT;
-
-struct CD3DX12_CPU_DESCRIPTOR_HANDLE : D3D12_CPU_DESCRIPTOR_HANDLE
-{
-    CD3DX12_CPU_DESCRIPTOR_HANDLE() = default;
-    explicit CD3DX12_CPU_DESCRIPTOR_HANDLE(const D3D12_CPU_DESCRIPTOR_HANDLE &o) noexcept :
-        D3D12_CPU_DESCRIPTOR_HANDLE(o)
-    {}
-    CD3DX12_CPU_DESCRIPTOR_HANDLE(CD3DX12_DEFAULT) noexcept { ptr = 0; }
-    CD3DX12_CPU_DESCRIPTOR_HANDLE(_In_ const D3D12_CPU_DESCRIPTOR_HANDLE &other, INT offsetScaledByIncrementSize) noexcept
-    {
-        InitOffsetted(other, offsetScaledByIncrementSize);
-    }
-    CD3DX12_CPU_DESCRIPTOR_HANDLE(_In_ const D3D12_CPU_DESCRIPTOR_HANDLE &other, INT offsetInDescriptors, UINT descriptorIncrementSize) noexcept
-    {
-        InitOffsetted(other, offsetInDescriptors, descriptorIncrementSize);
-    }
-    CD3DX12_CPU_DESCRIPTOR_HANDLE& Offset(INT offsetInDescriptors, UINT descriptorIncrementSize) noexcept
-    {
-        ptr = SIZE_T(INT64(ptr) + INT64(offsetInDescriptors) * INT64(descriptorIncrementSize));
-        return *this;
-    }
-    CD3DX12_CPU_DESCRIPTOR_HANDLE& Offset(INT offsetScaledByIncrementSize) noexcept
-    {
-        ptr = SIZE_T(INT64(ptr) + INT64(offsetScaledByIncrementSize));
-        return *this;
-    }
-    bool operator==(_In_ const D3D12_CPU_DESCRIPTOR_HANDLE& other) const noexcept
-    {
-        return (ptr == other.ptr);
-    }
-    bool operator!=(_In_ const D3D12_CPU_DESCRIPTOR_HANDLE& other) const noexcept
-    {
-        return (ptr != other.ptr);
-    }
-    CD3DX12_CPU_DESCRIPTOR_HANDLE &operator=(const D3D12_CPU_DESCRIPTOR_HANDLE &other) noexcept
-    {
-        ptr = other.ptr;
-        return *this;
-    }
-
-    inline void InitOffsetted(_In_ const D3D12_CPU_DESCRIPTOR_HANDLE &base, INT offsetScaledByIncrementSize) noexcept
-    {
-        InitOffsetted(*this, base, offsetScaledByIncrementSize);
-    }
-
-    inline void InitOffsetted(_In_ const D3D12_CPU_DESCRIPTOR_HANDLE &base, INT offsetInDescriptors, UINT descriptorIncrementSize) noexcept
-    {
-        InitOffsetted(*this, base, offsetInDescriptors, descriptorIncrementSize);
-    }
-
-    static inline void InitOffsetted(_Out_ D3D12_CPU_DESCRIPTOR_HANDLE &handle, _In_ const D3D12_CPU_DESCRIPTOR_HANDLE &base, INT offsetScaledByIncrementSize) noexcept
-    {
-        handle.ptr = SIZE_T(INT64(base.ptr) + INT64(offsetScaledByIncrementSize));
-    }
-
-    static inline void InitOffsetted(_Out_ D3D12_CPU_DESCRIPTOR_HANDLE &handle, _In_ const D3D12_CPU_DESCRIPTOR_HANDLE &base, INT offsetInDescriptors, UINT descriptorIncrementSize) noexcept
-    {
-        handle.ptr = SIZE_T(INT64(base.ptr) + INT64(offsetInDescriptors) * INT64(descriptorIncrementSize));
-    }
-};
-
-struct CD3DX12_SHADER_BYTECODE : public D3D12_SHADER_BYTECODE
-{
-    CD3DX12_SHADER_BYTECODE() = default;
-    explicit CD3DX12_SHADER_BYTECODE(const D3D12_SHADER_BYTECODE &o) noexcept :
-        D3D12_SHADER_BYTECODE(o)
-    {}
-    CD3DX12_SHADER_BYTECODE(
-        _In_ ID3DBlob* pShaderBlob ) noexcept
-    {
-        pShaderBytecode = pShaderBlob->GetBufferPointer();
-        BytecodeLength = pShaderBlob->GetBufferSize();
-    }
-    CD3DX12_SHADER_BYTECODE(
-        const void* _pShaderBytecode,
-        SIZE_T bytecodeLength ) noexcept
-    {
-        pShaderBytecode = _pShaderBytecode;
-        BytecodeLength = bytecodeLength;
-    }
-};
-
-struct CD3DX12_RASTERIZER_DESC : public D3D12_RASTERIZER_DESC
-{
-    CD3DX12_RASTERIZER_DESC() = default;
-    explicit CD3DX12_RASTERIZER_DESC( const D3D12_RASTERIZER_DESC& o ) noexcept :
-        D3D12_RASTERIZER_DESC( o )
-    {}
-    explicit CD3DX12_RASTERIZER_DESC( CD3DX12_DEFAULT ) noexcept
-    {
-        FillMode = D3D12_FILL_MODE_SOLID;
-        CullMode = D3D12_CULL_MODE_BACK;
-        FrontCounterClockwise = FALSE;
-        DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
-        DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
-        SlopeScaledDepthBias = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
-        DepthClipEnable = TRUE;
-        MultisampleEnable = FALSE;
-        AntialiasedLineEnable = FALSE;
-        ForcedSampleCount = 0;
-        ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
-    }
-    explicit CD3DX12_RASTERIZER_DESC(
-        D3D12_FILL_MODE fillMode,
-        D3D12_CULL_MODE cullMode,
-        BOOL frontCounterClockwise,
-        INT depthBias,
-        FLOAT depthBiasClamp,
-        FLOAT slopeScaledDepthBias,
-        BOOL depthClipEnable,
-        BOOL multisampleEnable,
-        BOOL antialiasedLineEnable,
-        UINT forcedSampleCount,
-        D3D12_CONSERVATIVE_RASTERIZATION_MODE conservativeRaster) noexcept
-    {
-        FillMode = fillMode;
-        CullMode = cullMode;
-        FrontCounterClockwise = frontCounterClockwise;
-        DepthBias = depthBias;
-        DepthBiasClamp = depthBiasClamp;
-        SlopeScaledDepthBias = slopeScaledDepthBias;
-        DepthClipEnable = depthClipEnable;
-        MultisampleEnable = multisampleEnable;
-        AntialiasedLineEnable = antialiasedLineEnable;
-        ForcedSampleCount = forcedSampleCount;
-        ConservativeRaster = conservativeRaster;
-    }
 };
 
 struct CD3DX12_BLEND_DESC : public D3D12_BLEND_DESC
