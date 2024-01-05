@@ -1,7 +1,4 @@
-#include <DXHelper.h>
-#include <MainDXWindow.h>
-
-using namespace Microsoft::WRL;
+#include <MainDXWindow.hpp>
 
 MainDXWindow::MainDXWindow(UINT width, UINT height, std::wstring name) {
     m_width = width;
@@ -9,7 +6,7 @@ MainDXWindow::MainDXWindow(UINT width, UINT height, std::wstring name) {
     m_title = name;
 
     WCHAR assetsPath[512];
-    GetAssetsPath(assetsPath, _countof(assetsPath));
+    DXHelperFunctions::GetAssetsPath(assetsPath, _countof(assetsPath));
     m_assetsPath = assetsPath;
 
     m_aspectRatio = static_cast<float>(width) / static_cast<float>(height);
@@ -51,6 +48,12 @@ HWND MainDXWindow::getWindowHandler() {
     return _window_handler;
 }
 
+UINT MainDXWindow::GetWidth() const { return m_width; }
+
+UINT MainDXWindow::GetHeight() const { return m_height; }
+
+const WCHAR * MainDXWindow::GetTitle() const { return m_title.c_str(); }
+
 std::wstring MainDXWindow::GetAssetFullPath(LPCWSTR assetName) {
     // Helper function for resolving the full path of assets.
     return m_assetsPath + L"assets\\" + assetName;
@@ -76,21 +79,21 @@ void MainDXWindow::LoadPipeline() {
 #endif
 
     ComPtr<IDXGIFactory4> factory;
-    ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)));
+    DXHelperFunctions::ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)));
 
     if (m_useWarpDevice) {
         ComPtr<IDXGIAdapter> warpAdapter;
-        ThrowIfFailed(factory->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter)));
+        DXHelperFunctions::ThrowIfFailed(factory->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter)));
 
-        ThrowIfFailed(D3D12CreateDevice(
+        DXHelperFunctions::ThrowIfFailed(D3D12CreateDevice(
             warpAdapter.Get(),
             D3D_FEATURE_LEVEL_11_0,
             IID_PPV_ARGS(&m_device)
         ));
     } else {
-        ComPtr<IDXGIAdapter1> hardwareAdapter = DXHelper::GetHardwareAdapter(factory.Get());
+        ComPtr<IDXGIAdapter1> hardwareAdapter = DXHelperFunctions::GetHardwareAdapter(factory.Get());
 
-        ThrowIfFailed(D3D12CreateDevice(
+        DXHelperFunctions::ThrowIfFailed(D3D12CreateDevice(
             hardwareAdapter.Get(),
             D3D_FEATURE_LEVEL_11_0,
             IID_PPV_ARGS(&m_device)
@@ -102,7 +105,7 @@ void MainDXWindow::LoadPipeline() {
     queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
     queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
-    ThrowIfFailed(m_device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_commandQueue)));
+    DXHelperFunctions::ThrowIfFailed(m_device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_commandQueue)));
 
     // Describe and create the swap chain.
     DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
@@ -115,7 +118,7 @@ void MainDXWindow::LoadPipeline() {
     swapChainDesc.SampleDesc.Count = 1;
 
     ComPtr<IDXGISwapChain1> swapChain;
-    ThrowIfFailed(factory->CreateSwapChainForHwnd(
+    DXHelperFunctions::ThrowIfFailed(factory->CreateSwapChainForHwnd(
         m_commandQueue.Get(), // Swap chain needs the queue so that it can force a flush on it.
         getWindowHandler(),
         &swapChainDesc,
@@ -125,9 +128,9 @@ void MainDXWindow::LoadPipeline() {
     ));
 
     // This sample does not support fullscreen transitions.
-    ThrowIfFailed(factory->MakeWindowAssociation(getWindowHandler(), DXGI_MWA_NO_ALT_ENTER));
+    DXHelperFunctions::ThrowIfFailed(factory->MakeWindowAssociation(getWindowHandler(), DXGI_MWA_NO_ALT_ENTER));
 
-    ThrowIfFailed(swapChain.As(&m_swapChain));
+    DXHelperFunctions::ThrowIfFailed(swapChain.As(&m_swapChain));
     m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
     // Create descriptor heaps.
@@ -137,7 +140,7 @@ void MainDXWindow::LoadPipeline() {
         rtvHeapDesc.NumDescriptors = FrameCount;
         rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
         rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-        ThrowIfFailed(m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap)));
+        DXHelperFunctions::ThrowIfFailed(m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap)));
 
         m_rtvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
     }
@@ -148,13 +151,13 @@ void MainDXWindow::LoadPipeline() {
 
         // Create a RTV for each frame.
         for (UINT n = 0; n < FrameCount; n++) {
-            ThrowIfFailed(m_swapChain->GetBuffer(n, IID_PPV_ARGS(&m_renderTargets[n])));
+            DXHelperFunctions::ThrowIfFailed(m_swapChain->GetBuffer(n, IID_PPV_ARGS(&m_renderTargets[n])));
             m_device->CreateRenderTargetView(m_renderTargets[n].Get(), nullptr, rtvHandle);
             rtvHandle.Offset(1, m_rtvDescriptorSize);
         }
     }
 
-    ThrowIfFailed(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)));
+    DXHelperFunctions::ThrowIfFailed(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)));
 }
 
 // Load the sample assets.
@@ -166,9 +169,9 @@ void MainDXWindow::LoadAssets() {
 
         ComPtr<ID3DBlob> signature;
         ComPtr<ID3DBlob> error;
-        ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature,
+        DXHelperFunctions::ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature,
                                                   &error));
-        ThrowIfFailed(m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(),
+        DXHelperFunctions::ThrowIfFailed(m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(),
                                                     IID_PPV_ARGS(&m_rootSignature)));
     }
 
@@ -184,9 +187,9 @@ void MainDXWindow::LoadAssets() {
         UINT compileFlags = 0;
 #endif
 
-        ThrowIfFailed(D3DCompileFromFile(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "VSMain",
+        DXHelperFunctions::ThrowIfFailed(D3DCompileFromFile(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "VSMain",
                                          "vs_5_0", compileFlags, 0, &vertexShader, nullptr));
-        ThrowIfFailed(D3DCompileFromFile(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "PSMain",
+        DXHelperFunctions::ThrowIfFailed(D3DCompileFromFile(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "PSMain",
                                          "ps_5_0", compileFlags, 0, &pixelShader, nullptr));
 
         // Define the vertex input layout.
@@ -211,16 +214,16 @@ void MainDXWindow::LoadAssets() {
         psoDesc.NumRenderTargets = 1;
         psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
         psoDesc.SampleDesc.Count = 1;
-        ThrowIfFailed(m_device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pipelineState)));
+        DXHelperFunctions::ThrowIfFailed(m_device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pipelineState)));
     }
 
     // Create the command list.
-    ThrowIfFailed(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(),
+    DXHelperFunctions::ThrowIfFailed(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(),
                                               m_pipelineState.Get(), IID_PPV_ARGS(&m_commandList)));
 
     // Command lists are created in the recording state, but there is nothing
     // to record yet. The main loop expects it to be closed, so close it now.
-    ThrowIfFailed(m_commandList->Close());
+    DXHelperFunctions::ThrowIfFailed(m_commandList->Close());
 
     // Create the vertex buffer.
     {
@@ -240,7 +243,7 @@ void MainDXWindow::LoadAssets() {
         // recommended. Every time the GPU needs it, the upload heap will be marshalled
         // over. Please read up on Default Heap usage. An upload heap is used here for
         // code simplicity and because there are very few verts to actually transfer.
-        ThrowIfFailed(m_device->CreateCommittedResource(
+        DXHelperFunctions::ThrowIfFailed(m_device->CreateCommittedResource(
             &cd_3dx12_heap_properties,
             D3D12_HEAP_FLAG_NONE,
             &cd_3dx12_resource_desc,
@@ -251,7 +254,7 @@ void MainDXWindow::LoadAssets() {
         // Copy the triangle data to the vertex buffer.
         UINT8 *pVertexDataBegin;
         CD3DX12_RANGE readRange(0, 0); // We do not intend to read from this resource on the CPU.
-        ThrowIfFailed(m_vertexBuffer->Map(0, &readRange, reinterpret_cast<void **>(&pVertexDataBegin)));
+        DXHelperFunctions::ThrowIfFailed(m_vertexBuffer->Map(0, &readRange, reinterpret_cast<void **>(&pVertexDataBegin)));
         memcpy(pVertexDataBegin, triangleVertices, sizeof(triangleVertices));
         m_vertexBuffer->Unmap(0, nullptr);
 
@@ -263,13 +266,13 @@ void MainDXWindow::LoadAssets() {
 
     // Create synchronization objects and wait until assets have been uploaded to the GPU.
     {
-        ThrowIfFailed(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
+        DXHelperFunctions::ThrowIfFailed(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
         m_fenceValue = 1;
 
         // Create an event handle to use for frame synchronization.
         m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
         if (m_fenceEvent == nullptr) {
-            ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
+            DXHelperFunctions::ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
         }
 
         // Wait for the command list to execute; we are reusing the same command
@@ -289,7 +292,7 @@ void MainDXWindow::render() {
     m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
     // Present the frame.
-    ThrowIfFailed(m_swapChain->Present(1, 0));
+    DXHelperFunctions::ThrowIfFailed(m_swapChain->Present(1, 0));
 
     WaitForPreviousFrame();
 }
@@ -298,12 +301,12 @@ void MainDXWindow::PopulateCommandList() {
     // Command list allocators can only be reset when the associated
     // command lists have finished execution on the GPU; apps should use
     // fences to determine GPU execution progress.
-    ThrowIfFailed(m_commandAllocator->Reset());
+    DXHelperFunctions::ThrowIfFailed(m_commandAllocator->Reset());
 
     // However, when ExecuteCommandList() is called on a particular command
     // list, that command list can then be reset at any time and must be before
     // re-recording.
-    ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), m_pipelineState.Get()));
+    DXHelperFunctions::ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), m_pipelineState.Get()));
 
     // Set necessary state.
     m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
@@ -332,7 +335,7 @@ void MainDXWindow::PopulateCommandList() {
     // Indicate that the back buffer will now be used to present.
     m_commandList->ResourceBarrier(1, &p_barriers);
 
-    ThrowIfFailed(m_commandList->Close());
+    DXHelperFunctions::ThrowIfFailed(m_commandList->Close());
 }
 
 void MainDXWindow::WaitForPreviousFrame() {
@@ -343,12 +346,12 @@ void MainDXWindow::WaitForPreviousFrame() {
 
     // Signal and increment the fence value.
     const UINT64 fence = m_fenceValue;
-    ThrowIfFailed(m_commandQueue->Signal(m_fence.Get(), fence));
+    DXHelperFunctions::ThrowIfFailed(m_commandQueue->Signal(m_fence.Get(), fence));
     m_fenceValue++;
 
     // Wait until the previous frame is finished.
     if (m_fence->GetCompletedValue() < fence) {
-        ThrowIfFailed(m_fence->SetEventOnCompletion(fence, m_fenceEvent));
+        DXHelperFunctions::ThrowIfFailed(m_fence->SetEventOnCompletion(fence, m_fenceEvent));
         WaitForSingleObject(m_fenceEvent, INFINITE);
     }
 

@@ -1,5 +1,5 @@
-#include <Win32Application.h>
-#include <MainDXWindow.h>
+#include <Win32Application.hpp>
+#include <MainDXWindow.hpp>
 
 Win32Application::Win32Application(const HINSTANCE instance_handler, const int show_command_flag) {
     _instance_handler = instance_handler;
@@ -51,6 +51,8 @@ int Win32Application::Run() const {
 
     return 0;
 }
+
+HWND Win32Application::GetWindowHandler() const { return _windowHandler; }
 
 // ReSharper disable CppDFAConstantFunctionResult
 
