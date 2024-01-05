@@ -1,4 +1,5 @@
 #include <CD3DX12_RESOURCE_DESC.hpp>
+#include <DXHelperFunctions.hpp>
 
 CD3DX12_RESOURCE_DESC::CD3DX12_RESOURCE_DESC() = default;
 
@@ -56,11 +57,11 @@ UINT16 CD3DX12_RESOURCE_DESC::Depth() const noexcept { return (Dimension == D3D1
 
 UINT16 CD3DX12_RESOURCE_DESC::ArraySize() const noexcept { return (Dimension != D3D12_RESOURCE_DIMENSION_TEXTURE3D ? DepthOrArraySize : 1); }
 
-UINT8 CD3DX12_RESOURCE_DESC::PlaneCount(ID3D12Device *pDevice) const noexcept { return D3D12GetFormatPlaneCount(pDevice, Format); }
+UINT8 CD3DX12_RESOURCE_DESC::PlaneCount(ID3D12Device *pDevice) const noexcept { return DXHelperFunctions::D3D12GetFormatPlaneCount(pDevice, Format); }
 
 UINT CD3DX12_RESOURCE_DESC::Subresources(ID3D12Device *pDevice) const noexcept { return MipLevels * ArraySize() * PlaneCount(pDevice); }
 
-UINT CD3DX12_RESOURCE_DESC::CalcSubresource(UINT MipSlice, UINT ArraySlice, UINT PlaneSlice) noexcept { return D3D12CalcSubresource(MipSlice, ArraySlice, PlaneSlice, MipLevels, ArraySize()); }
+UINT CD3DX12_RESOURCE_DESC::CalcSubresource(UINT MipSlice, UINT ArraySlice, UINT PlaneSlice) noexcept { return DXHelperFunctions::D3D12CalcSubresource(MipSlice, ArraySlice, PlaneSlice, MipLevels, ArraySize()); }
 
 bool operator==(const D3D12_RESOURCE_DESC &l, const D3D12_RESOURCE_DESC &r) noexcept {
     return l.Dimension == r.Dimension &&

@@ -1,24 +1,6 @@
 #pragma once
 #include <DXImports.hpp>
 
-inline UINT8 D3D12GetFormatPlaneCount(
-    _In_ ID3D12Device* pDevice,
-    DXGI_FORMAT Format
-    ) noexcept
-{
-    D3D12_FEATURE_DATA_FORMAT_INFO formatInfo = { Format, 0 };
-    if (FAILED(pDevice->CheckFeatureSupport(D3D12_FEATURE_FORMAT_INFO, &formatInfo, sizeof(formatInfo))))
-    {
-        return 0;
-    }
-    return formatInfo.PlaneCount;
-}
-
-inline constexpr UINT D3D12CalcSubresource( UINT MipSlice, UINT ArraySlice, UINT PlaneSlice, UINT MipLevels, UINT ArraySize ) noexcept
-{
-    return MipSlice + ArraySlice * MipLevels + PlaneSlice * MipLevels * ArraySize;
-}
-
 struct CD3DX12_RESOURCE_DESC : D3D12_RESOURCE_DESC
 {
     CD3DX12_RESOURCE_DESC();

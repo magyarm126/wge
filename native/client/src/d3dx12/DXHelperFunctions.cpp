@@ -88,3 +88,17 @@ void DXHelperFunctions::GetAssetsPath(WCHAR *path, UINT pathSize) {
         *(lastSlash + 1) = L'\0';
     }
 }
+
+UINT8 DXHelperFunctions::D3D12GetFormatPlaneCount(ID3D12Device *pDevice, DXGI_FORMAT Format) noexcept {
+    D3D12_FEATURE_DATA_FORMAT_INFO formatInfo = { Format, 0 };
+    if (FAILED(pDevice->CheckFeatureSupport(D3D12_FEATURE_FORMAT_INFO, &formatInfo, sizeof(formatInfo))))
+    {
+        return 0;
+    }
+    return formatInfo.PlaneCount;
+}
+
+UINT DXHelperFunctions::D3D12CalcSubresource(UINT MipSlice, UINT ArraySlice, UINT PlaneSlice, UINT MipLevels,
+    UINT ArraySize) noexcept {
+    return MipSlice + ArraySlice * MipLevels + PlaneSlice * MipLevels * ArraySize;
+}
