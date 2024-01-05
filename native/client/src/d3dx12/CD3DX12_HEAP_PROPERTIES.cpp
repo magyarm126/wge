@@ -1,0 +1,1 @@
+#include <CD3DX12_HEAP_PROPERTIES.h>

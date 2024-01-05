@@ -16,6 +16,10 @@ set(SOURCES
         src/d3dx12/CD3DX12_CPU_DESCRIPTOR_HANDLE.cpp
         src/d3dx12/CD3DX12_SHADER_BYTECODE.cpp
         src/d3dx12/CD3DX12_RASTERIZER_DESC.cpp
+        src/d3dx12/CD3DX12_BLEND_DESC.cpp
+        src/d3dx12/CD3DX12_HEAP_PROPERTIES.cpp
+        src/d3dx12/CD3DX12_RESOURCE_DESC.cpp
+        src/d3dx12/CD3DX12_ROOT_SIGNATURE_DESC.cpp
 )
 
 add_executable(client WIN32 ${SOURCES})
