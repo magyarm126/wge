@@ -1,6 +1,7 @@
-#include <DXHelper.h>
+#include <DXHelperFunctions.h>
+#include <HrException.h>
 
-IDXGIAdapter1 * DXHelper::GetHardwareAdapter(IDXGIFactory1 *pFactory) {
+IDXGIAdapter1 * DXHelperFunctions::GetHardwareAdapter(IDXGIFactory1 *pFactory) {
 
     ComPtr<IDXGIAdapter1> adapter;
 
@@ -54,13 +55,13 @@ IDXGIAdapter1 * DXHelper::GetHardwareAdapter(IDXGIFactory1 *pFactory) {
     return adapter.Detach();
 }
 
-std::string DXHelper::HrToString(HRESULT hr) {
+std::string DXHelperFunctions::HrToString(HRESULT hr) {
     char s_str[64] = {};
     sprintf_s(s_str, "HRESULT of 0x%08X", static_cast<UINT>(hr));
     return std::string(s_str);
 }
 
-void DXHelper::ThrowIfFailed(HRESULT hr) {
+void DXHelperFunctions::ThrowIfFailed(HRESULT hr) {
     if (FAILED(hr))
     {
         std::cout << "Error occured:" << hr;
@@ -68,7 +69,7 @@ void DXHelper::ThrowIfFailed(HRESULT hr) {
     }
 }
 
-void DXHelper::GetAssetsPath(WCHAR *path, UINT pathSize) {
+void DXHelperFunctions::GetAssetsPath(WCHAR *path, UINT pathSize) {
     if (path == nullptr)
     {
         throw std::exception();

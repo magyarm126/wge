@@ -1,5 +1,7 @@
-// ReSharper disable CppUnusedIncludeDirectiveDXImports
+// ReSharper disable CppUnusedIncludeDirective
 #pragma once
+
+#include <DXImports.h>
 
 #include <CD3DX12_BLEND_DESC.h>
 #include <CD3DX12_CPU_DESCRIPTOR_HANDLE.h>
@@ -11,14 +13,5 @@
 #include <CD3DX12_RESOURCE_DESC.h>
 #include <CD3DX12_VIEWPORT.h>
 #include <CD3DX12_RECT.h>
-#include "HrException.h"
-
-#include "DXImports.h"
-
-class DXHelper {
-public:
-    static IDXGIAdapter1 * GetHardwareAdapter(IDXGIFactory1 *pFactory);
-    static std::string HrToString(HRESULT hr);
-    static void ThrowIfFailed(HRESULT hr);
-    static void GetAssetsPath(_Out_writes_(pathSize) WCHAR* path, UINT pathSize);
-};
+#include <HrException.h>
+#include <DXHelperFunctions.h>

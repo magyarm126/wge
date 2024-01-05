@@ -8,7 +8,6 @@ set(SOURCES
         src/Win32Application.cpp
         src/MainDXWindow.cpp
         src/stdafx.cpp
-        src/d3dx12/DXHelper.cpp
         src/d3dx12/CD3DX12_VIEWPORT.cpp
         src/d3dx12/CD3DX12_RECT.cpp
         src/d3dx12/CD3DX12_RESOURCE_BARRIER.cpp
@@ -20,6 +19,7 @@ set(SOURCES
         src/d3dx12/CD3DX12_HEAP_PROPERTIES.cpp
         src/d3dx12/CD3DX12_RESOURCE_DESC.cpp
         src/d3dx12/CD3DX12_ROOT_SIGNATURE_DESC.cpp
+        src/d3dx12/DXHelperFunctions.cpp
 )
 
 add_executable(client WIN32 ${SOURCES})
