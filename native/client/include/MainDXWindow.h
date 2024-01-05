@@ -1,4 +1,6 @@
 #pragma once
+#include <CD3DX12_RECT.h>
+#include <CD3DX12_VIEWPORT.h>
 #include <DXWindow.h>
 #include <DXHelper.h>
 

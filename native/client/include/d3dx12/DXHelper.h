@@ -12,37 +12,6 @@ public:
     static void GetAssetsPath(_Out_writes_(pathSize) WCHAR* path, UINT pathSize);
 };
 
-struct CD3DX12_VIEWPORT : D3D12_VIEWPORT
-{
-    CD3DX12_VIEWPORT();
-    explicit CD3DX12_VIEWPORT( const D3D12_VIEWPORT& o ) noexcept;
-    explicit CD3DX12_VIEWPORT(
-        FLOAT topLeftX,
-        FLOAT topLeftY,
-        FLOAT width,
-        FLOAT height,
-        FLOAT minDepth = D3D12_MIN_DEPTH,
-        FLOAT maxDepth = D3D12_MAX_DEPTH ) noexcept;
-    explicit CD3DX12_VIEWPORT(
-        _In_ ID3D12Resource* pResource,
-        UINT mipSlice = 0,
-        FLOAT topLeftX = 0.0f,
-        FLOAT topLeftY = 0.0f,
-        FLOAT minDepth = D3D12_MIN_DEPTH,
-        FLOAT maxDepth = D3D12_MAX_DEPTH ) noexcept;
-};
-
-struct CD3DX12_RECT : D3D12_RECT
-{
-    CD3DX12_RECT();
-    explicit CD3DX12_RECT( const D3D12_RECT& o ) noexcept;
-    explicit CD3DX12_RECT(
-        LONG Left,
-        LONG Top,
-        LONG Right,
-        LONG Bottom ) noexcept;
-};
-
 class HrException final : public std::runtime_error
 {
 public:
@@ -50,26 +19,6 @@ public:
     HRESULT Error() const;
 private:
     const HRESULT m_hr;
-};
-
-struct CD3DX12_RESOURCE_BARRIER : D3D12_RESOURCE_BARRIER
-{
-    CD3DX12_RESOURCE_BARRIER();
-    explicit CD3DX12_RESOURCE_BARRIER(const D3D12_RESOURCE_BARRIER &o) noexcept;
-
-    static CD3DX12_RESOURCE_BARRIER Transition(
-        _In_ ID3D12Resource* pResource,
-        D3D12_RESOURCE_STATES stateBefore,
-        D3D12_RESOURCE_STATES stateAfter,
-        UINT subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES,
-        D3D12_RESOURCE_BARRIER_FLAGS flags = D3D12_RESOURCE_BARRIER_FLAG_NONE) noexcept;
-
-    static CD3DX12_RESOURCE_BARRIER Aliasing(
-        _In_ ID3D12Resource* pResourceBefore,
-        _In_ ID3D12Resource* pResourceAfter) noexcept;
-
-    static CD3DX12_RESOURCE_BARRIER UAV(
-        _In_ ID3D12Resource* pResource) noexcept;
 };
 
 struct CD3DX12_DEFAULT {};

@@ -1,6 +1,8 @@
 #include <DXHelper.h>
 #include <MainDXWindow.h>
 
+#include "CD3DX12_RESOURCE_BARRIER.h"
+
 using namespace Microsoft::WRL;
 
 MainDXWindow::MainDXWindow(UINT width, UINT height, std::wstring name) {
