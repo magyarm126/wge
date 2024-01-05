@@ -1,5 +1,5 @@
 #pragma once
-#include <DXImports.h>
+#include <DXImports.hpp>
 
 inline UINT8 D3D12GetFormatPlaneCount(
     _In_ ID3D12Device* pDevice,

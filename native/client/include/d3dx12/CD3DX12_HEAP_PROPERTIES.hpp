@@ -1,5 +1,5 @@
 #pragma once
-#include <DXImports.h>
+#include <DXImports.hpp>
 
 struct CD3DX12_HEAP_PROPERTIES : D3D12_HEAP_PROPERTIES
 {

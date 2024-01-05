@@ -1,6 +1,6 @@
 #pragma once
 
-#include <DXWindow.h>
+#include <DXWindow.hpp>
 #include <stdafx.h>
 
 class Win32Application {

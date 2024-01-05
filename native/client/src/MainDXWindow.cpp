@@ -1,7 +1,4 @@
-#include <DXHelper.h>
-#include <MainDXWindow.h>
-
-using namespace Microsoft::WRL;
+#include <MainDXWindow.hpp>
 
 MainDXWindow::MainDXWindow(UINT width, UINT height, std::wstring name) {
     m_width = width;

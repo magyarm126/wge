@@ -1,1 +1,1 @@
-#include <CD3DX12_RESOURCE_DESC.h>
+#include <CD3DX12_RESOURCE_DESC.hpp>

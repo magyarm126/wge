@@ -1,5 +1,5 @@
-#include <DXHelperFunctions.h>
-#include <HrException.h>
+#include <DXHelperFunctions.hpp>
+#include <HrException.hpp>
 
 IDXGIAdapter1 * DXHelperFunctions::GetHardwareAdapter(IDXGIFactory1 *pFactory) {
 

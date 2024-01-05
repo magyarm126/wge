@@ -1,5 +1,5 @@
 #pragma once
-#include <DXImports.h>
+#include <DXImports.hpp>
 
 struct CD3DX12_VIEWPORT : D3D12_VIEWPORT
 {

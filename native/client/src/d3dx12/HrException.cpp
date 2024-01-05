@@ -1,5 +1,5 @@
-#include <HrException.h>
-#include <DXHelper.h>
+#include <HrException.hpp>
+#include <DXHelper.hpp>
 
 HrException::HrException(const HRESULT hr): std::runtime_error(DXHelperFunctions::HrToString(hr)), m_hr(hr) {}
 

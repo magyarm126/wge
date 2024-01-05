@@ -1,4 +1,4 @@
-#include <CD3DX12_RECT.h>
+#include <CD3DX12_RECT.hpp>
 
 CD3DX12_RECT::CD3DX12_RECT() : D3D12_RECT() {
 }

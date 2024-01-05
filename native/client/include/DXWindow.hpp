@@ -1,6 +1,6 @@
 #pragma once
 
-#include <DXHelper.h>
+#include <DXHelper.hpp>
 
 class DXWindow{
 public:
