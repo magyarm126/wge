@@ -48,6 +48,12 @@ HWND MainDXWindow::getWindowHandler() {
     return _window_handler;
 }
 
+UINT MainDXWindow::GetWidth() const { return m_width; }
+
+UINT MainDXWindow::GetHeight() const { return m_height; }
+
+const WCHAR * MainDXWindow::GetTitle() const { return m_title.c_str(); }
+
 std::wstring MainDXWindow::GetAssetFullPath(LPCWSTR assetName) {
     // Helper function for resolving the full path of assets.
     return m_assetsPath + L"assets\\" + assetName;

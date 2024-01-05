@@ -7,7 +7,8 @@ class Win32Application {
 public:
     Win32Application(HINSTANCE instance_handler, int show_command_flag);
     int Run() const;
-    HWND GetWindowHandler() const { return _windowHandler; }
+    HWND GetWindowHandler() const;
+
 protected:
     static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 private:

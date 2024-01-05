@@ -52,6 +52,8 @@ int Win32Application::Run() const {
     return 0;
 }
 
+HWND Win32Application::GetWindowHandler() const { return _windowHandler; }
+
 // ReSharper disable CppDFAConstantFunctionResult
 
 /**

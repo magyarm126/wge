@@ -20,10 +20,11 @@ public:
 
     HWND getWindowHandler() override;
 
-    UINT GetWidth() const           { return m_width; }
-    UINT GetHeight() const          { return m_height; }
-    const WCHAR* GetTitle() const   { return m_title.c_str(); }
+    UINT GetWidth() const;
 
+    UINT GetHeight() const;
+
+    const WCHAR* GetTitle() const;
 
 protected:
     // Viewport dimensions.

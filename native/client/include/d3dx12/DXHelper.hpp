@@ -11,6 +11,7 @@
 #include <CD3DX12_ROOT_SIGNATURE_DESC.hpp>
 #include <CD3DX12_HEAP_PROPERTIES.hpp>
 #include <CD3DX12_RESOURCE_DESC.hpp>
+#include <CD3DX12_RANGE.hpp>
 #include <CD3DX12_VIEWPORT.hpp>
 #include <CD3DX12_RECT.hpp>
 #include <HrException.hpp>

@@ -18,6 +18,7 @@ set(SOURCES
         src/d3dx12/CD3DX12_BLEND_DESC.cpp
         src/d3dx12/CD3DX12_HEAP_PROPERTIES.cpp
         src/d3dx12/CD3DX12_RESOURCE_DESC.cpp
+        src/d3dx12/CD3DX12_RANGE.cpp
         src/d3dx12/CD3DX12_ROOT_SIGNATURE_DESC.cpp
         src/d3dx12/DXHelperFunctions.cpp
 )
