@@ -8,11 +8,12 @@ set(SOURCES
         src/Win32Application.cpp
         src/MainDXWindow.cpp
         src/stdafx.cpp
-        src/DXHelper.cpp
+        src/d3dx12/DXHelper.cpp
         src/d3dx12/CD3DX12_VIEWPORT.cpp
         src/d3dx12/CD3DX12_RECT.cpp
         src/d3dx12/CD3DX12_RESOURCE_BARRIER.cpp
-        include/d3dx12/CD3DX12_RESOURCE_BARRIER.h
+        src/d3dx12/HrException.cpp
+
 )
 
 add_executable(client WIN32 ${SOURCES})

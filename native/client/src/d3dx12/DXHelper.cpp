@@ -1,4 +1,6 @@
-#include <DXHelper.h>
+#include <../../include/d3dx12/DXHelper.h>
+
+#include "../../include/d3dx12/HrException.h"
 
 IDXGIAdapter1 * DXHelper::GetHardwareAdapter(IDXGIFactory1 *pFactory) {
 
@@ -87,7 +89,3 @@ void DXHelper::GetAssetsPath(WCHAR *path, UINT pathSize) {
         *(lastSlash + 1) = L'\0';
     }
 }
-
-HrException::HrException(const HRESULT hr): std::runtime_error(DXHelper::HrToString(hr)), m_hr(hr) {}
-
-HRESULT HrException::Error() const { return m_hr; }

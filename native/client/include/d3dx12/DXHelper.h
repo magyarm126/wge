@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <stdafx.h>
-#include <stdexcept>
 
 class DXHelper {
 public:
@@ -10,15 +9,6 @@ public:
     static std::string HrToString(HRESULT hr);
     static void ThrowIfFailed(HRESULT hr);
     static void GetAssetsPath(_Out_writes_(pathSize) WCHAR* path, UINT pathSize);
-};
-
-class HrException final : public std::runtime_error
-{
-public:
-    explicit HrException(HRESULT hr);
-    HRESULT Error() const;
-private:
-    const HRESULT m_hr;
 };
 
 struct CD3DX12_DEFAULT {};
