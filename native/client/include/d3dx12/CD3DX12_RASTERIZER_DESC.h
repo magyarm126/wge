@@ -1,6 +1,5 @@
 #pragma once
-#include <stdafx.h>
-#include <DXHelper.h>
+#include <DXImports.h>
 
 struct CD3DX12_RASTERIZER_DESC : D3D12_RASTERIZER_DESC
  {

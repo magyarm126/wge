@@ -1,6 +1,4 @@
-#include <../../include/d3dx12/DXHelper.h>
-
-#include "../../include/d3dx12/HrException.h"
+#include <DXHelper.h>
 
 IDXGIAdapter1 * DXHelper::GetHardwareAdapter(IDXGIFactory1 *pFactory) {
 

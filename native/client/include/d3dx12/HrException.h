@@ -1,6 +1,5 @@
 #pragma once
-#include <iostream>
-#include <stdafx.h>
+#include <DXImports.h>
 
 class HrException final : public std::runtime_error
 {

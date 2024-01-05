@@ -1,5 +1,5 @@
 #pragma once
-#include <stdafx.h>
+#include <DXImports.h>
 
 struct CD3DX12_SHADER_BYTECODE : D3D12_SHADER_BYTECODE
 {

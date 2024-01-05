@@ -1,5 +1,5 @@
 #pragma once
-#include <stdafx.h>
+#include <DXImports.h>
 
 struct CD3DX12_RESOURCE_BARRIER : D3D12_RESOURCE_BARRIER
 {

@@ -1,14 +1,13 @@
 #pragma once
-#include <DXHelper.h>
-#include <stdafx.h>
+#include <DXImports.h>
 
 struct CD3DX12_BLEND_DESC : D3D12_BLEND_DESC
 {
     CD3DX12_BLEND_DESC() = default;
-    explicit CD3DX12_BLEND_DESC( const D3D12_BLEND_DESC& o ) noexcept :
+    CD3DX12_BLEND_DESC( const D3D12_BLEND_DESC& o ) :
         D3D12_BLEND_DESC( o )
     {}
-    explicit CD3DX12_BLEND_DESC( CD3DX12_DEFAULT ) noexcept
+    explicit CD3DX12_BLEND_DESC( CD3DX12_DEFAULT )
     {
         AlphaToCoverageEnable = FALSE;
         IndependentBlendEnable = FALSE;

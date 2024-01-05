@@ -1,6 +1,5 @@
 #pragma once
-#include <stdafx.h>
-#include <DXHelper.h>
+#include <DXImports.h>
 
 struct CD3DX12_CPU_DESCRIPTOR_HANDLE : D3D12_CPU_DESCRIPTOR_HANDLE
 {

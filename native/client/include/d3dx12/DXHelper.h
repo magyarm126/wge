@@ -1,10 +1,19 @@
+// ReSharper disable CppUnusedIncludeDirectiveDXImports
 #pragma once
 
-#include <iostream>
-#include <stdafx.h>
+#include <CD3DX12_BLEND_DESC.h>
+#include <CD3DX12_CPU_DESCRIPTOR_HANDLE.h>
+#include <CD3DX12_RESOURCE_BARRIER.h>
+#include <CD3DX12_SHADER_BYTECODE.h>
+#include <CD3DX12_RASTERIZER_DESC.h>
+#include <CD3DX12_ROOT_SIGNATURE_DESC.h>
+#include <CD3DX12_HEAP_PROPERTIES.h>
+#include <CD3DX12_RESOURCE_DESC.h>
+#include <CD3DX12_VIEWPORT.h>
+#include <CD3DX12_RECT.h>
+#include "HrException.h"
 
-struct CD3DX12_DEFAULT {};
-extern const DECLSPEC_SELECTANY CD3DX12_DEFAULT D3D12_DEFAULT;
+#include "DXImports.h"
 
 class DXHelper {
 public:

@@ -1,7 +1,5 @@
 #pragma once
-#include <stdafx.h>
-
-#include "CD3DX12_BLEND_DESC.h"
+#include <DXImports.h>
 
 struct CD3DX12_ROOT_SIGNATURE_DESC : D3D12_ROOT_SIGNATURE_DESC
 {

@@ -1,13 +1,5 @@
-#include <CD3DX12_CPU_DESCRIPTOR_HANDLE.h>
 #include <DXHelper.h>
 #include <MainDXWindow.h>
-
-#include <CD3DX12_RESOURCE_BARRIER.h>
-#include <CD3DX12_SHADER_BYTECODE.h>
-#include <CD3DX12_RASTERIZER_DESC.h>
-#include <CD3DX12_ROOT_SIGNATURE_DESC.h>
-#include <CD3DX12_HEAP_PROPERTIES.h>
-#include <CD3DX12_RESOURCE_DESC.h>
 
 using namespace Microsoft::WRL;
 
