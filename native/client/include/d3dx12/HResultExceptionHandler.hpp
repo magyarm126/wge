@@ -1,18 +1,29 @@
 #pragma once
 #include <DXImports.hpp>
+#include <functional>
 
 class HResultExceptionHandler {
 public:
     explicit HResultExceptionHandler(HRESULT hresult);
 
-    [[nodiscard]] HRESULT Error() const;
+    explicit HResultExceptionHandler(HRESULT hresult, std::string  operation_name);
 
-    [[nodiscard]] std::string ToString() const;
+    explicit HResultExceptionHandler(const std::function<HRESULT()>& lambda_functor, const std::string& operation_name);
 
-    void ThrowIfFailed() const;
+    [[nodiscard]] HRESULT Error();
 
-    [[nodiscard]] HResultExceptionHandler Log() const;
+    [[nodiscard]] std::string ToString();
+
+    void ThrowIfFailed();
+
+    [[nodiscard]] HResultExceptionHandler Log();
 
 private:
-    const HRESULT _hresult;
+    HRESULT GetResult();
+
+    HRESULT _hresult = -1l;
+    std::string _operation_name;
+    bool _log = false;
+    std::function<HRESULT()> _labda_functor;
+    bool _labda_resolved = false;
 };
