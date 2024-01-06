@@ -1,8 +1,6 @@
 #include <DXHelperFunctions.hpp>
-#include <HrException.hpp>
 
-IDXGIAdapter1 * DXHelperFunctions::GetHardwareAdapter(IDXGIFactory1 *pFactory) {
-
+IDXGIAdapter1 *DXHelperFunctions::GetHardwareAdapter(IDXGIFactory1 *pFactory) {
     ComPtr<IDXGIAdapter1> adapter;
 
     ComPtr<IDXGIFactory6> factory6;
@@ -34,7 +32,7 @@ IDXGIAdapter1 * DXHelperFunctions::GetHardwareAdapter(IDXGIFactory1 *pFactory) {
     if (adapter.Get() == nullptr) {
         for (UINT adapterIndex = 0; SUCCEEDED(pFactory->EnumAdapters1(adapterIndex, &adapter)); ++adapterIndex) {
             DXGI_ADAPTER_DESC1 desc;
-            if(FAILED(adapter->GetDesc1(&desc))) {
+            if (FAILED(adapter->GetDesc1(&desc))) {
                 throw;
             }
 
@@ -55,50 +53,33 @@ IDXGIAdapter1 * DXHelperFunctions::GetHardwareAdapter(IDXGIFactory1 *pFactory) {
     return adapter.Detach();
 }
 
-std::string DXHelperFunctions::HrToString(HRESULT hr) {
-    char s_str[64] = {};
-    sprintf_s(s_str, "HRESULT of 0x%08X", static_cast<UINT>(hr));
-    return std::string(s_str);
-}
+std::wstring DXHelperFunctions::GetAssetsPath() {
+    int pathSize = 512;
+    WCHAR assetsPath[pathSize];
 
-void DXHelperFunctions::ThrowIfFailed(HRESULT hr) {
-    if (FAILED(hr))
-    {
-        std::cout << "Error occured:" << hr;
-        throw HrException(hr);
-    }
-}
-
-void DXHelperFunctions::GetAssetsPath(WCHAR *path, UINT pathSize) {
-    if (path == nullptr)
-    {
-        throw std::exception();
-    }
-
-    DWORD size = GetModuleFileName(nullptr, path, pathSize);
-    if (size == 0 || size == pathSize)
-    {
+    DWORD size = GetModuleFileName(nullptr, assetsPath, pathSize);
+    if (size == 0 || size == pathSize) {
         // Method failed or path was truncated.
         throw std::exception();
     }
 
-    WCHAR* lastSlash = wcsrchr(path, L'\\');
-    if (lastSlash)
-    {
+    WCHAR *lastSlash = wcsrchr(assetsPath, L'\\');
+    if (lastSlash) {
         *(lastSlash + 1) = L'\0';
     }
+
+    return {assetsPath};
 }
 
 UINT8 DXHelperFunctions::D3D12GetFormatPlaneCount(ID3D12Device *pDevice, DXGI_FORMAT Format) noexcept {
-    D3D12_FEATURE_DATA_FORMAT_INFO formatInfo = { Format, 0 };
-    if (FAILED(pDevice->CheckFeatureSupport(D3D12_FEATURE_FORMAT_INFO, &formatInfo, sizeof(formatInfo))))
-    {
+    D3D12_FEATURE_DATA_FORMAT_INFO formatInfo = {Format, 0};
+    if (FAILED(pDevice->CheckFeatureSupport(D3D12_FEATURE_FORMAT_INFO, &formatInfo, sizeof(formatInfo)))) {
         return 0;
     }
     return formatInfo.PlaneCount;
 }
 
 UINT DXHelperFunctions::D3D12CalcSubresource(UINT MipSlice, UINT ArraySlice, UINT PlaneSlice, UINT MipLevels,
-    UINT ArraySize) noexcept {
+                                             UINT ArraySize) noexcept {
     return MipSlice + ArraySlice * MipLevels + PlaneSlice * MipLevels * ArraySize;
 }
