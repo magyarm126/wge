@@ -14,5 +14,5 @@
 #include <CD3DX12_RANGE.hpp>
 #include <CD3DX12_VIEWPORT.hpp>
 #include <CD3DX12_RECT.hpp>
-#include <HrException.hpp>
+#include <HResultExceptionHandler.hpp>
 #include <DXHelperFunctions.hpp>

@@ -3,7 +3,6 @@
 
 class MainDXWindow final : DXWindow {
 public:
-
     MainDXWindow(UINT width, UINT height, std::wstring name);
 
     ~MainDXWindow() override;
@@ -24,7 +23,7 @@ public:
 
     UINT GetHeight() const;
 
-    const WCHAR* GetTitle() const;
+    const WCHAR *GetTitle() const;
 
 protected:
     // Viewport dimensions.
@@ -36,12 +35,13 @@ protected:
     bool m_useWarpDevice;
 
     void setWindowHandler(HWND hwnd);
+
     std::wstring GetAssetFullPath(LPCWSTR assetName);
+
 private:
     static const UINT FrameCount = 2;
 
-    struct Vertex
-    {
+    struct Vertex {
         XMFLOAT3 position;
         XMFLOAT4 color;
     };
@@ -71,8 +71,11 @@ private:
     UINT64 m_fenceValue;
 
     void LoadPipeline();
+
     void LoadAssets();
+
     void PopulateCommandList();
+
     void WaitForPreviousFrame();
 
     HWND _window_handler = nullptr;

@@ -4,7 +4,7 @@
 Win32Application::Win32Application(const HINSTANCE instance_handler, const int show_command_flag) {
     _instance_handler = instance_handler;
     _show_command_flag = show_command_flag;
-    _dx_window = reinterpret_cast<DXWindow*>(new MainDXWindow(1280, 720, L"D3D12 Hello Triangle"));
+    _dx_window = reinterpret_cast<DXWindow *>(new MainDXWindow(1280, 720, L"D3D12 Hello Triangle"));
 }
 
 int Win32Application::Run() const {
@@ -66,33 +66,31 @@ HWND Win32Application::GetWindowHandler() const { return _windowHandler; }
  */
 // ReSharper disable CppParameterMayBeConst
 LRESULT CALLBACK Win32Application::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-
-    auto* dx_window = reinterpret_cast<DXWindow*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+    auto *dx_window = reinterpret_cast<DXWindow *>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 
     switch (uMsg) {
-        case WM_CREATE:
-        {
+        case WM_CREATE: {
             // Save context, so dx_window is available for other events.
             const auto pCreateStruct = reinterpret_cast<LPCREATESTRUCT>(lParam);
             SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pCreateStruct->lpCreateParams));
         }
-        return 0;
+            return 0;
 
         case WM_DESTROY:
             PostQuitMessage(0);
-        return 0;
+            return 0;
 
         case WM_KEYDOWN:
             if (dx_window) {
                 dx_window->keyDown(static_cast<UINT8>(wParam));
             }
-        return 0;
+            return 0;
 
         case WM_KEYUP:
             if (dx_window) {
                 dx_window->keyUp(static_cast<UINT8>(wParam));
             }
-        return 0;
+            return 0;
 
         case WM_PAINT: {
             if (dx_window) {
@@ -100,7 +98,7 @@ LRESULT CALLBACK Win32Application::WindowProc(HWND hwnd, UINT uMsg, WPARAM wPara
                 dx_window->render();
             }
         }
-        return 0;
+            return 0;
         default: break;
     }
 
