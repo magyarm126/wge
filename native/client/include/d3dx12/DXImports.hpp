@@ -2,6 +2,7 @@
 #pragma once
 
 #include <iostream>
+#include <functional>
 #include <stdafx.h>
 
 struct CD3DX12_DEFAULT {};

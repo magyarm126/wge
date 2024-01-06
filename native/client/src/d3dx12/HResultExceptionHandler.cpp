@@ -2,11 +2,7 @@
 #include <DXHelper.hpp>
 #include <utility>
 
-HResultExceptionHandler::HResultExceptionHandler(const HRESULT hresult) : HResultExceptionHandler(hresult, "") {
-}
-
-HResultExceptionHandler::HResultExceptionHandler(const HRESULT hresult, std::string operation_name) : _hresult(hresult),
-    _operation_name(std::move(operation_name)) {
+HResultExceptionHandler::HResultExceptionHandler(const HRESULT hresult) : _hresult(hresult) {
 }
 
 HResultExceptionHandler::HResultExceptionHandler(const std::function<HRESULT()> & lambda_functor,
@@ -49,6 +45,11 @@ void HResultExceptionHandler::ThrowIfFailed() {
 
 HResultExceptionHandler HResultExceptionHandler::Log() {
     _log = true;
+    return *this;
+}
+
+HResultExceptionHandler HResultExceptionHandler::OperationName(const std::string& operation_name) {
+    _operation_name = operation_name;
     return *this;
 }
 

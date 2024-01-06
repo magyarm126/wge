@@ -77,10 +77,10 @@ void MainDXWindow::LoadPipeline() {
 #endif
 
     ComPtr<IDXGIFactory4> factory;
-    HResultExceptionHandler(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)), "CreateFactory")
+    HResultExceptionHandler(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)))
+            .OperationName("CreateFactory")
             .Log()
             .ThrowIfFailed();
-
     if (m_useWarpDevice) {
         ComPtr<IDXGIAdapter> warpAdapter;
         HResultExceptionHandler([&] {
