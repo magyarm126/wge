@@ -5,7 +5,7 @@ class HResultExceptionHandler {
 public:
     explicit HResultExceptionHandler(HRESULT hresult);
 
-    explicit HResultExceptionHandler(const std::function<HRESULT()>& lambda_functor, const std::string& operation_name);
+    explicit HResultExceptionHandler(const std::function<HRESULT()> &lambda_functor, const std::string &operation_name);
 
     [[nodiscard]] HRESULT Error();
 
@@ -15,10 +15,12 @@ public:
 
     [[nodiscard]] HResultExceptionHandler Log();
 
-    [[nodiscard]] HResultExceptionHandler OperationName(const std::string& operation_name);
+    [[nodiscard]] HResultExceptionHandler OperationName(const std::string &operation_name);
 
 private:
     HRESULT GetResult();
+
+    boolean failed();
 
     HRESULT _hresult = -1l;
     std::string _operation_name;

@@ -16,7 +16,7 @@ HRESULT HResultExceptionHandler::Error() { return GetResult(); }
 std::string HResultExceptionHandler::ToString() {
     std::string toString;
 
-    if (FAILED(GetResult())) {
+    if (failed()) {
         toString = "[ERROR] HResult error occured";
     } else {
         toString = "[ LOG ] HResult";
@@ -33,7 +33,7 @@ std::string HResultExceptionHandler::ToString() {
 }
 
 void HResultExceptionHandler::ThrowIfFailed() {
-    if (FAILED(GetResult())) {
+    if (failed()) {
         throw std::runtime_error(ToString());
     }
     if (_log) {
@@ -60,4 +60,8 @@ HRESULT HResultExceptionHandler::GetResult() {
         _lambda_resolved = true;
     }
     return _hresult;
+}
+
+boolean HResultExceptionHandler::failed() {
+    return FAILED(GetResult());
 }
