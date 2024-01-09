@@ -5,14 +5,26 @@ class HResultExceptionHandler {
 public:
     explicit HResultExceptionHandler(HRESULT hresult);
 
-    [[nodiscard]] HRESULT Error() const;
+    explicit HResultExceptionHandler(const std::function<HRESULT()> &lambda_functor, const std::string &operation_name);
 
-    [[nodiscard]] std::string ToString() const;
+    [[nodiscard]] HRESULT Error();
 
-    void ThrowIfFailed() const;
+    [[nodiscard]] std::string ToString();
 
-    [[nodiscard]] HResultExceptionHandler Log() const;
+    void ThrowIfFailed();
+
+    [[nodiscard]] HResultExceptionHandler Log();
+
+    [[nodiscard]] HResultExceptionHandler OperationName(const std::string &operation_name);
 
 private:
-    const HRESULT _hresult;
+    HRESULT GetResult();
+
+    boolean failed();
+
+    HRESULT _hresult = -1l;
+    std::string _operation_name;
+    bool _log = false;
+    std::function<HRESULT()> _lambda_functor;
+    bool _lambda_resolved = false;
 };

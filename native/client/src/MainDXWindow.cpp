@@ -78,27 +78,33 @@ void MainDXWindow::LoadPipeline() {
 
     ComPtr<IDXGIFactory4> factory;
     HResultExceptionHandler(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)))
+            .OperationName("CreateFactory")
+            .Log()
             .ThrowIfFailed();
-
     if (m_useWarpDevice) {
         ComPtr<IDXGIAdapter> warpAdapter;
         HResultExceptionHandler(factory->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter)))
+                .OperationName("EnumWarpAdapter")
+                .Log()
                 .ThrowIfFailed();
-
         HResultExceptionHandler(D3D12CreateDevice(
                     warpAdapter.Get(),
                     D3D_FEATURE_LEVEL_11_0,
                     IID_PPV_ARGS(&m_device)
                 ))
+                .OperationName("WarpAdapter Device")
+                .Log()
                 .ThrowIfFailed();
     } else {
-        ComPtr<IDXGIAdapter1> hardwareAdapter = DXHelperFunctions::GetHardwareAdapter(factory.Get());
+        const ComPtr<IDXGIAdapter1> hardwareAdapter = DXHelperFunctions::GetHardwareAdapter(factory.Get());
 
         HResultExceptionHandler(D3D12CreateDevice(
                     hardwareAdapter.Get(),
                     D3D_FEATURE_LEVEL_11_0,
                     IID_PPV_ARGS(&m_device)
                 ))
+                .OperationName("HardwareAdapter device")
+                .Log()
                 .ThrowIfFailed();
     }
 
@@ -108,6 +114,8 @@ void MainDXWindow::LoadPipeline() {
     queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
     HResultExceptionHandler(m_device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_commandQueue)))
+            .OperationName("CreateCommandQueue")
+            .Log()
             .ThrowIfFailed();
 
     // Describe and create the swap chain.
@@ -129,13 +137,19 @@ void MainDXWindow::LoadPipeline() {
                 nullptr,
                 &swapChain
             ))
+            .OperationName("CreateSwapChainForHwnd")
+            .Log()
             .ThrowIfFailed();
 
     // This sample does not support fullscreen transitions.
     HResultExceptionHandler(factory->MakeWindowAssociation(getWindowHandler(), DXGI_MWA_NO_ALT_ENTER))
+            .OperationName("MakeWindowAssociation")
+            .Log()
             .ThrowIfFailed();
 
     HResultExceptionHandler(swapChain.As(&m_swapChain))
+            .OperationName("AssignSwapChainToMember")
+            .Log()
             .ThrowIfFailed();
     m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
@@ -147,6 +161,8 @@ void MainDXWindow::LoadPipeline() {
         rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
         rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
         HResultExceptionHandler(m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap)))
+                .OperationName("CreateDescriptorHeap")
+                .Log()
                 .ThrowIfFailed();
 
         m_rtvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
@@ -159,6 +175,7 @@ void MainDXWindow::LoadPipeline() {
         // Create a RTV for each frame.
         for (UINT n = 0; n < FrameCount; n++) {
             HResultExceptionHandler(m_swapChain->GetBuffer(n, IID_PPV_ARGS(&m_renderTargets[n])))
+                    .OperationName("GetBuffer")
                     .ThrowIfFailed();
             m_device->CreateRenderTargetView(m_renderTargets[n].Get(), nullptr, rtvHandle);
             rtvHandle.Offset(1, m_rtvDescriptorSize);
@@ -167,6 +184,8 @@ void MainDXWindow::LoadPipeline() {
 
     HResultExceptionHandler(
                 m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)))
+            .OperationName("CreateCommandAllocator")
+            .Log()
             .ThrowIfFailed();
 }
 
@@ -182,10 +201,14 @@ void MainDXWindow::LoadAssets() {
         HResultExceptionHandler(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1,
                                                             &signature,
                                                             &error))
+                .OperationName("SerializeRootSignature")
+                .Log()
                 .ThrowIfFailed();
         HResultExceptionHandler(m_device->CreateRootSignature(0, signature->GetBufferPointer(),
                                                               signature->GetBufferSize(),
                                                               IID_PPV_ARGS(&m_rootSignature)))
+                .OperationName("AssignRootSignature")
+                .Log()
                 .ThrowIfFailed();
     }
 
@@ -204,10 +227,14 @@ void MainDXWindow::LoadAssets() {
         HResultExceptionHandler(D3DCompileFromFile(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr,
                                                    "VSMain",
                                                    "vs_5_0", compileFlags, 0, &vertexShader, nullptr))
+                .OperationName("CompileVShader")
+                .Log()
                 .ThrowIfFailed();
         HResultExceptionHandler(D3DCompileFromFile(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr,
                                                    "PSMain",
                                                    "ps_5_0", compileFlags, 0, &pixelShader, nullptr))
+                .OperationName("CompilePShader")
+                .Log()
                 .ThrowIfFailed();
 
         // Define the vertex input layout.
@@ -234,6 +261,8 @@ void MainDXWindow::LoadAssets() {
         psoDesc.SampleDesc.Count = 1;
         HResultExceptionHandler(
                     m_device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pipelineState)))
+                .OperationName("CreateGraphicPipelineState")
+                .Log()
                 .ThrowIfFailed();
     }
 
@@ -241,11 +270,15 @@ void MainDXWindow::LoadAssets() {
     HResultExceptionHandler(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT,
                                                         m_commandAllocator.Get(),
                                                         m_pipelineState.Get(), IID_PPV_ARGS(&m_commandList)))
+            .OperationName("CreateCommandList")
+            .Log()
             .ThrowIfFailed();
 
     // Command lists are created in the recording state, but there is nothing
     // to record yet. The main loop expects it to be closed, so close it now.
     HResultExceptionHandler(m_commandList->Close())
+            .OperationName("AssignCommandList")
+            .Log()
             .ThrowIfFailed();
 
     // Create the vertex buffer.
@@ -273,6 +306,8 @@ void MainDXWindow::LoadAssets() {
                     D3D12_RESOURCE_STATE_GENERIC_READ,
                     nullptr,
                     IID_PPV_ARGS(&m_vertexBuffer)))
+                .OperationName("CreateCommitedResource")
+                .Log()
                 .ThrowIfFailed();
 
         // Copy the triangle data to the vertex buffer.
@@ -280,6 +315,8 @@ void MainDXWindow::LoadAssets() {
         CD3DX12_RANGE readRange(0, 0); // We do not intend to read from this resource on the CPU.
         HResultExceptionHandler(
                     m_vertexBuffer->Map(0, &readRange, reinterpret_cast<void **>(&pVertexDataBegin)))
+                .OperationName("MapVertexBuffer")
+                .Log()
                 .ThrowIfFailed();
         memcpy(pVertexDataBegin, triangleVertices, sizeof(triangleVertices));
         m_vertexBuffer->Unmap(0, nullptr);
@@ -293,6 +330,8 @@ void MainDXWindow::LoadAssets() {
     // Create synchronization objects and wait until assets have been uploaded to the GPU.
     {
         HResultExceptionHandler(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)))
+                .OperationName("CreateFence")
+                .Log()
                 .ThrowIfFailed();
         m_fenceValue = 1;
 
@@ -300,6 +339,8 @@ void MainDXWindow::LoadAssets() {
         m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
         if (m_fenceEvent == nullptr) {
             HResultExceptionHandler(HRESULT_FROM_WIN32(GetLastError()))
+                    .OperationName("LastWinError")
+                    .Log()
                     .ThrowIfFailed();
         }
 
@@ -321,6 +362,7 @@ void MainDXWindow::render() {
 
     // Present the frame.
     HResultExceptionHandler(m_swapChain->Present(1, 0))
+            .OperationName("PresentSwapChain")
             .ThrowIfFailed();
 
     WaitForPreviousFrame();
@@ -331,12 +373,14 @@ void MainDXWindow::PopulateCommandList() {
     // command lists have finished execution on the GPU; apps should use
     // fences to determine GPU execution progress.
     HResultExceptionHandler(m_commandAllocator->Reset())
+            .OperationName("ResetCommandAllocator")
             .ThrowIfFailed();
 
     // However, when ExecuteCommandList() is called on a particular command
     // list, that command list can then be reset at any time and must be before
     // re-recording.
     HResultExceptionHandler(m_commandList->Reset(m_commandAllocator.Get(), m_pipelineState.Get()))
+            .OperationName("ResetCommandList")
             .ThrowIfFailed();
 
     // Set necessary state.
@@ -367,6 +411,7 @@ void MainDXWindow::PopulateCommandList() {
     m_commandList->ResourceBarrier(1, &p_barriers);
 
     HResultExceptionHandler(m_commandList->Close())
+            .OperationName("CloseCommandList")
             .ThrowIfFailed();
 }
 
@@ -379,12 +424,14 @@ void MainDXWindow::WaitForPreviousFrame() {
     // Signal and increment the fence value.
     const UINT64 fence = m_fenceValue;
     HResultExceptionHandler(m_commandQueue->Signal(m_fence.Get(), fence))
+            .OperationName("SignalCommandQueue")
             .ThrowIfFailed();
     m_fenceValue++;
 
     // Wait until the previous frame is finished.
     if (m_fence->GetCompletedValue() < fence) {
         HResultExceptionHandler(m_fence->SetEventOnCompletion(fence, m_fenceEvent))
+                .OperationName("CompleteFence")
                 .ThrowIfFailed();
         WaitForSingleObject(m_fenceEvent, INFINITE);
     }
