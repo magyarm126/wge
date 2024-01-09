@@ -1,6 +1,5 @@
 #include <HResultExceptionHandler.hpp>
 #include <DXHelper.hpp>
-#include <utility>
 
 HResultExceptionHandler::HResultExceptionHandler(const HRESULT hresult) : _hresult(hresult) {
 }
@@ -23,13 +22,12 @@ std::string HResultExceptionHandler::ToString() {
     }
 
     if (!_operation_name.empty()) {
-        toString += " for \"" + _operation_name + "\" - ";
+        toString += " for \"" + _operation_name + "\"";
     }
     char s_str[64] = {};
-    sprintf_s(s_str, "HRESULT code: 0x%08X", static_cast<UINT>(GetResult()));
-    toString += {s_str};
+    sprintf_s(s_str, ": HRESULT code: 0x%08X", static_cast<UINT>(GetResult()));
 
-    return toString;
+    return pad_right(toString, 50) + std::string{s_str};
 }
 
 void HResultExceptionHandler::ThrowIfFailed() {

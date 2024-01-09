@@ -83,28 +83,28 @@ void MainDXWindow::LoadPipeline() {
             .ThrowIfFailed();
     if (m_useWarpDevice) {
         ComPtr<IDXGIAdapter> warpAdapter;
-        HResultExceptionHandler([&] {
-                    return factory->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter));
-                }, "EnumWarpAdapter")
+        HResultExceptionHandler(factory->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter)))
+                .OperationName("EnumWarpAdapter")
                 .Log()
                 .ThrowIfFailed();
-        HResultExceptionHandler(factory->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter)))
-                .ThrowIfFailed();
-
         HResultExceptionHandler(D3D12CreateDevice(
                     warpAdapter.Get(),
                     D3D_FEATURE_LEVEL_11_0,
                     IID_PPV_ARGS(&m_device)
                 ))
+                .OperationName("WarpAdapter Device")
+                .Log()
                 .ThrowIfFailed();
     } else {
-        ComPtr<IDXGIAdapter1> hardwareAdapter = DXHelperFunctions::GetHardwareAdapter(factory.Get());
+        const ComPtr<IDXGIAdapter1> hardwareAdapter = DXHelperFunctions::GetHardwareAdapter(factory.Get());
 
         HResultExceptionHandler(D3D12CreateDevice(
                     hardwareAdapter.Get(),
                     D3D_FEATURE_LEVEL_11_0,
                     IID_PPV_ARGS(&m_device)
                 ))
+                .OperationName("CreateD3D12Device - HardwareAdapter")
+                .Log()
                 .ThrowIfFailed();
     }
 
@@ -114,6 +114,8 @@ void MainDXWindow::LoadPipeline() {
     queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
     HResultExceptionHandler(m_device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&m_commandQueue)))
+            .OperationName("CreateCommandQueue")
+            .Log()
             .ThrowIfFailed();
 
     // Describe and create the swap chain.
@@ -135,13 +137,19 @@ void MainDXWindow::LoadPipeline() {
                 nullptr,
                 &swapChain
             ))
+            .OperationName("CreateSwapChainForHwnd")
+            .Log()
             .ThrowIfFailed();
 
     // This sample does not support fullscreen transitions.
     HResultExceptionHandler(factory->MakeWindowAssociation(getWindowHandler(), DXGI_MWA_NO_ALT_ENTER))
+            .OperationName("MakeWindowAssociation")
+            .Log()
             .ThrowIfFailed();
 
     HResultExceptionHandler(swapChain.As(&m_swapChain))
+            .OperationName("AssignSwapChainToMember")
+            .Log()
             .ThrowIfFailed();
     m_frameIndex = m_swapChain->GetCurrentBackBufferIndex();
 
