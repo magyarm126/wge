@@ -23,6 +23,6 @@ private:
     HRESULT _hresult = -1l;
     std::string _operation_name;
     bool _log = false;
-    std::function<HRESULT()> _labda_functor;
-    bool _labda_resolved = false;
+    std::function<HRESULT()> _lambda_functor;
+    bool _lambda_resolved = false;
 };
