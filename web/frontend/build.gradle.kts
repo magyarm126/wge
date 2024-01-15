@@ -24,20 +24,23 @@ tasks {
         outputs.file("package-lock.json")
         inputs.dir(fileTree("node_modules").exclude(".cache"))
         outputs.dir("dist")
-        doLast{
+        doLast {
             println("Built frontend distribution!")
         }
     }
 
-    processResources{
+    processResources {
         dependsOn(buildAngularApp)
+        from("dist/") {
+            into("static")
+        }
     }
 
     clean {
         delete("node_modules")
         delete("dist")
         delete(".angular")
-        doLast{
+        doLast {
             println("Cleaned frontend caches!")
         }
     }

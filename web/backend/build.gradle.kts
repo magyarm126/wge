@@ -11,7 +11,7 @@ plugins {
 version = "0.1"
 group = "hu.matemagyar.wge"
 
-val kotlinVersion= project.properties["kotlinVersion"]
+val kotlinVersion = project.properties["kotlinVersion"]
 repositories {
     mavenCentral()
 }
@@ -28,6 +28,7 @@ dependencies {
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
     testImplementation("io.micronaut:micronaut-http-client")
     runtimeOnly("org.yaml:snakeyaml")
+    runtimeOnly(project(":frontend"))
 }
 
 
@@ -48,8 +49,8 @@ micronaut {
         annotations("hu.matemagyar.wge.*")
     }
     aot {
-    // Please review carefully the optimizations enabled below
-    // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
+        // Please review carefully the optimizations enabled below
+        // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
         optimizeServiceLoading.set(false)
         convertYamlToJava.set(false)
         precomputeOperations.set(true)

@@ -6,5 +6,5 @@ micronaut:
     static-resources:
       default:
         enabled: true
-        mapping: /static/**
-        paths: classpath:data
+        mapping: /**
+        paths: classpath:static/wge/browser
