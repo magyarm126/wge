@@ -13,11 +13,15 @@ class User(name: String) {
         println("User created with name:" + this.name + ", and id:$id")
     }
 
-    companion object UserIdCounter {
+    companion object Factory{
         private var counter: Long = 0L
 
         fun getNextId(): Long {
             return counter++
+        }
+
+        fun sampleUser(): User {
+            return User("NewSampleUser")
         }
     }
 }

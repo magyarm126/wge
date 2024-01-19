@@ -15,6 +15,6 @@ class UserController {
 
     @Get("/current-user")
     fun getCurrentUser(): User {
-        return User("Current")
+        return User.sampleUser()
     }
 }
