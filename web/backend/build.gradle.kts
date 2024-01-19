@@ -29,6 +29,7 @@ dependencies {
     testImplementation("io.micronaut:micronaut-http-client")
     runtimeOnly("org.yaml:snakeyaml")
     runtimeOnly(project(":frontend"))
+    annotationProcessor("io.micronaut.data:micronaut-data-processor")
 }
 
 
