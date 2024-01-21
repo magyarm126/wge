@@ -30,6 +30,11 @@ dependencies {
     runtimeOnly("org.yaml:snakeyaml")
     runtimeOnly(project(":frontend"))
     annotationProcessor("io.micronaut.data:micronaut-data-processor")
+    implementation("io.micronaut.sql:micronaut-hibernate-jpa")
+    implementation("io.micronaut.data:micronaut-data-tx-hibernate")
+    implementation("io.micronaut.data:micronaut-data-model")
+    implementation("io.micronaut.sql:micronaut-jdbc-hikari")
+    runtimeOnly("com.h2database:h2")
 }
 
 
