@@ -39,7 +39,7 @@ dependencies {
 
 
 application {
-    mainClass.set("hu.matemagyar.wge.ApplicationKt")
+    mainClass.set("hu.matemagyar.wge.Application")
 }
 java {
     sourceCompatibility = JavaVersion.toVersion("21")
