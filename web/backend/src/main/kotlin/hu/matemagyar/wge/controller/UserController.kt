@@ -10,6 +10,7 @@ class UserController {
 
     @Get("/user/{id}")
     fun getUser(@QueryValue("id") id: Long): User {
+        println("User request came in for Id: $id")
         return User("User")
     }
 

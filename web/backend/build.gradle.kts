@@ -6,6 +6,7 @@ plugins {
     id("io.micronaut.application") version "4.2.0"
     id("io.micronaut.aot") version "4.2.0"
     id("java")
+    id("org.jetbrains.dokka") version "1.9.10"
 }
 
 version = "0.1"

@@ -23,7 +23,7 @@ import io.micronaut.runtime.Micronaut
  * }
  *
  */
-fun main(args: Array<String>) {
+fun main() {
     Micronaut.build()
         .packages("hu.matemagyar.wge")
         .start()
