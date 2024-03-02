@@ -55,7 +55,7 @@ IDXGIAdapter1 *DXHelperFunctions::GetHardwareAdapter(IDXGIFactory1 *pFactory) {
 
 std::wstring DXHelperFunctions::GetAssetsPath() {
     int pathSize = 512;
-    WCHAR assetsPath[pathSize];
+    auto* assetsPath = new WCHAR[pathSize];
 
     DWORD size = GetModuleFileName(nullptr, assetsPath, pathSize);
     if (size == 0 || size == pathSize) {
