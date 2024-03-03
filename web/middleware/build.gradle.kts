@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.idea.proto.generated.kpm.ideaKpmCompilationOutputProto
+
 plugins {
     id("org.jetbrains.kotlin.jvm")
     id("com.google.devtools.ksp")
@@ -14,7 +16,7 @@ repositories {
 
 dependencies {
     ksp("io.micronaut.serde:micronaut-serde-processor")
-    implementation("io.micronaut.serde:micronaut-serde-jackson")
+    compileOnly("io.micronaut.serde:micronaut-serde-api")
 }
 
 java {
