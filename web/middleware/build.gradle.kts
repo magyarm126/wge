@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.idea.proto.generated.kpm.ideaKpmCompilationOutputProto
-
 plugins {
     id("org.jetbrains.kotlin.jvm")
     id("com.google.devtools.ksp")

@@ -32,7 +32,7 @@ class UserController {
         println("Returning all users")
         val userentity = userRepository.findAll().get(0)
         val user = UserDto()
-        user.id= userentity.id
+        user.id = userentity.id
         user.name = userentity.name
         return user
     }
