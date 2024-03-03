@@ -38,6 +38,7 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     implementation("io.micronaut.liquibase:micronaut-liquibase")
     runtimeOnly("org.postgresql:postgresql:42.7.2")
+    implementation("io.micronaut.data:micronaut-data-hibernate-jpa:4.6.2")
 }
 
 
