@@ -1,6 +1,7 @@
 package hu.matemagyar.wge.controller
 
 import hu.matemagyar.wge.model.User
+import hu.matemagyar.wge.model.UserDto
 import hu.matemagyar.wge.repository.UserRepository
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
@@ -23,6 +24,17 @@ class UserController {
     fun getUsers(): List<User> {
         println("Returning all users")
         return userRepository.findAll()
+    }
+
+
+    @Get("/dto")
+    fun getDto(): UserDto {
+        println("Returning all users")
+        val userentity = userRepository.findAll().get(0)
+        val user = UserDto()
+        user.id= userentity.id
+        user.name = userentity.name
+        return user
     }
 
     @Get("/current-user")

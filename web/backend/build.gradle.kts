@@ -1,16 +1,16 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.9.21"
-    id("org.jetbrains.kotlin.plugin.allopen") version "1.9.21"
-    id("com.google.devtools.ksp") version "1.9.21-1.0.16"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("io.micronaut.application") version "4.2.0"
-    id("io.micronaut.aot") version "4.2.0"
+    id("org.jetbrains.kotlin.jvm")
+    id("org.jetbrains.kotlin.plugin.allopen")
+    id("com.google.devtools.ksp")
+    id("com.github.johnrengelman.shadow")
+    id("io.micronaut.application")
+    id("io.micronaut.aot")
     id("java")
-    id("org.jetbrains.dokka") version "1.9.10"
+    id("org.jetbrains.dokka")
 }
 
 version = "0.1"
-group = "hu.matemagyar.wge"
+group = "hu.matemagyar.wge.backend"
 
 val kotlinVersion = project.properties["kotlinVersion"]
 repositories {
@@ -30,6 +30,7 @@ dependencies {
     testImplementation("io.micronaut:micronaut-http-client")
     runtimeOnly("org.yaml:snakeyaml")
     runtimeOnly(project(":frontend"))
+    implementation(project(":middleware"))
     annotationProcessor("io.micronaut.data:micronaut-data-processor")
     implementation("io.micronaut.sql:micronaut-hibernate-jpa")
     implementation("io.micronaut.data:micronaut-data-tx-hibernate")

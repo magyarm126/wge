@@ -12,7 +12,7 @@
                 <constraints nullable="false"
                              unique="true"
                              primaryKey="true"
-                             primaryKeyName="personPK"/>
+                             primaryKeyName="user_pk"/>
             </column>
 
             <column name="name" type="VARCHAR2">
