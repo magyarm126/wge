@@ -37,7 +37,7 @@ dependencies {
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
     runtimeOnly("com.h2database:h2")
     implementation("io.micronaut.liquibase:micronaut-liquibase")
-
+    runtimeOnly("org.postgresql:postgresql:42.7.2")
 }
 
 

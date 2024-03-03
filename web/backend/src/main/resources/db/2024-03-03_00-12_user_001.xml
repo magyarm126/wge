@@ -6,7 +6,7 @@
 
     <changeSet id="01" author="magyarmate126@gmail.com">
 
-        <createTable tableName="user">
+        <createTable tableName="tbl_user">
 
             <column name="id" type="BIGINT">
                 <constraints nullable="false"
@@ -15,7 +15,7 @@
                              primaryKeyName="personPK"/>
             </column>
 
-            <column name="age" type="VARCHAR2">
+            <column name="name" type="VARCHAR2">
                 <constraints nullable="true"/>
             </column>
 

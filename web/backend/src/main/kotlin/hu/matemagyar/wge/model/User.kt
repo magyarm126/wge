@@ -16,11 +16,9 @@ class User() {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Long = getNextId()
-        private set
 
     @Column(name = "name", nullable = true, unique = false)
     var name: String = ""
-        private set
 
     init {
         println("User created with name:" + this.name + ", and id:$id")
