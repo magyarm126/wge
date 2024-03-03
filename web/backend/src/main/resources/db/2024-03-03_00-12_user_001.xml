@@ -8,7 +8,7 @@
 
         <createTable tableName="tbl_user">
 
-            <column name="id" type="BIGINT">
+            <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints nullable="false"
                              unique="true"
                              primaryKey="true"

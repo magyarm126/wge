@@ -16,7 +16,7 @@ class UserController {
     @Get("/user/{id}")
     fun getUser(@QueryValue("id") id: Long): User {
         println("User request came in for Id: $id")
-        return User("User")
+        return userRepository.save(User("User"))
     }
 
     @Get("/user")
@@ -27,6 +27,6 @@ class UserController {
 
     @Get("/current-user")
     fun getCurrentUser(): User {
-        return User.sampleUser()
+        return userRepository.save(User("sampleUser"))
     }
 }

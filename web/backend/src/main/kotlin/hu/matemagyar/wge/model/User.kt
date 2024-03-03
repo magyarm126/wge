@@ -14,8 +14,8 @@ import jakarta.persistence.Table
 class User() {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    var id: Long = getNextId()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: Long? = null
 
     @Column(name = "name", nullable = true, unique = false)
     var name: String = ""
@@ -26,17 +26,5 @@ class User() {
 
     constructor(name: String) : this() {
         this.name = name
-    }
-
-    companion object Factory {
-        private var counter: Long = 0L
-
-        fun getNextId(): Long {
-            return counter++
-        }
-
-        fun sampleUser(): User {
-            return User("NewSampleUser")
-        }
     }
 }
