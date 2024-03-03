@@ -10,7 +10,7 @@ plugins {
 }
 
 version = "0.1"
-group = "hu.matemagyar.wge.backend"
+group = "hu.matemagyar.wge"
 
 val kotlinVersion = project.properties["kotlinVersion"]
 repositories {
