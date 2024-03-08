@@ -25,15 +25,8 @@ class UserController {
         return userService.getUsers()
     }
 
-
-    @Get("/dto")
-    fun getDto(): UserDto {
-        println("Returning all users")
-        return userService.getUsers().get(0)
-    }
-
     @Get("/current-user")
     fun getCurrentUser(): UserDto {
-        return userService.getCurrentUser()
+        return userService.saveUser()
     }
 }

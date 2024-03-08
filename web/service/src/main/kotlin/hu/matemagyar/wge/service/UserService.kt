@@ -15,39 +15,22 @@ class UserService {
 
     fun getUser(id: Long): UserDto {
         println("User request came in for Id: $id")
-        val userentity = userRepository.save(UserEntity("User"))
-        val user = UserDto()
-        user.id = userentity.id
-        user.name = userentity.name
-        return user
+        return toUserDto(userRepository.save(UserEntity("User")))
     }
 
     fun getUsers(): List<UserDto> {
         println("Returning all users")
-        return userRepository.findAll().stream().map {
-            val user = UserDto()
-            user.id = it.id
-            user.name = it.name
-            user
-
-        }.collect(Collectors.toList())
+        return userRepository.findAll().stream().map(this::toUserDto).collect(Collectors.toList())
     }
 
-
-    fun getDto(): UserDto {
-        println("Returning all users")
-        val userentity = userRepository.findAll().get(0)
-        val user = UserDto()
-        user.id = userentity.id
-        user.name = userentity.name
-        return user
+    fun saveUser(): UserDto {
+        return toUserDto(userRepository.save(UserEntity("sampleUser")))
     }
 
-    fun getCurrentUser(): UserDto {
-        val userentity = userRepository.save(UserEntity("sampleUser"))
+    private fun toUserDto(userEntity: UserEntity): UserDto {
         val user = UserDto()
-        user.id = userentity.id
-        user.name = userentity.name
+        user.id = userEntity.id
+        user.name = userEntity.name
         return user
     }
 }
