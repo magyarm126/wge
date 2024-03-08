@@ -12,7 +12,7 @@ pluginManagement {
     }
 }
 
-rootProject.name="wge"
+rootProject.name = "wge"
 
 include("backend")
 project(":backend").projectDir = file("backend")
