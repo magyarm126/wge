@@ -1,7 +1,7 @@
 plugins {
     id("org.jetbrains.kotlin.jvm")
     id("com.google.devtools.ksp")
-    id("io.micronaut.library")
+    id("io.micronaut.minimal.library")
     id("org.jetbrains.dokka")
 }
 
