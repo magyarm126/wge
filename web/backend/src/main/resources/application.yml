@@ -15,9 +15,3 @@ datasources:
     url: ${POSTGRES_URL:`jdbc:postgresql://localhost:5432/postgres`}
     username: ${POSTGRES_USER:wge_user}
     driver-class-name: ${POSTGRES_DRIVER:org.postgresql.Driver}
-
-liquibase:
-  datasources:
-    default:
-      enabled: true
-      change-log: 'classpath:db/liquibase-changelog.xml'

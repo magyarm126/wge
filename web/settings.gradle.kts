@@ -2,6 +2,7 @@ pluginManagement {
     plugins {
         id("org.jetbrains.kotlin.jvm") version "1.9.21"
         id("com.google.devtools.ksp") version "1.9.21-1.0.16"
+        id("io.micronaut.library") version "4.2.0"
         id("io.micronaut.minimal.library") version "4.2.0"
         id("org.jetbrains.kotlin.plugin.allopen") version "1.9.21"
         id("org.jetbrains.dokka") version "1.9.10"
@@ -21,3 +22,6 @@ project(":frontend").projectDir = file("frontend")
 
 include("middleware")
 project(":middleware").projectDir = file("middleware")
+
+include("service")
+project(":service").projectDir = file("service")

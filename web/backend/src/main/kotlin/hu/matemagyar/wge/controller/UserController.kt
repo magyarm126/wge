@@ -1,8 +1,7 @@
 package hu.matemagyar.wge.controller
 
-import hu.matemagyar.wge.model.User
 import hu.matemagyar.wge.model.UserDto
-import hu.matemagyar.wge.repository.UserRepository
+import hu.matemagyar.wge.service.UserService
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.QueryValue
@@ -12,33 +11,29 @@ import jakarta.inject.Inject
 class UserController {
 
     @Inject
-    lateinit var userRepository: UserRepository
+    lateinit var userService: UserService
 
     @Get("/user/{id}")
-    fun getUser(@QueryValue("id") id: Long): User {
+    fun getUser(@QueryValue("id") id: Long): UserDto {
         println("User request came in for Id: $id")
-        return userRepository.save(User("User"))
+        return userService.getUser(id)
     }
 
     @Get("/user")
-    fun getUsers(): List<User> {
+    fun getUsers(): List<UserDto> {
         println("Returning all users")
-        return userRepository.findAll()
+        return userService.getUsers()
     }
 
 
     @Get("/dto")
     fun getDto(): UserDto {
         println("Returning all users")
-        val userentity = userRepository.findAll().get(0)
-        val user = UserDto()
-        user.id = userentity.id
-        user.name = userentity.name
-        return user
+        return userService.getUsers().get(0)
     }
 
     @Get("/current-user")
-    fun getCurrentUser(): User {
-        return userRepository.save(User("sampleUser"))
+    fun getCurrentUser(): UserDto {
+        return userService.getCurrentUser()
     }
 }

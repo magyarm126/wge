@@ -1,4 +1,4 @@
-package hu.matemagyar.wge.model
+package hu.matemagyar.wge.entity
 
 import io.micronaut.serde.annotation.Serdeable
 import jakarta.persistence.*
@@ -6,7 +6,7 @@ import jakarta.persistence.*
 @Entity
 @Serdeable
 @Table(name = "tbl_user")
-class User() {
+class UserEntity() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

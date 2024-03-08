@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 
 @MicronautTest
-class UserControllerTest {
+class UserEntityControllerTest {
 
     @Inject
     @Client("/")
