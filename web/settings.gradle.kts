@@ -14,10 +14,10 @@ pluginManagement {
 rootProject.name="wge"
 
 include("backend")
-project(":backend").projectDir = file("web/backend")
+project(":backend").projectDir = file("backend")
 
 include("frontend")
-project(":frontend").projectDir = file("web/frontend")
+project(":frontend").projectDir = file("frontend")
 
 include("middleware")
-project(":middleware").projectDir = file("web/middleware")
+project(":middleware").projectDir = file("middleware")
