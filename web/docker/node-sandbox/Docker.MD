@@ -1,6 +1,4 @@
-# Docker commands
-
-## Node sandbox
+# Node sandbox
 
 ### Spin up
 
