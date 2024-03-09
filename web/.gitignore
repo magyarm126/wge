@@ -15,7 +15,7 @@ out/
 .classpath
 .factorypath
 # Custom
-/web/frontend/sandbox/volume/
-/web/frontend/.angular/
-/web/frontend/dist/
-/web/frontend/node_modules/
+/frontend/sandbox/volume/
+/frontend/.angular/
+/frontend/dist/
+/frontend/node_modules/
