@@ -23,6 +23,10 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql:42.7.2")
     runtimeOnly("ch.qos.logback:logback-classic:1.5.3")
     runtimeOnly("com.h2database:h2")
+    kspTest("io.micronaut:micronaut-inject-java")
+    testImplementation("io.micronaut.test:micronaut-test-junit5:1.1.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:2.22.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.1.0")
 }
 
 java {
