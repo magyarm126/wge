@@ -9,10 +9,6 @@ plugins {
 version = "0.1"
 group = "hu.matemagyar.wge"
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation(project(":middleware"))
     ksp("io.micronaut.serde:micronaut-serde-processor")

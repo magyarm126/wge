@@ -13,9 +13,6 @@ version = "0.1"
 group = "hu.matemagyar.wge"
 
 val kotlinVersion = project.properties["kotlinVersion"]
-repositories {
-    mavenCentral()
-}
 
 dependencies {
     runtimeOnly(project(":frontend"))
@@ -34,14 +31,12 @@ dependencies {
     runtimeOnly("org.yaml:snakeyaml")
 }
 
-
 application {
     mainClass.set("hu.matemagyar.wge.ApplicationKt")
 }
 java {
     sourceCompatibility = JavaVersion.toVersion("21")
 }
-
 
 graalvmNative.toolchainDetection.set(false)
 micronaut {

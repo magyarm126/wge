@@ -8,10 +8,6 @@ plugins {
 version = "0.1"
 group = "hu.matemagyar.wge"
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     ksp("io.micronaut.serde:micronaut-serde-processor")
     compileOnly("io.micronaut.serde:micronaut-serde-api")
