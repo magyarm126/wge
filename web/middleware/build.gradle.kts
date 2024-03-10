@@ -39,7 +39,6 @@ protobuf {
         }
     }
 
-    //generatedFilesBaseDir = "$projectDir/src/generated"
     generateProtoTasks {
         ofSourceSet("main").forEach {
             it.plugins {
