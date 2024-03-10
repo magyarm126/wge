@@ -1,6 +1,8 @@
 syntax = "proto3";
 package hu.matemagyar.wge.model;
 
+option java_multiple_files = true;
+
 message SceneDto {
   int32 id = 1;
   string name = 2;

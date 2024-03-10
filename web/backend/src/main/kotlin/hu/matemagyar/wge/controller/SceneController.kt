@@ -1,6 +1,6 @@
 package hu.matemagyar.wge.controller
 
-import hu.matemagyar.wge.model.Common.SceneDto
+import hu.matemagyar.wge.model.SceneDto
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 
