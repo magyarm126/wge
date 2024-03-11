@@ -17,7 +17,7 @@ dependencies {
     compileOnly("io.micronaut.serde:micronaut-serde-api")
 
     protobuf(files("../../common/protobuf"))
-    implementation("com.google.protobuf:protobuf-lite:3.0.0")
+    compileOnly("com.google.protobuf:protobuf-lite:3.0.1")
 }
 
 java {
@@ -26,8 +26,7 @@ java {
 
 protobuf {
     protoc {
-        // You still need protoc like in the non-Android case
-        artifact = "com.google.protobuf:protoc:3.7.0"
+        artifact = "com.google.protobuf:protoc:4.26.0-RC3"
     }
     plugins {
         id("javalite") {
