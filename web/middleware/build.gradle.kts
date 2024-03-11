@@ -1,6 +1,3 @@
-import com.google.protobuf.gradle.id
-import com.google.protobuf.gradle.remove
-
 plugins {
     id("org.jetbrains.kotlin.jvm")
     id("com.google.devtools.ksp")
@@ -17,7 +14,7 @@ dependencies {
     compileOnly("io.micronaut.serde:micronaut-serde-api")
 
     protobuf(files("../../common/protobuf"))
-    compileOnly("com.google.protobuf:protobuf-lite:3.0.1")
+    compileOnly("com.google.protobuf:protobuf-java:4.26.0-RC3")
 }
 
 java {
@@ -28,21 +25,8 @@ protobuf {
     protoc {
         artifact = "com.google.protobuf:protoc:4.26.0-RC3"
     }
-    plugins {
-        id("javalite") {
-            artifact = "com.google.protobuf:protoc-gen-javalite:3.0.0"
-        }
-    }
-    generateProtoTasks {
-        all().configureEach {
-            builtins {
-                // In most cases you don't need the full Java output
-                // if you use the lite output.
-                remove("java")
-            }
-            plugins {
-                id("javalite") {}
-            }
-        }
-    }
+}
+
+micronaut {
+    version("4.3.4")
 }

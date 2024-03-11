@@ -29,7 +29,7 @@ dependencies {
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
     testImplementation("io.micronaut:micronaut-http-client")
     runtimeOnly("org.yaml:snakeyaml")
-    implementation("com.google.protobuf:protobuf-lite:3.0.1")
+    implementation("com.google.protobuf:protobuf-java-util:4.26.0-RC3")
 }
 
 application {
@@ -47,6 +47,7 @@ micronaut {
         incremental(true)
         annotations("hu.matemagyar.wge.*")
     }
+    version("4.3.4")
     aot {
         // Please review carefully the optimizations enabled below
         // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
