@@ -1,4 +1,5 @@
 import com.google.protobuf.gradle.id
+import com.google.protobuf.gradle.remove
 
 plugins {
     id("org.jetbrains.kotlin.jvm")
@@ -16,7 +17,7 @@ dependencies {
     compileOnly("io.micronaut.serde:micronaut-serde-api")
 
     protobuf(files("../../common/protobuf"))
-    compileOnly("io.micronaut.grpc:micronaut-grpc-runtime") //Can we replace this with?
+    implementation("com.google.protobuf:protobuf-lite:3.0.0")
 }
 
 java {
@@ -25,19 +26,23 @@ java {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.6.1"
+        // You still need protoc like in the non-Android case
+        artifact = "com.google.protobuf:protoc:3.7.0"
     }
-
     plugins {
-        id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.62.2"
+        id("javalite") {
+            artifact = "com.google.protobuf:protoc-gen-javalite:3.0.0"
         }
     }
-
     generateProtoTasks {
-        ofSourceSet("main").forEach {
-            it.plugins {
-                id("grpc") { }
+        all().configureEach {
+            builtins {
+                // In most cases you don't need the full Java output
+                // if you use the lite output.
+                remove("java")
+            }
+            plugins {
+                id("javalite") {}
             }
         }
     }
