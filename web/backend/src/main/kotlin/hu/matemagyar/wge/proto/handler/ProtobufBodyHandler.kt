@@ -2,6 +2,7 @@ package hu.matemagyar.wge.proto.handler
 
 import com.google.protobuf.ExtensionRegistry
 import com.google.protobuf.Message
+import com.google.protobuf.util.JsonFormat
 import hu.matemagyar.wge.proto.codec.ProtoBufferCodec
 import io.micronaut.core.annotation.Order
 import io.micronaut.core.type.Argument
@@ -42,8 +43,8 @@ import java.util.*
  */
 @Order(-1)
 @Singleton
-@Produces(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2, MediaType.APPLICATION_JSON)
-@Consumes(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2, MediaType.APPLICATION_JSON)
+@Produces(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2)
+@Consumes(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2)
 class ProtobufBodyHandler<T>(
     codec: ProtoBufferCodec,
     private val extensionRegistry: ExtensionRegistry,
@@ -77,8 +78,18 @@ class ProtobufBodyHandler<T>(
         outgoingHeaders: MutableHeaders,
         outputStream: OutputStream
     ) {
-        if (MediaType.APPLICATION_JSON == mediaType.name) {
+        if (obj !is Message) {
             nettyJsonHandler.writeTo(type, mediaType, obj, outgoingHeaders, outputStream)
+            return
+        }
+        if (MediaType.APPLICATION_JSON == mediaType.name) {
+            if (obj is Message) {
+                outputStream.write(JsonFormat.printer().print(obj).toByteArray())
+            } else if (obj is List<*>) {
+                obj.forEach {
+                    outputStream.write(JsonFormat.printer().print(it as Message).toByteArray())
+                }
+            }
             return
         }
 
@@ -86,8 +97,8 @@ class ProtobufBodyHandler<T>(
         try {
             if (obj is Message) {
                 obj.writeTo(outputStream)
-            } else if (obj is List<*>){
-                obj.forEach{
+            } else if (obj is List<*>) {
+                obj.forEach {
                     (it as Message).writeDelimitedTo(outputStream)
                 }
             }
