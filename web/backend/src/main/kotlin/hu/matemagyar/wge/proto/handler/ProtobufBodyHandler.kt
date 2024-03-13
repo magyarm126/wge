@@ -44,7 +44,7 @@ import java.util.*
 @Singleton
 @Produces(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2, MediaType.APPLICATION_JSON)
 @Consumes(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2, MediaType.APPLICATION_JSON)
-class ProtobufBodyHandler<T : Message?>(
+class ProtobufBodyHandler<T>(
     codec: ProtoBufferCodec,
     private val extensionRegistry: ExtensionRegistry,
     private val nettyJsonHandler: NettyJsonHandler<T>
@@ -73,24 +73,30 @@ class ProtobufBodyHandler<T : Message?>(
     override fun writeTo(
         type: Argument<T>,
         mediaType: MediaType,
-        `object`: T,
+        obj: T,
         outgoingHeaders: MutableHeaders,
         outputStream: OutputStream
     ) {
         if (MediaType.APPLICATION_JSON == mediaType.name) {
-            nettyJsonHandler.writeTo(type, mediaType, `object`, outgoingHeaders, outputStream)
+            nettyJsonHandler.writeTo(type, mediaType, obj, outgoingHeaders, outputStream)
             return
         }
 
         outgoingHeaders[HttpHeaders.CONTENT_TYPE] = mediaType ?: ProtoBufferCodec.PROTOBUFFER_ENCODED_TYPE
         try {
-            `object`!!.writeTo(outputStream)
+            if (obj is Message) {
+                obj.writeTo(outputStream)
+            } else if (obj is List<*>){
+                obj.forEach{
+                    (it as Message).writeDelimitedTo(outputStream)
+                }
+            }
         } catch (e: IOException) {
             throw CodecException("Failed to write protobuf", e)
         }
     }
 
     private fun getBuilder(type: Argument<T>): Optional<Message.Builder> {
-        return codec.getMessageBuilder(type.type)
+        return codec.getMessageBuilder(type.type as Class<out Message?>)
     }
 }

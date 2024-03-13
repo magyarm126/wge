@@ -22,4 +22,8 @@ class SceneController {
     fun getSceneProto(): SceneDto {
         return SceneDto.newBuilder().setId(1).setName("testScene").build()
     }
+
+    @Get("/sceneProtos", produces = [ProtoBufferCodec.PROTOBUFFER_ENCODED2])
+    fun getSceneProtos(): List<SceneDto> {
+        return listOf(SceneDto.newBuilder().setId(1).setName("testScene").build(), SceneDto.newBuilder().setId(2).setName("testScene2").build()) }
 }
