@@ -7,7 +7,7 @@ import io.micronaut.serde.*
 import jakarta.inject.Singleton
 import jdk.jshell.spi.ExecutionControl.NotImplementedException
 
-@Singleton
+//@Singleton
 class ProtoMessageSerdeBean : Serde<MessageOrBuilder> {
     override fun serialize(
         encoder: Encoder?,

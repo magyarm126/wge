@@ -8,7 +8,6 @@ import io.micronaut.core.annotation.Order
 import io.micronaut.core.type.Argument
 import io.micronaut.core.type.Headers
 import io.micronaut.core.type.MutableHeaders
-import io.micronaut.http.HttpHeaders
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Consumes
 import io.micronaut.http.annotation.Produces
@@ -78,33 +77,65 @@ class ProtobufBodyHandler<T>(
         outgoingHeaders: MutableHeaders,
         outputStream: OutputStream
     ) {
-        if (obj !is Message) {
-            nettyJsonHandler.writeTo(type, mediaType, obj, outgoingHeaders, outputStream)
-            return
-        }
-        if (MediaType.APPLICATION_JSON == mediaType.name) {
-            if (obj is Message) {
-                outputStream.write(JsonFormat.printer().print(obj).toByteArray())
-            } else if (obj is List<*>) {
-                obj.forEach {
-                    outputStream.write(JsonFormat.printer().print(it as Message).toByteArray())
-                }
+        val isJson = MediaType.APPLICATION_JSON == mediaType.name
+
+        try {
+            if (obj is List<*>) {
+                handleList(obj, isJson, outputStream, type, mediaType, outgoingHeaders)
+            } else {
+                handleSingleInstance(obj, isJson, outputStream, type, mediaType, outgoingHeaders)
             }
-            return
+        } catch (exception: IOException) {
+            throw CodecException("Proto serialization error", exception)
         }
 
-        outgoingHeaders[HttpHeaders.CONTENT_TYPE] = mediaType ?: ProtoBufferCodec.PROTOBUFFER_ENCODED_TYPE
-        try {
-            if (obj is Message) {
-                obj.writeTo(outputStream)
-            } else if (obj is List<*>) {
+    }
+
+    private fun handleSingleInstance(
+        obj: T,
+        isJson: Boolean,
+        outputStream: OutputStream,
+        type: Argument<T>,
+        mediaType: MediaType,
+        outgoingHeaders: MutableHeaders
+    ) {
+        when (obj) {
+            is Message -> {
+                serializeProto(isJson, obj, outputStream)
+                return
+            }
+
+            else -> {
+                nettyJsonHandler.writeTo(type, mediaType, obj, outgoingHeaders, outputStream)
+                return
+            }
+        }
+    }
+
+    private fun handleList(
+        obj: List<*>,
+        isJson: Boolean,
+        outputStream: OutputStream,
+        type: Argument<T>,
+        mediaType: MediaType,
+        outgoingHeaders: MutableHeaders
+    ) {
+        when (obj.firstOrNull()) {
+            is Message -> {
                 obj.forEach {
-                    (it as Message).writeDelimitedTo(outputStream)
+                    serializeProto(isJson, it as Message, outputStream) //TODO: add []
                 }
             }
-        } catch (e: IOException) {
-            throw CodecException("Failed to write protobuf", e)
+
+            else -> {
+                nettyJsonHandler.writeTo(type, mediaType, obj as T, outgoingHeaders, outputStream)
+            }
         }
+    }
+
+    private fun serializeProto(isJson: Boolean, message: Message, outputStream: OutputStream) {
+        if (isJson) outputStream.write(JsonFormat.printer().print(message).toByteArray())
+        else (message).writeDelimitedTo(outputStream)
     }
 
     private fun getBuilder(type: Argument<T>): Optional<Message.Builder> {
