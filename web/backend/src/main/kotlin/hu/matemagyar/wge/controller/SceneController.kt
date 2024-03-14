@@ -2,6 +2,7 @@ package hu.matemagyar.wge.controller
 
 import hu.matemagyar.wge.model.SceneDto
 import hu.matemagyar.wge.proto.codec.ProtoBufferCodec
+import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
 
@@ -23,7 +24,23 @@ class SceneController {
         return SceneDto.newBuilder().setId(1).setName("testScene").build()
     }
 
+    @Get("/sceneNull", produces = [ProtoBufferCodec.PROTOBUFFER_ENCODED2])
+    fun getSceneNull(): SceneDto? {
+        return null
+    }
+
+    @Get("/sceneResponse", produces = ["application/json",ProtoBufferCodec.PROTOBUFFER_ENCODED2])
+    fun getSceneResponse(): HttpResponse<SceneDto> {
+        return HttpResponse.created(
+            SceneDto.newBuilder().setId(1).setName("testScene").build()
+        )
+    }
+
     @Get("/sceneProtos", produces = ["application/json", ProtoBufferCodec.PROTOBUFFER_ENCODED2])
     fun getSceneProtos(): List<SceneDto> {
-        return listOf(SceneDto.newBuilder().setId(1).setName("testScene").build(), SceneDto.newBuilder().setId(2).setName("testScene2").build()) }
+        return listOf(
+            SceneDto.newBuilder().setId(1).setName("testScene").build(),
+            SceneDto.newBuilder().setId(2).setName("testScene2").build()
+        )
+    }
 }
