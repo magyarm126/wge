@@ -8,6 +8,7 @@ import io.micronaut.core.annotation.Order
 import io.micronaut.core.type.Argument
 import io.micronaut.core.type.Headers
 import io.micronaut.core.type.MutableHeaders
+import io.micronaut.http.HttpHeaders
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Consumes
 import io.micronaut.http.annotation.Produces
@@ -77,8 +78,7 @@ class ProtobufBodyHandler<T>(
         outgoingHeaders: MutableHeaders,
         outputStream: OutputStream
     ) {
-        val isJson = MediaType.APPLICATION_JSON == mediaType.name
-
+        val isJson = isJsonAndHandleHeaders(mediaType, outgoingHeaders)
         try {
             if (obj is List<*>) {
                 handleList(obj, isJson, outputStream, type, mediaType, outgoingHeaders)
@@ -89,6 +89,19 @@ class ProtobufBodyHandler<T>(
             throw CodecException("Proto serialization error", exception)
         }
 
+    }
+
+    private fun isJsonAndHandleHeaders(
+        mediaType: MediaType,
+        outgoingHeaders: MutableHeaders
+    ): Boolean {
+        val isJson = MediaType.APPLICATION_JSON == mediaType.name
+        if (isJson) {
+            outgoingHeaders.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+        } else {
+            outgoingHeaders.set(HttpHeaders.CONTENT_TYPE, ProtoBufferCodec.PROTOBUFFER_ENCODED)
+        }
+        return isJson
     }
 
     private fun handleSingleInstance(
@@ -112,6 +125,7 @@ class ProtobufBodyHandler<T>(
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun handleList(
         obj: List<*>,
         isJson: Boolean,
@@ -122,9 +136,7 @@ class ProtobufBodyHandler<T>(
     ) {
         when (obj.firstOrNull()) {
             is Message -> {
-                obj.forEach {
-                    serializeProto(isJson, it as Message, outputStream) //TODO: add []
-                }
+                serializeProtos(isJson, obj.filterIsInstance<Message>(), outputStream)
             }
 
             else -> {
@@ -134,10 +146,30 @@ class ProtobufBodyHandler<T>(
     }
 
     private fun serializeProto(isJson: Boolean, message: Message, outputStream: OutputStream) {
-        if (isJson) outputStream.write(JsonFormat.printer().print(message).toByteArray())
-        else (message).writeDelimitedTo(outputStream)
+        if (isJson) outputStream.write(
+            JsonFormat.printer().omittingInsignificantWhitespace().print(message).toByteArray()
+        )
+        else message.writeDelimitedTo(outputStream)
     }
 
+    private fun serializeProtos(isJson: Boolean, messageList: List<Message>, outputStream: OutputStream) {
+        if (isJson) {
+            outputStream.write("[".toByteArray())
+            for (i in messageList.indices) {
+                serializeProto(true, messageList[i], outputStream)
+                if (i != messageList.size - 1) {
+                    outputStream.write(",".toByteArray())
+                }
+            }
+            outputStream.write("]".toByteArray())
+        } else {
+            messageList.forEach {
+                serializeProto(false, it, outputStream)
+            }
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
     private fun getBuilder(type: Argument<T>): Optional<Message.Builder> {
         return codec.getMessageBuilder(type.type as Class<out Message?>)
     }
