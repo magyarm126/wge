@@ -3,8 +3,11 @@ package hu.matemagyar.wge.controller
 import hu.matemagyar.wge.model.SceneDto
 import hu.matemagyar.wge.proto.codec.ProtoBufferCodec
 import io.micronaut.http.HttpResponse
+import io.micronaut.http.MediaType
+import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
+import io.micronaut.http.annotation.Post
 
 @Controller
 class SceneController {
@@ -29,7 +32,7 @@ class SceneController {
         return null
     }
 
-    @Get("/sceneResponse", produces = ["application/json",ProtoBufferCodec.PROTOBUFFER_ENCODED2])
+    @Get("/sceneResponse", produces = ["application/json", ProtoBufferCodec.PROTOBUFFER_ENCODED2])
     fun getSceneResponse(): HttpResponse<SceneDto> {
         return HttpResponse.created(
             SceneDto.newBuilder().setId(1).setName("testScene").build()
@@ -42,5 +45,17 @@ class SceneController {
             SceneDto.newBuilder().setId(1).setName("testScene").build(),
             SceneDto.newBuilder().setId(2).setName("testScene2").build()
         )
+    }
+
+    @Post("/scenePost", processes = [MediaType.APPLICATION_JSON, ProtoBufferCodec.PROTOBUFFER_ENCODED2])
+    fun postProto(@Body dto: SceneDto): SceneDto {
+        println(dto)
+        return dto
+    }
+
+    @Post("/scenePosts", processes = [MediaType.APPLICATION_JSON, ProtoBufferCodec.PROTOBUFFER_ENCODED2])
+    fun postProtos(@Body dto: List<SceneDto>): List<SceneDto> {
+        println(dto)
+        return dto
     }
 }

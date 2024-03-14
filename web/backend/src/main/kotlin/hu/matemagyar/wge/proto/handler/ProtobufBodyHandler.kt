@@ -16,10 +16,14 @@ import io.micronaut.http.body.MessageBodyHandler
 import io.micronaut.http.codec.CodecException
 import io.micronaut.http.netty.body.NettyJsonHandler
 import jakarta.inject.Singleton
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.IOException
 import java.io.InputStream
+import java.io.InputStreamReader
 import java.io.OutputStream
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * ProtobufBodyHandler supports endpoint seamless serialization and deserialization based on accept header media type. Tested with json/protobuf on a @Get endpoint.
@@ -55,7 +59,35 @@ class ProtobufBodyHandler<T>(
 
     @Throws(CodecException::class)
     override fun read(type: Argument<T>, mediaType: MediaType, httpHeaders: Headers, inputStream: InputStream): T {
-        val builder = getBuilder(type)
+        val isJson = MediaType.APPLICATION_JSON == mediaType.name
+        if (isJson) {
+
+            if (type is Message) {
+
+
+                try {
+                    val jsonBuilder = getBuilderTyped(type).orElseThrow()
+                    JsonFormat.parser().merge(InputStreamReader(inputStream), jsonBuilder)
+                    return type.type.cast(jsonBuilder.build())
+                } catch (e: IOException) {
+                    throw CodecException("Failed to read protobuf from JSON", e)
+                }
+            }
+
+            val returnList = ArrayList<Message>()
+            val jsonArrayString = inputStream.bufferedReader().use { it.readText() }
+            val jsonArray = JSONArray(jsonArrayString)
+            for (i in 0 until jsonArray.length()) {
+                val jsonObject: JSONObject = jsonArray.getJSONObject(i)
+                val jsonBuilder = getBuilder(type.typeVariables.values.first()).orElseThrow()
+                JsonFormat.parser().merge(jsonObject.toString(), jsonBuilder)
+                val msg: Message = jsonBuilder.build() as Message
+                returnList.addLast(msg)
+            }
+            return type.type.cast(returnList)
+        }
+
+        val builder = getBuilderTyped(type)
             .orElseThrow {
                 CodecException(
                     "Unable to create builder"
@@ -64,6 +96,7 @@ class ProtobufBodyHandler<T>(
         check(!type.hasTypeVariables()) { "Generic type arguments are not supported" }
         try {
             builder.mergeFrom(inputStream, extensionRegistry)
+            //builder.mergeDelimitedFrom()
         } catch (e: IOException) {
             throw CodecException("Failed to read protobuf", e)
         }
@@ -114,7 +147,7 @@ class ProtobufBodyHandler<T>(
     ) {
         when (obj) {
             is Message -> {
-                serializeProto(isJson, obj, outputStream)
+                serializeProto(isJson, obj, outputStream, false)
                 return
             }
 
@@ -145,18 +178,19 @@ class ProtobufBodyHandler<T>(
         }
     }
 
-    private fun serializeProto(isJson: Boolean, message: Message, outputStream: OutputStream) {
+    private fun serializeProto(isJson: Boolean, message: Message, outputStream: OutputStream, delimited: Boolean) {
         if (isJson) outputStream.write(
             JsonFormat.printer().omittingInsignificantWhitespace().print(message).toByteArray()
         )
-        else message.writeDelimitedTo(outputStream)
+        else if (delimited) message.writeDelimitedTo(outputStream)
+        else message.writeTo(outputStream)
     }
 
     private fun serializeProtos(isJson: Boolean, messageList: List<Message>, outputStream: OutputStream) {
         if (isJson) {
             outputStream.write("[".toByteArray())
             for (i in messageList.indices) {
-                serializeProto(true, messageList[i], outputStream)
+                serializeProto(true, messageList[i], outputStream, messageList.size > 1)
                 if (i != messageList.size - 1) {
                     outputStream.write(",".toByteArray())
                 }
@@ -164,13 +198,18 @@ class ProtobufBodyHandler<T>(
             outputStream.write("]".toByteArray())
         } else {
             messageList.forEach {
-                serializeProto(false, it, outputStream)
+                serializeProto(false, it, outputStream, messageList.size > 1)
             }
         }
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun getBuilder(type: Argument<T>): Optional<Message.Builder> {
+    private fun getBuilder(type: Argument<*>): Optional<Message.Builder> {
+        return codec.getMessageBuilder(type.type as Class<out Message?>)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun getBuilderTyped(type: Argument<T>): Optional<Message.Builder> {
         return codec.getMessageBuilder(type.type as Class<out Message?>)
     }
 }
