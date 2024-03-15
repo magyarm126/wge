@@ -4,14 +4,20 @@ package hu.matemagyar.wge.proto.serde
 import com.google.protobuf.Message
 import com.google.protobuf.util.JsonFormat
 import io.micronaut.core.type.Argument
+import io.micronaut.json.JsonMapper
 import io.micronaut.json.tree.JsonNode
 import io.micronaut.serde.*
+import jakarta.inject.Inject
 import jakarta.inject.Singleton
-import org.json.JSONObject
 
 @Singleton
 class ProtoMessageSerdeBean : Serde<Message> {
 
+    @Inject
+    lateinit var objectMapper: JsonMapper
+
+    @Inject
+    lateinit var defaultSerdeRegistry: SerdeRegistry
 
     override fun serialize(
         encoder: Encoder?,
@@ -19,38 +25,12 @@ class ProtoMessageSerdeBean : Serde<Message> {
         type: Argument<out Message>?,
         value: Message?
     ) {
-        if (value == null) {
-            throw Exception("Could not serialize MessageOrBuilder, value is null for type:" + type?.simpleName)
-        }
-
-        val jsonRootObj = JSONObject(JsonFormat.printer().print(value))
-
-        if (encoder != null && context != null) {
-            encode(encoder, context, jsonRootObj)
-        }
-    }
-
-    private fun encode(
-        encoder: Encoder,
-        context: Serializer.EncoderContext,
-        jsonObject: JSONObject
-    ) {
-        encoder.encodeObject(Argument.of(JsonNode::class.java))
-
-        for (key in jsonObject.keys()) {
-            val jso = jsonObject.get(key)
-            encoder.encodeKey(key)
-            if (jso is String) {
-                encoder.encodeString(jso)
-                continue
-            }
-            if (jso is Int) {
-                encoder.encodeInt(jso)
-                continue
-            }
-            encode(encoder, context, jso as JSONObject)
-        }
-        encoder.finishStructure()
+        defaultSerdeRegistry.findSerializer(JsonNode::class.java).serialize(
+            encoder,
+            context,
+            Argument.of(JsonNode::class.java),
+            objectMapper.readValue(JsonFormat.printer().print(value), JsonNode::class.java)
+        )
     }
 
     override fun deserialize(

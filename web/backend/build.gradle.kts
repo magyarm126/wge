@@ -30,7 +30,7 @@ dependencies {
     testImplementation("io.micronaut:micronaut-http-client")
     runtimeOnly("org.yaml:snakeyaml")
     implementation("com.google.protobuf:protobuf-java-util:4.26.0-RC3")
-    implementation("org.json:json:20240303")
+    implementation("io.micronaut.serde:micronaut-serde-support")
 }
 
 application {

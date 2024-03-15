@@ -4,7 +4,6 @@ import com.google.protobuf.ExtensionRegistry
 import com.google.protobuf.Message
 import com.google.protobuf.util.JsonFormat
 import hu.matemagyar.wge.proto.codec.ProtoBufferCodec
-import io.micronaut.core.annotation.Order
 import io.micronaut.core.type.Argument
 import io.micronaut.core.type.Headers
 import io.micronaut.core.type.MutableHeaders
@@ -15,15 +14,10 @@ import io.micronaut.http.annotation.Produces
 import io.micronaut.http.body.MessageBodyHandler
 import io.micronaut.http.codec.CodecException
 import io.micronaut.http.netty.body.NettyJsonHandler
-import jakarta.inject.Singleton
-import org.json.JSONArray
-import org.json.JSONObject
 import java.io.IOException
 import java.io.InputStream
-import java.io.InputStreamReader
 import java.io.OutputStream
 import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  * ProtobufBodyHandler supports endpoint seamless serialization and deserialization based on accept header media type. Tested with json/protobuf on a @Get endpoint.
@@ -60,32 +54,32 @@ class ProtobufBodyHandler<T>(
     @Throws(CodecException::class)
     override fun read(type: Argument<T>, mediaType: MediaType, httpHeaders: Headers, inputStream: InputStream): T {
         val isJson = MediaType.APPLICATION_JSON == mediaType.name
-        if (isJson) {
+        /*        if (isJson) {
 
-            if (type is Message) {
+                    if (type is Message) {
 
 
-                try {
-                    val jsonBuilder = getBuilderTyped(type).orElseThrow()
-                    JsonFormat.parser().merge(InputStreamReader(inputStream), jsonBuilder)
-                    return type.type.cast(jsonBuilder.build())
-                } catch (e: IOException) {
-                    throw CodecException("Failed to read protobuf from JSON", e)
-                }
-            }
+                        try {
+                            val jsonBuilder = getBuilderTyped(type).orElseThrow()
+                            JsonFormat.parser().merge(InputStreamReader(inputStream), jsonBuilder)
+                            return type.type.cast(jsonBuilder.build())
+                        } catch (e: IOException) {
+                            throw CodecException("Failed to read protobuf from JSON", e)
+                        }
+                    }
 
-            val returnList = ArrayList<Message>()
-            val jsonArrayString = inputStream.bufferedReader().use { it.readText() }
-            val jsonArray = JSONArray(jsonArrayString)
-            for (i in 0 until jsonArray.length()) {
-                val jsonObject: JSONObject = jsonArray.getJSONObject(i)
-                val jsonBuilder = getBuilder(type.typeVariables.values.first()).orElseThrow()
-                JsonFormat.parser().merge(jsonObject.toString(), jsonBuilder)
-                val msg: Message = jsonBuilder.build() as Message
-                returnList.addLast(msg)
-            }
-            return type.type.cast(returnList)
-        }
+                    val returnList = ArrayList<Message>()
+                    val jsonArrayString = inputStream.bufferedReader().use { it.readText() }
+                    val jsonArray = JSONArray(jsonArrayString)
+                    for (i in 0 until jsonArray.length()) {
+                        val jsonObject: JSONObject = jsonArray.getJSONObject(i)
+                        val jsonBuilder = getBuilder(type.typeVariables.values.first()).orElseThrow()
+                        JsonFormat.parser().merge(jsonObject.toString(), jsonBuilder)
+                        val msg: Message = jsonBuilder.build() as Message
+                        returnList.addLast(msg)
+                    }
+                    return type.type.cast(returnList)
+                }*/
 
         val builder = getBuilderTyped(type)
             .orElseThrow {
