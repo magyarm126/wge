@@ -1,5 +1,6 @@
 package hu.matemagyar.wge.controller
 
+import hu.matemagyar.wge.Hybrid
 import hu.matemagyar.wge.model.SceneDto
 import hu.matemagyar.wge.proto.codec.ProtoBufferCodec
 import io.micronaut.http.HttpResponse
@@ -21,6 +22,12 @@ class SceneController {
     fun getSceneJson(): SceneDto {
         return SceneDto.newBuilder().setId(1).setName("testScene").build()
     }
+
+    @Get("/sceneHybrid", produces = ["application/json", ProtoBufferCodec.PROTOBUFFER_ENCODED2])
+    fun getSceneHybrid(): Hybrid {
+        return Hybrid()
+    }
+
 
     @Get("/sceneProto", produces = [ProtoBufferCodec.PROTOBUFFER_ENCODED2])
     fun getSceneProto(): SceneDto {
