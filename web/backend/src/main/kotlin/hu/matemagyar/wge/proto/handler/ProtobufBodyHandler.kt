@@ -65,29 +65,30 @@ class ProtobufBodyHandler<T>(
         val isJson = MediaType.APPLICATION_JSON == mediaType.name
 
         if (isJson) {
+            try {
+                if (type.type.name.equals("java.util.List")) {
+                    val jsonArray = objectMapper.readValue(inputStream, JsonNode::class.java)
 
-            if (type is Message) {
-                try {
-                    val jsonBuilder = getBuilder(type).orElseThrow()
-                    JsonFormat.parser().merge(InputStreamReader(inputStream), jsonBuilder)
-                    return type.type.cast(jsonBuilder.build())
-                } catch (e: IOException) {
-                    throw CodecException("Failed to read protobuf from JSON", e)
+                    val returnList = ArrayList<Message>()
+
+                    for (i in 0 until jsonArray.size()) {
+                        val jsonObject: JsonNode = jsonArray.get(i)
+                        val jsonBuilder = getBuilder(type.typeVariables.values.first()).orElseThrow()
+
+                        val writeValueAsString = objectMapper.writeValueAsString(jsonObject)
+                        JsonFormat.parser().merge(writeValueAsString, jsonBuilder)
+                        val msg: Message = jsonBuilder.build() as Message
+                        returnList.addLast(msg)
+                    }
+                    return type.type.cast(returnList)
                 }
+
+                val jsonBuilder = getBuilder(type).orElseThrow()
+                JsonFormat.parser().merge(InputStreamReader(inputStream), jsonBuilder)
+                return type.type.cast(jsonBuilder.build())
+            } catch (e: IOException) {
+                throw CodecException("Failed to read protobuf from JSON", e)
             }
-
-            val jsonArray = objectMapper.readValue(inputStream, JsonNode::class.java)
-
-            val returnList = ArrayList<Message>()
-
-            for (i in 0 until jsonArray.size()) {
-                val jsonObject: JsonNode = jsonArray.get(i)
-                val jsonBuilder = getBuilder(type.typeVariables.values.first()).orElseThrow()
-                JsonFormat.parser().merge(jsonObject.toString(), jsonBuilder)
-                val msg: Message = jsonBuilder.build() as Message
-                returnList.addLast(msg)
-            }
-            return type.type.cast(returnList)
         }
         val builder = getBuilder(type)
             .orElseThrow {
