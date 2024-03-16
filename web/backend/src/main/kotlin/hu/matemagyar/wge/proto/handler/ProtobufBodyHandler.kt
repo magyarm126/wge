@@ -3,6 +3,7 @@ package hu.matemagyar.wge.proto.handler
 import com.google.protobuf.ExtensionRegistry
 import com.google.protobuf.Message
 import com.google.protobuf.util.JsonFormat
+import hu.matemagyar.wge.Hybrid
 import hu.matemagyar.wge.proto.codec.ProtoBufferCodec
 import io.micronaut.core.annotation.Order
 import io.micronaut.core.type.Argument
@@ -67,7 +68,7 @@ class ProtobufBodyHandler<T>(
         //val jsonArray = objectMapper.readValue(inputStream, JsonNode::class.java)
         //val writeValueAsString = objectMapper.writeValueAsString(jsonArray)
         //we could do some parsing using the json converter services
-
+        val h = objectMapper.readValue(inputStream, Hybrid::class.java)
 
         if (isJson) {
             try {

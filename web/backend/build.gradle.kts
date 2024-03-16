@@ -31,6 +31,7 @@ dependencies {
     runtimeOnly("org.yaml:snakeyaml")
     implementation("com.google.protobuf:protobuf-java-util:4.26.0-RC3")
     implementation("io.micronaut.serde:micronaut-serde-support")
+    compileOnly("com.fasterxml.jackson.core:jackson-databind")
 }
 
 application {

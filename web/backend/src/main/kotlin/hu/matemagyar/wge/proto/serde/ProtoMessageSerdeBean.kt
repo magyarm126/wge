@@ -11,7 +11,7 @@ import jakarta.inject.Inject
 import jakarta.inject.Singleton
 
 @Singleton
-class ProtoMessageSerdeBean : Serde<Message> {
+class ProtoMessageSerdeBean : Serde<Message>{
 
     @Inject
     lateinit var objectMapper: JsonMapper
