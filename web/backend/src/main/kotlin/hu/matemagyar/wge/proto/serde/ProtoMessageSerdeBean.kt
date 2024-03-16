@@ -19,18 +19,10 @@ class ProtoMessageSerdeBean<T : Message> : Serde<T> {
     lateinit var objectMapper: JsonMapper
 
     @Inject
-    lateinit var defaultSerdeRegistry: SerdeRegistry
-
-    @Inject
     lateinit var codec: ProtoBufferCodec
 
-    @Suppress("UNCHECKED_CAST")
-    private fun getBuilder(type: Argument<*>): Message.Builder {
-        return codec.getMessageBuilder(type.type as Class<out Message?>).orElseThrow()
-    }
-
     override fun serialize(encoder: Encoder?, context: Serializer.EncoderContext?, type: Argument<out T>?, value: T) {
-        defaultSerdeRegistry.findSerializer(JsonNode::class.java).serialize(
+        context!!.findSerializer(JsonNode::class.java).serialize(
             encoder,
             context,
             Argument.of(JsonNode::class.java),
@@ -39,17 +31,13 @@ class ProtoMessageSerdeBean<T : Message> : Serde<T> {
     }
 
     override fun deserialize(decoder: Decoder?, context: Deserializer.DecoderContext?, type: Argument<in T>?): T {
-        if (decoder == null || type == null) {
-            throw RuntimeException("meh")
-        }
-
-        val rootJson: JsonNode = decoder.decodeNode()
+        val rootJson: JsonNode = decoder!!.decodeNode()
         val writeValueAsString = objectMapper.writeValueAsString(rootJson)
 
         val jsonBuilder = if (type is MyDefaultArgument<*, *>) {
-            getBuilder(type.getValue() as Argument<*>)
+            codec.getBuilder(type.getValue() as Argument<*>)
         } else {
-            getBuilder(type)
+            codec.getBuilder(type!!)
         }
         JsonFormat.parser().merge(writeValueAsString, jsonBuilder)
         return type.type.cast(jsonBuilder.build()) as T

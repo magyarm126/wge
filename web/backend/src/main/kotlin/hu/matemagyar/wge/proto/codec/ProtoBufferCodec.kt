@@ -137,6 +137,11 @@ class ProtoBufferCodec
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
+    fun getBuilder(type: Argument<*>): Message.Builder {
+        return getMessageBuilder(type.type as Class<out Message?>).orElseThrow()
+    }
+
     @Throws(Exception::class)
     private fun createBuilder(clazz: Class<out Message?>): Optional<Message.Builder> {
         return Optional.of(getMethod(clazz)!!.invoke(clazz) as Message.Builder)
