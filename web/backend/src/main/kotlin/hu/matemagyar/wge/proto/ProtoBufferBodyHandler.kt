@@ -1,8 +1,7 @@
-package hu.matemagyar.wge.proto.handler
+package hu.matemagyar.wge.proto
 
 import com.google.protobuf.ExtensionRegistry
 import com.google.protobuf.Message
-import hu.matemagyar.wge.proto.codec.ProtoBufferCodec
 import io.micronaut.core.annotation.Order
 import io.micronaut.core.type.Argument
 import io.micronaut.core.type.Headers
@@ -45,7 +44,7 @@ import java.util.*
 @Singleton
 @Produces(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2, MediaType.APPLICATION_JSON)
 @Consumes(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2, MediaType.APPLICATION_JSON)
-class ProtobufBodyHandler<T> : MessageBodyHandler<T> {
+class ProtoBufferBodyHandler<T> : MessageBodyHandler<T> {
 
     @Inject
     lateinit var codec: ProtoBufferCodec

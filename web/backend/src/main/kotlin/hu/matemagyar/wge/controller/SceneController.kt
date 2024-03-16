@@ -2,7 +2,7 @@ package hu.matemagyar.wge.controller
 
 import hu.matemagyar.wge.Hybrid
 import hu.matemagyar.wge.model.SceneDto
-import hu.matemagyar.wge.proto.codec.ProtoBufferCodec
+import hu.matemagyar.wge.proto.ProtoBufferCodec
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Body

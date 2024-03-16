@@ -1,7 +1,9 @@
-package hu.matemagyar.wge.proto.codec
+package hu.matemagyar.wge.proto
 
 import com.google.protobuf.ExtensionRegistry
 import com.google.protobuf.Message
+import io.micronaut.context.annotation.Factory
+import io.micronaut.context.annotation.Requires
 import io.micronaut.core.io.buffer.ByteBuffer
 import io.micronaut.core.io.buffer.ByteBufferFactory
 import io.micronaut.core.type.Argument
@@ -18,7 +20,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 @Singleton
-@Named("protobuf")
+@Named("ProtoBufferCodec")
 class ProtoBufferCodec
     (
     val extensionRegistry: ExtensionRegistry
@@ -165,5 +167,14 @@ class ProtoBufferCodec
         val PROTOBUFFER_ENCODED_TYPE2: MediaType = MediaType(PROTOBUFFER_ENCODED2)
         val DEFAULT_MEDIA_TYPES: List<MediaType> =
             java.util.List.of(PROTOBUFFER_ENCODED_TYPE, PROTOBUFFER_ENCODED_TYPE2)
+    }
+}
+
+@Factory
+@Requires(classes = [ExtensionRegistry::class])
+open class ExtensionRegistryFactory {
+    @Singleton
+    protected fun extensionRegistry(): ExtensionRegistry {
+        return ExtensionRegistry.newInstance()
     }
 }
