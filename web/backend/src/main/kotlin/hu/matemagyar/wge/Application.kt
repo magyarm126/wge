@@ -30,6 +30,3 @@ fun main() {
         .packages("hu.matemagyar.wge")
         .start()
 }
-
-@SerdeImport(packageName = "hu.matemagyar.wge.model")
-class Serdes {}
