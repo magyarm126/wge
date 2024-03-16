@@ -1,8 +1,6 @@
 package hu.matemagyar.wge
 
-import com.google.protobuf.Message
 import io.micronaut.runtime.Micronaut
-import io.micronaut.serde.annotation.SerdeImport
 
 
 /**
