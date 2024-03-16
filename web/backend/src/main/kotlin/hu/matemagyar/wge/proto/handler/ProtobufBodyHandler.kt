@@ -46,8 +46,8 @@ import java.util.*
  *      }
  * }
  */
-@Order(-1)
-@Singleton
+//@Order(-1)
+//@Singleton
 @Produces(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2, MediaType.APPLICATION_JSON)
 @Consumes(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2, MediaType.APPLICATION_JSON)
 class ProtobufBodyHandler<T>(
