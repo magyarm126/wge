@@ -61,6 +61,7 @@ class ProtobufBodyHandler<T>(
     override fun read(type: Argument<T>, mediaType: MediaType, httpHeaders: Headers, inputStream: InputStream): T {
         val isJson = MediaType.APPLICATION_JSON == mediaType.name
         if (isJson) {
+            return objectMapper.readValue(inputStream, type.type) as T
             val arg = MyDefaultArgument(Argument.of(Message::class.java), type)
             return objectMapper.readValue(inputStream, arg) as T
             //return objectMapper.readValue(inputStream, Argument.of(Message::class.java, type.type.simpleName)) as T
