@@ -4,13 +4,13 @@ package hu.matemagyar.wge.proto.serde
 import com.google.protobuf.Message
 import com.google.protobuf.util.JsonFormat
 import hu.matemagyar.wge.proto.codec.ProtoBufferCodec
+import hu.matemagyar.wge.proto.handler.MyDefaultArgument
 import io.micronaut.core.type.Argument
 import io.micronaut.json.JsonMapper
 import io.micronaut.json.tree.JsonNode
 import io.micronaut.serde.*
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
-import java.util.*
 
 @Singleton
 class ProtoMessageSerdeBean : Serde<Message> {
@@ -50,14 +50,19 @@ class ProtoMessageSerdeBean : Serde<Message> {
 
         val rootJson: JsonNode = decoder.decodeNode()
         val writeValueAsString = objectMapper.writeValueAsString(rootJson)
-        val jsonBuilder = getBuilder(type).orElseThrow()
+        
+        val jsonBuilder = if (type is MyDefaultArgument<*, *>) {
+            getBuilder(type.getValue() as Argument<*>)
+        } else {
+            getBuilder(type)
+        }
         JsonFormat.parser().merge(writeValueAsString, jsonBuilder)
         return type.type.cast(jsonBuilder.build()) as Message
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun getBuilder(type: Argument<*>): Optional<Message.Builder> {
-        return codec.getMessageBuilder(type.type as Class<out Message?>)
+    private fun getBuilder(type: Argument<*>): Message.Builder {
+        return codec.getMessageBuilder(type.type as Class<out Message?>).orElseThrow()
     }
 
 }
