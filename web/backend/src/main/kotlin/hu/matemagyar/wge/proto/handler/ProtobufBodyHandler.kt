@@ -64,6 +64,11 @@ class ProtobufBodyHandler<T>(
     override fun read(type: Argument<T>, mediaType: MediaType, httpHeaders: Headers, inputStream: InputStream): T {
         val isJson = MediaType.APPLICATION_JSON == mediaType.name
 
+        //val jsonArray = objectMapper.readValue(inputStream, JsonNode::class.java)
+        //val writeValueAsString = objectMapper.writeValueAsString(jsonArray)
+        //we could do some parsing using the json converter services
+
+
         if (isJson) {
             try {
                 if (type.type.name.equals("java.util.List")) {

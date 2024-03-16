@@ -28,6 +28,17 @@ class SceneController {
         return Hybrid()
     }
 
+    @Post("/scenePostHybrid", produces = ["application/json", ProtoBufferCodec.PROTOBUFFER_ENCODED2])
+    fun postSceneHybrid(@Body dto: Hybrid): Hybrid {
+        println(dto)
+        return dto
+    }
+
+    @Post("/scenePostHybrids", produces = ["application/json", ProtoBufferCodec.PROTOBUFFER_ENCODED2])
+    fun postSceneHybrids(@Body dto: List<Hybrid>): List<Hybrid> {
+        println(dto)
+        return dto
+    }
 
     @Get("/sceneProto", produces = [ProtoBufferCodec.PROTOBUFFER_ENCODED2])
     fun getSceneProto(): SceneDto {
