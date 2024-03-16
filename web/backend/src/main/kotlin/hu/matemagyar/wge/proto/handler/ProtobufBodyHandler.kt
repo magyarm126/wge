@@ -2,7 +2,6 @@ package hu.matemagyar.wge.proto.handler
 
 import com.google.protobuf.ExtensionRegistry
 import com.google.protobuf.Message
-import com.google.protobuf.util.JsonFormat
 import hu.matemagyar.wge.proto.codec.ProtoBufferCodec
 import io.micronaut.core.type.Argument
 import io.micronaut.core.type.Headers
@@ -105,101 +104,31 @@ class ProtobufBodyHandler<T>(
         outgoingHeaders: MutableHeaders,
         outputStream: OutputStream
     ) {
-        val isJson = isJsonAndHandleHeaders(mediaType, outgoingHeaders)
+        if (MediaType.APPLICATION_JSON == mediaType.name) {
+            nettyJsonHandler.writeTo(type, mediaType, obj, outgoingHeaders, outputStream)
+            return
+        }
+        outgoingHeaders.set(HttpHeaders.CONTENT_TYPE, ProtoBufferCodec.PROTOBUFFER_ENCODED)
         try {
             if (obj is List<*>) {
-                handleList(obj, isJson, outputStream, type, mediaType, outgoingHeaders)
+                serializeProtos(obj.filterIsInstance<Message>(), outputStream)
             } else {
-                handleSingleInstance(obj, isJson, outputStream, type, mediaType, outgoingHeaders)
+                serializeProto(obj as Message, outputStream, false)
             }
         } catch (exception: IOException) {
             throw CodecException("Proto serialization error", exception)
         }
-
     }
 
-    private fun isJsonAndHandleHeaders(
-        mediaType: MediaType,
-        outgoingHeaders: MutableHeaders
-    ): Boolean {
-        val isJson = MediaType.APPLICATION_JSON == mediaType.name
-        if (isJson) {
-            outgoingHeaders.set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-        } else {
-            outgoingHeaders.set(HttpHeaders.CONTENT_TYPE, ProtoBufferCodec.PROTOBUFFER_ENCODED)
-        }
-        return isJson
-    }
-
-    private fun handleSingleInstance(
-        obj: T,
-        isJson: Boolean,
-        outputStream: OutputStream,
-        type: Argument<T>,
-        mediaType: MediaType,
-        outgoingHeaders: MutableHeaders
-    ) {
-        when (obj) {
-            is Message -> {
-                serializeProto(isJson, obj, outputStream, false)
-                return
-            }
-
-            else -> {
-                nettyJsonHandler.writeTo(type, mediaType, obj, outgoingHeaders, outputStream)
-                return
-            }
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun handleList(
-        obj: List<*>,
-        isJson: Boolean,
-        outputStream: OutputStream,
-        type: Argument<T>,
-        mediaType: MediaType,
-        outgoingHeaders: MutableHeaders
-    ) {
-        when (obj.firstOrNull()) {
-            is Message -> {
-                serializeProtos(isJson, obj.filterIsInstance<Message>(), outputStream)
-            }
-
-            else -> {
-                nettyJsonHandler.writeTo(type, mediaType, obj as T, outgoingHeaders, outputStream)
-            }
-        }
-    }
-
-    private fun serializeProto(isJson: Boolean, message: Message, outputStream: OutputStream, delimited: Boolean) {
-        if (isJson) outputStream.write(
-            JsonFormat.printer().omittingInsignificantWhitespace().print(message).toByteArray()
-        )
-        else if (delimited) message.writeDelimitedTo(outputStream)
+    private fun serializeProto(message: Message, outputStream: OutputStream, delimited: Boolean) {
+        if (delimited) message.writeDelimitedTo(outputStream)
         else message.writeTo(outputStream)
     }
 
-    private fun serializeProtos(isJson: Boolean, messageList: List<Message>, outputStream: OutputStream) {
-        if (isJson) {
-            outputStream.write("[".toByteArray())
-            for (i in messageList.indices) {
-                serializeProto(true, messageList[i], outputStream, messageList.size > 1)
-                if (i != messageList.size - 1) {
-                    outputStream.write(",".toByteArray())
-                }
-            }
-            outputStream.write("]".toByteArray())
-        } else {
-            messageList.forEach {
-                serializeProto(false, it, outputStream, messageList.size > 1)
-            }
+    private fun serializeProtos(messageList: List<Message>, outputStream: OutputStream) {
+        messageList.forEach {
+            serializeProto(it, outputStream, messageList.size > 1)
         }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun getBuilder(type: Argument<*>): Optional<Message.Builder> {
-        return codec.getMessageBuilder(type.type as Class<out Message?>)
     }
 
     @Suppress("UNCHECKED_CAST")
