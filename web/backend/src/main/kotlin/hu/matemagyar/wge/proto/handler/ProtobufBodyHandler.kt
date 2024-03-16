@@ -64,15 +64,15 @@ class ProtobufBodyHandler<T>(
     @Throws(CodecException::class)
     override fun read(type: Argument<T>, mediaType: MediaType, httpHeaders: Headers, inputStream: InputStream): T {
         val isJson = MediaType.APPLICATION_JSON == mediaType.name
+        val isList = type.type.name.equals("java.util.List")
 
-        //val jsonArray = objectMapper.readValue(inputStream, JsonNode::class.java)
-        //val writeValueAsString = objectMapper.writeValueAsString(jsonArray)
-        //we could do some parsing using the json converter services
-        val h = objectMapper.readValue(inputStream, Hybrid::class.java)
+        if (!Message::class.java.isAssignableFrom(type.type) && !isList) {//todo: hybrid list
+            return nettyJsonHandler.read(type, mediaType, httpHeaders, inputStream)
+        }
 
         if (isJson) {
             try {
-                if (type.type.name.equals("java.util.List")) {
+                if (isList) {
                     val jsonArray = objectMapper.readValue(inputStream, JsonNode::class.java)
 
                     val returnList = ArrayList<Message>()
