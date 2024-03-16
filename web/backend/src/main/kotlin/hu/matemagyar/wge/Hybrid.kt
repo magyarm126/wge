@@ -3,8 +3,6 @@ package hu.matemagyar.wge
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.google.protobuf.Message
 import hu.matemagyar.wge.model.SceneDto
-import hu.matemagyar.wge.proto.serde.ProtoDeser
-import hu.matemagyar.wge.proto.serde.ProtoMessageSerdeBean
 import io.micronaut.serde.annotation.Serdeable
 
 @Serdeable

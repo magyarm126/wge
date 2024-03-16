@@ -2,8 +2,6 @@ package hu.matemagyar.wge.proto.handler
 
 import com.google.protobuf.ExtensionRegistry
 import com.google.protobuf.Message
-import com.google.protobuf.util.JsonFormat
-import hu.matemagyar.wge.Hybrid
 import hu.matemagyar.wge.proto.codec.ProtoBufferCodec
 import io.micronaut.core.annotation.Order
 import io.micronaut.core.type.Argument
@@ -17,12 +15,11 @@ import io.micronaut.http.body.MessageBodyHandler
 import io.micronaut.http.codec.CodecException
 import io.micronaut.http.netty.body.NettyJsonHandler
 import io.micronaut.json.JsonMapper
-import io.micronaut.json.tree.JsonNode
+import io.micronaut.serde.ObjectMapper
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import java.io.IOException
 import java.io.InputStream
-import java.io.InputStreamReader
 import java.io.OutputStream
 import java.util.*
 
@@ -46,8 +43,8 @@ import java.util.*
  *      }
  * }
  */
-//@Order(-1)
-//@Singleton
+@Order(-1)
+@Singleton
 @Produces(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2, MediaType.APPLICATION_JSON)
 @Consumes(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2, MediaType.APPLICATION_JSON)
 class ProtobufBodyHandler<T>(
@@ -64,13 +61,19 @@ class ProtobufBodyHandler<T>(
     @Throws(CodecException::class)
     override fun read(type: Argument<T>, mediaType: MediaType, httpHeaders: Headers, inputStream: InputStream): T {
         val isJson = MediaType.APPLICATION_JSON == mediaType.name
-        val isList = type.type.name.equals("java.util.List")
-
-        if (!Message::class.java.isAssignableFrom(type.type) && !isList) {//todo: hybrid list
+        if (isJson) {
+            return objectMapper.readValue(inputStream, type)
             return nettyJsonHandler.read(type, mediaType, httpHeaders, inputStream)
         }
+        val isList = type.type.name.equals("java.util.List")
+        if (isList) {
+            throw RuntimeException("We cant deser proto lists yet")
+        }
+        if (!Message::class.java.isAssignableFrom(type.type)) {
+            throw RuntimeException("We dont proto hybrids")
+        }
 
-        if (isJson) {
+        /*if (isJson) {
             try {
                 if (isList) {
                     val jsonArray = objectMapper.readValue(inputStream, JsonNode::class.java)
@@ -95,7 +98,8 @@ class ProtobufBodyHandler<T>(
             } catch (e: IOException) {
                 throw CodecException("Failed to read protobuf from JSON", e)
             }
-        }
+        }*/
+
         val builder = getBuilder(type)
             .orElseThrow {
                 CodecException(
