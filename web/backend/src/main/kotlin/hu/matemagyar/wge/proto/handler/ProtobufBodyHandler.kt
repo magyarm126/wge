@@ -14,7 +14,6 @@ import io.micronaut.http.annotation.Produces
 import io.micronaut.http.body.MessageBodyHandler
 import io.micronaut.http.codec.CodecException
 import io.micronaut.http.netty.body.NettyJsonHandler
-import io.micronaut.json.JsonMapper
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import java.io.IOException
@@ -46,62 +45,30 @@ import java.util.*
 @Singleton
 @Produces(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2, MediaType.APPLICATION_JSON)
 @Consumes(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2, MediaType.APPLICATION_JSON)
-class ProtobufBodyHandler<T>(
-    codec: ProtoBufferCodec,
-    private val extensionRegistry: ExtensionRegistry,
-    private val nettyJsonHandler: NettyJsonHandler<T>
-) :
-    MessageBodyHandler<T> {
-    private val codec: ProtoBufferCodec = codec
+class ProtobufBodyHandler<T> : MessageBodyHandler<T> {
 
     @Inject
-    lateinit var objectMapper: JsonMapper
+    lateinit var codec: ProtoBufferCodec
+
+    @Inject
+    lateinit var extensionRegistry: ExtensionRegistry
+
+    @Suppress("MnInjectionPoints")
+    @Inject
+    lateinit var messageBodyHandler: NettyJsonHandler<T>
 
     @Throws(CodecException::class)
     override fun read(type: Argument<T>, mediaType: MediaType, httpHeaders: Headers, inputStream: InputStream): T {
-        val isJson = MediaType.APPLICATION_JSON == mediaType.name
-        if (isJson) {
-            return objectMapper.readValue(inputStream, type.type) as T
-            val arg = MyDefaultArgument(Argument.of(Message::class.java), type)
-            return objectMapper.readValue(inputStream, arg) as T
-            //return objectMapper.readValue(inputStream, Argument.of(Message::class.java, type.type.simpleName)) as T
-            return nettyJsonHandler.read(type, mediaType, httpHeaders, inputStream)
+        if (MediaType.APPLICATION_JSON == mediaType.name) {
+            return messageBodyHandler.read(type, mediaType, httpHeaders, inputStream)
         }
         val isList = type.type.name.equals("java.util.List")
         if (isList) {
-            throw RuntimeException("We cant deser proto lists yet")
+            throw RuntimeException("We can't deserialize proto lists yet" + type.type.name)
         }
         if (!Message::class.java.isAssignableFrom(type.type)) {
-            throw RuntimeException("We dont proto hybrids")
+            throw RuntimeException("We dont proto hybrids" + type.type.name)
         }
-
-        /*if (isJson) {
-            try {
-                if (isList) {
-                    val jsonArray = objectMapper.readValue(inputStream, JsonNode::class.java)
-
-                    val returnList = ArrayList<Message>()
-
-                    for (i in 0 until jsonArray.size()) {
-                        val jsonObject: JsonNode = jsonArray.get(i)
-                        val jsonBuilder = getBuilder(type.typeVariables.values.first()).orElseThrow()
-
-                        val writeValueAsString = objectMapper.writeValueAsString(jsonObject)
-                        JsonFormat.parser().merge(writeValueAsString, jsonBuilder)
-                        val msg: Message = jsonBuilder.build() as Message
-                        returnList.addLast(msg)
-                    }
-                    return type.type.cast(returnList)
-                }
-
-                val jsonBuilder = getBuilder(type).orElseThrow()
-                JsonFormat.parser().merge(InputStreamReader(inputStream), jsonBuilder)
-                return type.type.cast(jsonBuilder.build())
-            } catch (e: IOException) {
-                throw CodecException("Failed to read protobuf from JSON", e)
-            }
-        }*/
-
         val builder = getBuilder(type)
             .orElseThrow {
                 CodecException(
@@ -127,7 +94,7 @@ class ProtobufBodyHandler<T>(
         outputStream: OutputStream
     ) {
         if (MediaType.APPLICATION_JSON == mediaType.name) {
-            nettyJsonHandler.writeTo(type, mediaType, obj, outgoingHeaders, outputStream)
+            messageBodyHandler.writeTo(type, mediaType, obj, outgoingHeaders, outputStream)
             return
         }
         outgoingHeaders.set(HttpHeaders.CONTENT_TYPE, ProtoBufferCodec.PROTOBUFFER_ENCODED)
