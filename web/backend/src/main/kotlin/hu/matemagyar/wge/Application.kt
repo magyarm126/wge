@@ -31,6 +31,5 @@ fun main() {
         .start()
 }
 
-
-@SerdeImport(value = Message::class)
+@SerdeImport(packageName = "hu.matemagyar.wge.model")
 class Serdes {}
