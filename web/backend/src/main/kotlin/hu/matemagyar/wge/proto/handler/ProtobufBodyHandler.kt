@@ -62,7 +62,7 @@ class ProtobufBodyHandler<T>(
     override fun read(type: Argument<T>, mediaType: MediaType, httpHeaders: Headers, inputStream: InputStream): T {
         val isJson = MediaType.APPLICATION_JSON == mediaType.name
         if (isJson) {
-            return objectMapper.readValue(inputStream, type)
+            return objectMapper.readValue(inputStream, Argument.of(Message::class.java)) as T
             return nettyJsonHandler.read(type, mediaType, httpHeaders, inputStream)
         }
         val isList = type.type.name.equals("java.util.List")
