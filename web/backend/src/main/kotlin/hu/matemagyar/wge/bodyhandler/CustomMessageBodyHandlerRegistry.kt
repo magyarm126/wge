@@ -1,4 +1,4 @@
-package hu.matemagyar.wge.proto
+package hu.matemagyar.wge.bodyhandler
 
 import com.google.protobuf.Message
 import io.micronaut.context.annotation.Primary
@@ -27,7 +27,7 @@ class CustomMessageBodyHandlerRegistry<T> : MessageBodyHandlerRegistry {
         type: Argument<T>,
         mediaType: MutableList<MediaType>
     ): Optional<MessageBodyReader<T>> {
-        if (Message::class.java.isAssignableFrom(type.type)) {
+        if (Message::class.java.isAssignableFrom(type.type) || type.type.name.equals("java.util.List")) {
             return Optional.of(protoBufferBodyHandlerProxy as MessageBodyReader<T>)
         }
         return Optional.of<MessageBodyReader<T>>(nettyJsonHandler as MessageBodyReader<T>)
@@ -37,7 +37,7 @@ class CustomMessageBodyHandlerRegistry<T> : MessageBodyHandlerRegistry {
         type: Argument<T>,
         mediaType: MutableList<MediaType>
     ): Optional<MessageBodyWriter<T>> {
-        if (Message::class.java.isAssignableFrom(type.type)) {
+        if (Message::class.java.isAssignableFrom(type.type) || type.type.name.equals("java.util.List") ) {
             return Optional.of(protoBufferBodyHandlerProxy as MessageBodyWriter<T>)
         }
         return Optional.of(nettyJsonHandler as MessageBodyWriter<T>)

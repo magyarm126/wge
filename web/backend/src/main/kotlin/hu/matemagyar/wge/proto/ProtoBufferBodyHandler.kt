@@ -11,7 +11,6 @@ import io.micronaut.http.annotation.Consumes
 import io.micronaut.http.annotation.Produces
 import io.micronaut.http.body.MessageBodyHandler
 import io.micronaut.http.codec.CodecException
-import io.micronaut.http.netty.body.NettyJsonHandler
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import java.io.IOException
