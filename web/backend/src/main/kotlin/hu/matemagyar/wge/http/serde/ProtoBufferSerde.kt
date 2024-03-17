@@ -12,7 +12,7 @@ import jakarta.inject.Inject
 import jakarta.inject.Singleton
 
 @Singleton
-class ProtoBufferSerde<T : Message> : Serde<T> {
+class ProtoBufferSerde : Serde<Message> {
 
     @Inject
     lateinit var objectMapper: JsonMapper
@@ -20,7 +20,12 @@ class ProtoBufferSerde<T : Message> : Serde<T> {
     @Inject
     lateinit var codec: ProtoBufferCodec
 
-    override fun serialize(encoder: Encoder, context: Serializer.EncoderContext, type: Argument<out T>, value: T) {
+    override fun serialize(
+        encoder: Encoder,
+        context: Serializer.EncoderContext,
+        type: Argument<out Message>,
+        value: Message
+    ) {
         context.findSerializer(JsonNode::class.java).serialize(
             encoder,
             context,
@@ -30,11 +35,15 @@ class ProtoBufferSerde<T : Message> : Serde<T> {
     }
 
     @Suppress("UNCHECKED_CAST")
-    override fun deserialize(decoder: Decoder, context: Deserializer.DecoderContext, type: Argument<in T>): T {
+    override fun deserialize(
+        decoder: Decoder,
+        context: Deserializer.DecoderContext,
+        type: Argument<in Message>
+    ): Message {
         val rootJson: JsonNode = decoder.decodeNode()
         val writeValueAsString = objectMapper.writeValueAsString(rootJson)
-        val jsonBuilder = codec.getBuilder(type)
+        val jsonBuilder = codec.getBuilderTyped(type as Argument<Message>)
         JsonFormat.parser().merge(writeValueAsString, jsonBuilder)
-        return type.type.cast(jsonBuilder.build()) as T
+        return type.type.cast(jsonBuilder.build())
     }
 }

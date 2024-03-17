@@ -10,6 +10,7 @@ import io.micronaut.core.type.Argument
 import io.micronaut.http.MediaType
 import io.micronaut.http.codec.CodecException
 import io.micronaut.http.codec.MediaTypeCodec
+import jakarta.inject.Inject
 import jakarta.inject.Named
 import jakarta.inject.Singleton
 import java.io.IOException
@@ -21,15 +22,15 @@ import java.util.concurrent.ConcurrentHashMap
 
 @Singleton
 @Named("ProtoBufferCodec")
-class ProtoBufferCodec
-    (
-    val extensionRegistry: ExtensionRegistry
-) : MediaTypeCodec {
+class ProtoBufferCodec : MediaTypeCodec {
     private val methodCache = ConcurrentHashMap<Class<*>, Method?>()
 
-    private var mediaTypes = DEFAULT_MEDIA_TYPES
+    private var mediaTypes = listOf(PROTO_BUFFER_TYPE)
 
-    override fun supportsType(type: Class<*>?): Boolean {
+    @Inject
+    lateinit var extensionRegistry: ExtensionRegistry
+
+    override fun supportsType(type: Class<*>): Boolean {
         return Message::class.java.isAssignableFrom(type)
     }
 
@@ -37,19 +38,10 @@ class ProtoBufferCodec
         return mediaTypes
     }
 
-    fun setMediaTypes(mediaTypes: List<MediaType>?) {
-        this.mediaTypes = Collections.unmodifiableList(ArrayList(mediaTypes))
-    }
-
     @Throws(CodecException::class)
     override fun <T> decode(type: Argument<T>, inputStream: InputStream): T {
         try {
-            val builder = getBuilder<T>(type)
-                .orElseThrow {
-                    CodecException(
-                        "Unable to create builder"
-                    )
-                }
+            val builder = getBuilder(type)
             check(!type.hasTypeVariables()) { "Generic type arguments are not supported" }
             builder.mergeFrom(inputStream, extensionRegistry)
             return type.type.cast(builder.build())
@@ -64,12 +56,7 @@ class ProtoBufferCodec
             if (type.type == ByteArray::class.java) {
                 return buffer.toByteArray() as T
             } else {
-                val builder = getBuilder<T>(type)
-                    .orElseThrow {
-                        CodecException(
-                            "Unable to create builder"
-                        )
-                    }
+                val builder = getBuilder(type)
                 check(!type.hasTypeVariables()) { "Generic type arguments are not supported" }
                 builder.mergeFrom(buffer.toByteArray(), extensionRegistry)
                 return type.type.cast(builder.build())
@@ -85,12 +72,7 @@ class ProtoBufferCodec
             if (type.type == ByteArray::class.java) {
                 return bytes as T
             } else {
-                val builder = getBuilder<T>(type)
-                    .orElseThrow {
-                        CodecException(
-                            "Unable to create builder"
-                        )
-                    }
+                val builder = getBuilder(type)
                 check(!type.hasTypeVariables()) { "Generic type arguments are not supported" }
                 builder.mergeFrom(bytes, extensionRegistry)
                 return type.type.cast(builder.build())
@@ -98,11 +80,6 @@ class ProtoBufferCodec
         } catch (e: Exception) {
             throw CodecException("Error decoding Protobuff bytes for type [" + type.name + "]: " + e.message, e)
         }
-    }
-
-    private fun <T> getBuilder(type: Argument<T>): Optional<Message.Builder> {
-        val clazz = type.type as Class<out Message?>
-        return getMessageBuilder(clazz)
     }
 
     @Throws(CodecException::class)
@@ -131,22 +108,26 @@ class ProtoBufferCodec
         return allocator.copiedBuffer(encode(`object`))
     }
 
-    fun getMessageBuilder(clazz: Class<out Message?>): Optional<Message.Builder> {
+
+    fun getMessageBuilder(clazz: Class<out Message>): Message.Builder {
         return try {
             createBuilder(clazz)
         } catch (throwable: Throwable) {
-            Optional.empty()
+            throw CodecException("Could not create message builder for class:" + clazz.simpleName, throwable)
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
+    fun getBuilderTyped(type: Argument<Message>): Message.Builder {
+        return getMessageBuilder(type.type)
+    }
+
     fun getBuilder(type: Argument<*>): Message.Builder {
-        return getMessageBuilder(type.type as Class<out Message?>).orElseThrow()
+        return getMessageBuilder(type.type as Class<out Message?>)
     }
 
     @Throws(Exception::class)
-    private fun createBuilder(clazz: Class<out Message?>): Optional<Message.Builder> {
-        return Optional.of(getMethod(clazz)!!.invoke(clazz) as Message.Builder)
+    private fun createBuilder(clazz: Class<out Message?>): Message.Builder {
+        return getMethod(clazz)!!.invoke(clazz) as Message.Builder
     }
 
     @Throws(NoSuchMethodException::class)
@@ -162,7 +143,6 @@ class ProtoBufferCodec
     companion object {
         const val PROTO_BUFFER: String = "application/x-protobuf"
         val PROTO_BUFFER_TYPE: MediaType = MediaType(PROTO_BUFFER)
-        val DEFAULT_MEDIA_TYPES: List<MediaType> = listOf(PROTO_BUFFER_TYPE)
     }
 
     fun serializeProto(message: Message, outputStream: OutputStream, delimited: Boolean = false) {
