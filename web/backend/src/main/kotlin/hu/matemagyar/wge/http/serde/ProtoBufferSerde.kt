@@ -42,8 +42,8 @@ class ProtoBufferSerde : Serde<Message> {
     ): Message {
         val rootJson: JsonNode = decoder.decodeNode()
         val writeValueAsString = objectMapper.writeValueAsString(rootJson)
-        val jsonBuilder = codec.getBuilderTyped(type as Argument<Message>)
+        val jsonBuilder = codec.getBuilder(type)
         JsonFormat.parser().merge(writeValueAsString, jsonBuilder)
-        return type.type.cast(jsonBuilder.build())
+        return type.type.cast(jsonBuilder.build()) as Message
     }
 }

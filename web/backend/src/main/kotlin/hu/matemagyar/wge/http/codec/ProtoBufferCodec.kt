@@ -106,30 +106,12 @@ class ProtoBufferCodec : MediaTypeCodec {
         return ByteArray(0)
     }
 
-    override fun <T, B> encode(`object`: T, allocator: ByteBufferFactory<*, B>): ByteBuffer<B> {
-        return allocator.copiedBuffer(encode(`object`))
-    }
-
-    fun serializeProto(message: Message, outputStream: OutputStream, delimited: Boolean = false) {
-        if (delimited) message.writeDelimitedTo(outputStream)
-        else message.writeTo(outputStream)
-    }
-
-    fun serializeProtos(messageList: List<Message>, outputStream: OutputStream) {
-        messageList.forEach {
-            serializeProto(it, outputStream, messageList.size > 1)
-        }
-    }
-
-    fun getBuilderTyped(type: Argument<Message>): Message.Builder {
-        return getBuilder(type.type)
+    override fun <T, B> encode(obj: T, allocator: ByteBufferFactory<*, B>): ByteBuffer<B> {
+        return allocator.copiedBuffer(encode(obj))
     }
 
     fun getBuilder(type: Argument<*>): Message.Builder {
-        return getBuilder(type.type)
-    }
-
-    private fun getBuilder(clazz: Class<*>): Message.Builder {
+        val clazz = type.type
         try {
             val method = methodCache.getOrDefault(clazz, clazz.getMethod("newBuilder"))
             return method.invoke(clazz) as Message.Builder
