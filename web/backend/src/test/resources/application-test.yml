@@ -15,3 +15,5 @@ micronaut:
   http:
     client:
       read-timeout: 1m
+  server:
+    port: 8180
