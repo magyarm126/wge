@@ -169,7 +169,7 @@ class ProtoBufferCodec
             java.util.List.of(PROTOBUFFER_ENCODED_TYPE, PROTOBUFFER_ENCODED_TYPE2)
     }
 
-    fun serializeProto(message: Message, outputStream: OutputStream, delimited: Boolean) {
+    fun serializeProto(message: Message, outputStream: OutputStream, delimited: Boolean = false) {
         if (delimited) message.writeDelimitedTo(outputStream)
         else message.writeTo(outputStream)
     }

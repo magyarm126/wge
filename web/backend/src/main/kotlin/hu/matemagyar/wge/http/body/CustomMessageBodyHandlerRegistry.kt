@@ -2,12 +2,11 @@ package hu.matemagyar.wge.http.body
 
 import com.google.protobuf.Message
 import io.micronaut.context.annotation.Primary
+import io.micronaut.context.annotation.Requires
 import io.micronaut.core.type.Argument
 import io.micronaut.http.MediaType
-import io.micronaut.http.body.MessageBodyHandlerRegistry
-import io.micronaut.http.body.MessageBodyReader
-import io.micronaut.http.body.MessageBodyWriter
-import io.micronaut.http.body.RawMessageBodyHandler
+import io.micronaut.http.body.*
+import io.micronaut.http.netty.body.ByteBufRawMessageBodyHandler
 import io.micronaut.http.netty.body.NettyJsonHandler
 import io.netty.buffer.ByteBuf
 import jakarta.inject.Inject
@@ -28,10 +27,12 @@ class CustomMessageBodyHandlerRegistry<T> : MessageBodyHandlerRegistry {
 
     @Inject
     @Named("ByteBufRawMessageBodyHandler")
+    @Requires(classes = [ByteBufRawMessageBodyHandler::class])
     lateinit var byteBufRawMessageBodyHandler: RawMessageBodyHandler<T>
 
     @Inject
     @Named("RawStringHandler")
+    @Requires(classes = [DefaultMessageBodyHandlerRegistry::class])
     lateinit var rawStringHandler: RawMessageBodyHandler<T>
 
     override fun <T> findReader(
