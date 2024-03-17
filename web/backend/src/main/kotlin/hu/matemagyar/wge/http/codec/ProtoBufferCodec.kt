@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap
 @Singleton
 @Named("ProtoBufferCodec")
 class ProtoBufferCodec : MediaTypeCodec {
-    private val methodCache = ConcurrentHashMap<Class<*>, Method?>()
+    private val methodCache = ConcurrentHashMap<Class<*>, Method>()
 
     private var mediaTypes = listOf(PROTO_BUFFER_TYPE)
 
@@ -78,66 +78,48 @@ class ProtoBufferCodec : MediaTypeCodec {
                 return type.type.cast(builder.build())
             }
         } catch (e: Exception) {
-            throw CodecException("Error decoding Protobuff bytes for type [" + type.name + "]: " + e.message, e)
+            throw CodecException("Error decoding Protobuf bytes for type [" + type.name + "]: " + e.message, e)
         }
     }
 
-    @Throws(CodecException::class)
-    override fun <T> encode(`object`: T, outputStream: OutputStream) {
+    override fun <T> encode(obj: T, outputStream: OutputStream) {
         try {
-            if (`object` is Message) {
-                `object`.writeTo(outputStream)
+            if (obj is Message) {
+                obj.writeTo(outputStream)
             }
         } catch (e: IOException) {
-            throw CodecException("Error encoding object [" + `object` + "] to OutputStream:" + e.message)
+            throw CodecException("Error encoding object [" + obj + "] to OutputStream:" + e.message)
         }
     }
 
-    @Throws(CodecException::class)
-    override fun <T> encode(`object`: T): ByteArray {
-        if (`object` is Message) {
-            return `object`.toByteArray()
-        } else if (`object` is ByteArray) {
-            return `object`
+    override fun <T> encode(obj: T): ByteArray {
+        if (obj is Message) {
+            return obj.toByteArray()
+        } else if (obj is ByteArray) {
+            return obj
         }
         return ByteArray(0)
     }
 
-    @Throws(CodecException::class)
     override fun <T, B> encode(`object`: T, allocator: ByteBufferFactory<*, B>): ByteBuffer<B> {
         return allocator.copiedBuffer(encode(`object`))
     }
 
-
-    fun getMessageBuilder(clazz: Class<out Message>): Message.Builder {
-        return try {
-            createBuilder(clazz)
-        } catch (throwable: Throwable) {
-            throw CodecException("Could not create message builder for class:" + clazz.simpleName, throwable)
-        }
-    }
-
     fun getBuilderTyped(type: Argument<Message>): Message.Builder {
-        return getMessageBuilder(type.type)
+        return getBuilder(type.type)
     }
 
     fun getBuilder(type: Argument<*>): Message.Builder {
-        return getMessageBuilder(type.type as Class<out Message?>)
+        return getBuilder(type.type)
     }
 
-    @Throws(Exception::class)
-    private fun createBuilder(clazz: Class<out Message?>): Message.Builder {
-        return getMethod(clazz)!!.invoke(clazz) as Message.Builder
-    }
-
-    @Throws(NoSuchMethodException::class)
-    private fun getMethod(clazz: Class<out Message?>): Method? {
-        var method = methodCache[clazz]
-        if (method == null) {
-            method = clazz.getMethod("newBuilder")
-            methodCache[clazz] = method
+    private fun getBuilder(clazz: Class<*>): Message.Builder {
+        try {
+            val method = methodCache.getOrDefault(clazz, clazz.getMethod("newBuilder"))
+            return method.invoke(clazz) as Message.Builder
+        } catch (throwable: Throwable) {
+            throw CodecException("Could not create message builder for class:" + clazz.simpleName, throwable)
         }
-        return method
     }
 
     companion object {
