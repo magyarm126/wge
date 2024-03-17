@@ -1,5 +1,6 @@
 package hu.matemagyar.wge.proto
 
+import com.google.protobuf.Message
 import io.micronaut.context.annotation.Primary
 import io.micronaut.core.type.Argument
 import io.micronaut.http.MediaType
@@ -11,37 +12,34 @@ import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import java.util.*
 
+@Suppress("UNCHECKED_CAST")
 @Singleton
 @Primary
-class CustomMessageBodyHandlerRegistry : MessageBodyHandlerRegistry {
+class CustomMessageBodyHandlerRegistry<T> : MessageBodyHandlerRegistry {
 
     @Inject
-    lateinit var protoBufferBodyHandler: ProtoBufferBodyHandler<*>
+    lateinit var protoBufferBodyHandler: ProtoBufferBodyHandler<T>
 
     @Inject
-    lateinit var nettyJsonHandler: NettyJsonHandler<*>
+    lateinit var nettyJsonHandler: NettyJsonHandler<T>
 
-    override fun <T : Any?> findReader(
-        type: Argument<T>?,
-        mediaType: MutableList<MediaType>?
+    override fun <T> findReader(
+        type: Argument<T>,
+        mediaType: MutableList<MediaType>
     ): Optional<MessageBodyReader<T>> {
-        if (mediaType!!.stream().anyMatch {
-                it.type.equals(ProtoBufferCodec.PROTOBUFFER_ENCODED) || it.type.equals(ProtoBufferCodec.PROTOBUFFER_ENCODED2)
-            }) {
-            return Optional.of(protoBufferBodyHandler) as Optional<MessageBodyReader<T>>
+        if (Message::class.java.isAssignableFrom(type.type)) {
+            return Optional.of(protoBufferBodyHandler as MessageBodyReader<T>)
         }
-        return Optional.of(nettyJsonHandler) as Optional<MessageBodyReader<T>>
+        return Optional.of<MessageBodyReader<T>>(nettyJsonHandler as MessageBodyReader<T>)
     }
 
-    override fun <T : Any?> findWriter(
-        type: Argument<T>?,
-        mediaType: MutableList<MediaType>?
+    override fun <T> findWriter(
+        type: Argument<T>,
+        mediaType: MutableList<MediaType>
     ): Optional<MessageBodyWriter<T>> {
-        if (mediaType!!.stream().anyMatch {
-                ProtoBufferCodec.PROTOBUFFER_ENCODED == it.name || ProtoBufferCodec.PROTOBUFFER_ENCODED2 == it.name
-            }) {
-            return Optional.of(protoBufferBodyHandler) as Optional<MessageBodyWriter<T>>
+        if (Message::class.java.isAssignableFrom(type.type)) {
+            return Optional.of(protoBufferBodyHandler as MessageBodyWriter<T>)
         }
-        return Optional.of(nettyJsonHandler) as Optional<MessageBodyWriter<T>>
+        return Optional.of(nettyJsonHandler as MessageBodyWriter<T>)
     }
 }
