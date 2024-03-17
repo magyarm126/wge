@@ -40,11 +40,11 @@ import java.util.*
  *      }
  * }
  */
-@Order(-1)
+//@Order(-1)
 @Singleton
 @Produces(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2, MediaType.APPLICATION_JSON)
 @Consumes(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2, MediaType.APPLICATION_JSON)
-class ProtoBufferBodyHandler<T> : MessageBodyHandler<T> {
+class ProtoBufferBodyHandler<T: Message> : MessageBodyHandler<T> {
 
     @Inject
     lateinit var codec: ProtoBufferCodec
