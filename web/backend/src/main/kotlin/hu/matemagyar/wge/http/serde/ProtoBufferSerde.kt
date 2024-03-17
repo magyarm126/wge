@@ -12,7 +12,7 @@ import jakarta.inject.Inject
 import jakarta.inject.Singleton
 
 @Singleton
-class ProtoBufferSerde : Serde<Message> {
+class ProtoBufferSerde<T : Message> : Serde<T> {
 
     @Inject
     lateinit var objectMapper: JsonMapper
@@ -23,8 +23,8 @@ class ProtoBufferSerde : Serde<Message> {
     override fun serialize(
         encoder: Encoder,
         context: Serializer.EncoderContext,
-        type: Argument<out Message>,
-        value: Message
+        type: Argument<out T>,
+        value: T
     ) {
         context.findSerializer(JsonNode::class.java).serialize(
             encoder,
@@ -38,12 +38,12 @@ class ProtoBufferSerde : Serde<Message> {
     override fun deserialize(
         decoder: Decoder,
         context: Deserializer.DecoderContext,
-        type: Argument<in Message>
-    ): Message {
+        type: Argument<in T>
+    ): T {
         val rootJson: JsonNode = decoder.decodeNode()
         val writeValueAsString = objectMapper.writeValueAsString(rootJson)
         val jsonBuilder = codec.getBuilder(type)
         JsonFormat.parser().merge(writeValueAsString, jsonBuilder)
-        return type.type.cast(jsonBuilder.build()) as Message
+        return type.type.cast(jsonBuilder.build()) as T
     }
 }
