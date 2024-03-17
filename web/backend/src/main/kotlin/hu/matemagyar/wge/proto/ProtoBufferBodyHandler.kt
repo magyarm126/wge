@@ -44,7 +44,7 @@ import java.util.*
 @Singleton
 @Produces(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2, MediaType.APPLICATION_JSON)
 @Consumes(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2, MediaType.APPLICATION_JSON)
-class ProtoBufferBodyHandler<T: Message> : MessageBodyHandler<T> {
+class ProtoBufferBodyHandler<T> : MessageBodyHandler<T> {
 
     @Inject
     lateinit var codec: ProtoBufferCodec
