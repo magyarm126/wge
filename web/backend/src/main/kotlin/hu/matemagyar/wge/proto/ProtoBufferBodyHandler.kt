@@ -20,8 +20,8 @@ import java.io.OutputStream
 import java.util.*
 
 @Singleton
-@Produces(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2, MediaType.APPLICATION_JSON)
-@Consumes(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2, MediaType.APPLICATION_JSON)
+@Produces(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2)
+@Consumes(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2)
 class ProtoBufferBodyHandler<T> : MessageBodyHandler<T> {
 
     @Inject
@@ -30,15 +30,8 @@ class ProtoBufferBodyHandler<T> : MessageBodyHandler<T> {
     @Inject
     lateinit var extensionRegistry: ExtensionRegistry
 
-    @Suppress("MnInjectionPoints")
-    @Inject
-    lateinit var messageBodyHandler: NettyJsonHandler<T>
-
     @Throws(CodecException::class)
     override fun read(type: Argument<T>, mediaType: MediaType, httpHeaders: Headers, inputStream: InputStream): T {
-        if (MediaType.APPLICATION_JSON == mediaType.name) {
-            return messageBodyHandler.read(type, mediaType, httpHeaders, inputStream)
-        }
         val isList = type.type.name.equals("java.util.List")
         if (isList) {
             throw RuntimeException("We can't deserialize proto lists yet" + type.type.name)
@@ -70,10 +63,6 @@ class ProtoBufferBodyHandler<T> : MessageBodyHandler<T> {
         outgoingHeaders: MutableHeaders,
         outputStream: OutputStream
     ) {
-        if (MediaType.APPLICATION_JSON == mediaType.name) {
-            messageBodyHandler.writeTo(type, mediaType, obj, outgoingHeaders, outputStream)
-            return
-        }
         outgoingHeaders.set(HttpHeaders.CONTENT_TYPE, ProtoBufferCodec.PROTOBUFFER_ENCODED)
         try {
             if (obj is List<*>) {

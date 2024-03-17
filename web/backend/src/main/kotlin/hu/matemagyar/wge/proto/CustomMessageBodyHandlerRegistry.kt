@@ -12,13 +12,13 @@ import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import java.util.*
 
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "MnInjectionPoints")
 @Singleton
 @Primary
 class CustomMessageBodyHandlerRegistry<T> : MessageBodyHandlerRegistry {
 
     @Inject
-    lateinit var protoBufferBodyHandler: ProtoBufferBodyHandler<T>
+    lateinit var protoBufferBodyHandlerProxy: ProtoBufferBodyHandlerProxy<T>
 
     @Inject
     lateinit var nettyJsonHandler: NettyJsonHandler<T>
@@ -28,7 +28,7 @@ class CustomMessageBodyHandlerRegistry<T> : MessageBodyHandlerRegistry {
         mediaType: MutableList<MediaType>
     ): Optional<MessageBodyReader<T>> {
         if (Message::class.java.isAssignableFrom(type.type)) {
-            return Optional.of(protoBufferBodyHandler as MessageBodyReader<T>)
+            return Optional.of(protoBufferBodyHandlerProxy as MessageBodyReader<T>)
         }
         return Optional.of<MessageBodyReader<T>>(nettyJsonHandler as MessageBodyReader<T>)
     }
@@ -38,7 +38,7 @@ class CustomMessageBodyHandlerRegistry<T> : MessageBodyHandlerRegistry {
         mediaType: MutableList<MediaType>
     ): Optional<MessageBodyWriter<T>> {
         if (Message::class.java.isAssignableFrom(type.type)) {
-            return Optional.of(protoBufferBodyHandler as MessageBodyWriter<T>)
+            return Optional.of(protoBufferBodyHandlerProxy as MessageBodyWriter<T>)
         }
         return Optional.of(nettyJsonHandler as MessageBodyWriter<T>)
     }
