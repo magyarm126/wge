@@ -160,13 +160,9 @@ class ProtoBufferCodec
     }
 
     companion object {
-        const val X_PROTOBUF_MESSAGE_HEADER: String = "X-Protobuf-Message"
-        const val PROTOBUFFER_ENCODED: String = "application/x-protobuf"
-        const val PROTOBUFFER_ENCODED2: String = "application/protobuf"
-        val PROTOBUFFER_ENCODED_TYPE: MediaType = MediaType(PROTOBUFFER_ENCODED)
-        val PROTOBUFFER_ENCODED_TYPE2: MediaType = MediaType(PROTOBUFFER_ENCODED2)
-        val DEFAULT_MEDIA_TYPES: List<MediaType> =
-            java.util.List.of(PROTOBUFFER_ENCODED_TYPE, PROTOBUFFER_ENCODED_TYPE2)
+        const val PROTO_BUFFER: String = "application/x-protobuf"
+        val PROTO_BUFFER_TYPE: MediaType = MediaType(PROTO_BUFFER)
+        val DEFAULT_MEDIA_TYPES: List<MediaType> = listOf(PROTO_BUFFER_TYPE)
     }
 
     fun serializeProto(message: Message, outputStream: OutputStream, delimited: Boolean = false) {

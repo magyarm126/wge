@@ -44,7 +44,7 @@ class ProtoBufferBodyHandler : MessageBodyHandler<Message> {
         outgoingHeaders: MutableHeaders,
         outputStream: OutputStream
     ) {
-        outgoingHeaders.set(HttpHeaders.CONTENT_TYPE, ProtoBufferCodec.PROTOBUFFER_ENCODED)
+        outgoingHeaders.set(HttpHeaders.CONTENT_TYPE, ProtoBufferCodec.PROTO_BUFFER)
         codec.serializeProto(obj, outputStream)
     }
 }

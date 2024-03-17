@@ -19,8 +19,8 @@ import java.util.*
 
 @Singleton
 @Suppress("MnInjectionPoints")
-@Produces(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2, MediaType.APPLICATION_JSON)
-@Consumes(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2, MediaType.APPLICATION_JSON)
+@Produces(ProtoBufferCodec.PROTO_BUFFER, ProtoBufferCodec.PROTO_BUFFER, MediaType.APPLICATION_JSON)
+@Consumes(ProtoBufferCodec.PROTO_BUFFER, ProtoBufferCodec.PROTO_BUFFER, MediaType.APPLICATION_JSON)
 class ProtoBufferBodyHandlerProxy<T> : MessageBodyHandler<T> {
 
     @Inject

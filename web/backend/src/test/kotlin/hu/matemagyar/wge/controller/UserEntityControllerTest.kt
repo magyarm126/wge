@@ -42,14 +42,14 @@ class UserEntityControllerTest {
 
     @Test
     fun getProto() {
-        val request: HttpRequest<Any> = HttpRequest.GET<Any?>("/scene").accept(ProtoBufferCodec.PROTOBUFFER_ENCODED_TYPE2)
+        val request: HttpRequest<Any> = HttpRequest.GET<Any?>("/scene").accept(ProtoBufferCodec.PROTO_BUFFER)
         val body = client.toBlocking().retrieve(request)
         assertNotNull(body)
     }
 
     @Test
     fun getProtoDeser() {
-        val request: HttpRequest<SceneDto> = HttpRequest.GET<SceneDto?>("/scene").accept(ProtoBufferCodec.PROTOBUFFER_ENCODED_TYPE2)
+        val request: HttpRequest<SceneDto> = HttpRequest.GET<SceneDto?>("/scene").accept(ProtoBufferCodec.PROTO_BUFFER)
         val body = client.toBlocking().retrieve(request, SceneDto::class.java)
         assertNotNull(body)
     }

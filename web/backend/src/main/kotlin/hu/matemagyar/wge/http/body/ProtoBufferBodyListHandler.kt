@@ -8,8 +8,6 @@ import io.micronaut.core.type.Headers
 import io.micronaut.core.type.MutableHeaders
 import io.micronaut.http.HttpHeaders
 import io.micronaut.http.MediaType
-import io.micronaut.http.annotation.Consumes
-import io.micronaut.http.annotation.Produces
 import io.micronaut.http.body.MessageBodyHandler
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
@@ -41,7 +39,7 @@ class ProtoBufferBodyListHandler : MessageBodyHandler<List<Message>> {
         outgoingHeaders: MutableHeaders,
         outputStream: OutputStream
     ) {
-        outgoingHeaders.set(HttpHeaders.CONTENT_TYPE, ProtoBufferCodec.PROTOBUFFER_ENCODED)
+        outgoingHeaders.set(HttpHeaders.CONTENT_TYPE, ProtoBufferCodec.PROTO_BUFFER)
         codec.serializeProtos(obj, outputStream)
     }
 }
