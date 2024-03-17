@@ -1,7 +1,6 @@
-package hu.matemagyar.wge.bodyhandler
+package hu.matemagyar.wge.http.body
 
-import hu.matemagyar.wge.proto.ProtoBufferBodyHandler
-import hu.matemagyar.wge.proto.ProtoBufferCodec
+import hu.matemagyar.wge.http.codec.ProtoBufferCodec
 import io.micronaut.core.type.Argument
 import io.micronaut.core.type.Headers
 import io.micronaut.core.type.MutableHeaders

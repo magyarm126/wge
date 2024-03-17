@@ -1,8 +1,9 @@
-package hu.matemagyar.wge.proto
+package hu.matemagyar.wge.http.serde
 
 
 import com.google.protobuf.Message
 import com.google.protobuf.util.JsonFormat
+import hu.matemagyar.wge.http.codec.ProtoBufferCodec
 import io.micronaut.core.type.Argument
 import io.micronaut.json.JsonMapper
 import io.micronaut.json.tree.JsonNode

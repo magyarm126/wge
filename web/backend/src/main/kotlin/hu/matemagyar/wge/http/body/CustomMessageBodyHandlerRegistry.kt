@@ -1,4 +1,4 @@
-package hu.matemagyar.wge.bodyhandler
+package hu.matemagyar.wge.http.body
 
 import com.google.protobuf.Message
 import io.micronaut.context.annotation.Primary

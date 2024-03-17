@@ -1,7 +1,8 @@
-package hu.matemagyar.wge.proto
+package hu.matemagyar.wge.http.body
 
 import com.google.protobuf.ExtensionRegistry
 import com.google.protobuf.Message
+import hu.matemagyar.wge.http.codec.ProtoBufferCodec
 import io.micronaut.core.type.Argument
 import io.micronaut.core.type.Headers
 import io.micronaut.core.type.MutableHeaders

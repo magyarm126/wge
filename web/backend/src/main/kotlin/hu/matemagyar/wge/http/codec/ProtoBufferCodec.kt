@@ -1,4 +1,4 @@
-package hu.matemagyar.wge.proto
+package hu.matemagyar.wge.http.codec
 
 import com.google.protobuf.ExtensionRegistry
 import com.google.protobuf.Message
