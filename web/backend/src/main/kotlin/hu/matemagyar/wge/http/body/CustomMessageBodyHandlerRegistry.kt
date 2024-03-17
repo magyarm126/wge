@@ -30,11 +30,18 @@ class CustomMessageBodyHandlerRegistry<T> : MessageBodyHandlerRegistry {
     @Named("ByteBufRawMessageBodyHandler")
     lateinit var byteBufRawMessageBodyHandler: RawMessageBodyHandler<T>
 
+    @Inject
+    @Named("RawStringHandler")
+    lateinit var rawStringHandler: RawMessageBodyHandler<T>
+
     override fun <T> findReader(
         type: Argument<T>,
         mediaType: MutableList<MediaType>
     ): Optional<MessageBodyReader<T>> {
-        if (ByteBuf::class.java.isAssignableFrom(type.type)) { //TODO: Automate this? Missing string conversion if type is not explicitly defined in test
+        if (String::class.java.isAssignableFrom(type.type)) {
+            return Optional.of(rawStringHandler as MessageBodyReader<T>)
+        }
+        if (ByteBuf::class.java.isAssignableFrom(type.type)) {
             return Optional.of(byteBufRawMessageBodyHandler as MessageBodyReader<T>)
         }
         if (Message::class.java.isAssignableFrom(type.type) || type.type.name.equals("java.util.List")) {
@@ -47,6 +54,9 @@ class CustomMessageBodyHandlerRegistry<T> : MessageBodyHandlerRegistry {
         type: Argument<T>,
         mediaType: MutableList<MediaType>
     ): Optional<MessageBodyWriter<T>> {
+        if (String::class.java.isAssignableFrom(type.type)) {
+            return Optional.of(rawStringHandler as MessageBodyWriter<T>)
+        }
         if (ByteBuf::class.java.isAssignableFrom(type.type)) {
             return Optional.of(byteBufRawMessageBodyHandler as MessageBodyWriter<T>)
         }

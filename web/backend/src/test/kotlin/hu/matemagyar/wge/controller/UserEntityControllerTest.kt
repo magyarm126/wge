@@ -26,8 +26,8 @@ class UserEntityControllerTest {
 
     @Test
     fun getCurrentUser() {
-        val request: HttpRequest<UserDto> = HttpRequest.GET("/current-user")
-        val body = client.toBlocking().retrieve(request, UserDto::class.java)
+        val request: HttpRequest<Any> = HttpRequest.GET("/current-user")
+        val body = client.toBlocking().retrieve(request)
         assertNotNull(body)
     }
 }
