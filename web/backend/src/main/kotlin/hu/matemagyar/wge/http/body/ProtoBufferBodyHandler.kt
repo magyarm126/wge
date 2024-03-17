@@ -1,7 +1,5 @@
 package hu.matemagyar.wge.http.body
 
-import com.google.protobuf.ExtensionRegistry
-import com.google.protobuf.Message
 import hu.matemagyar.wge.http.codec.ProtoBufferCodec
 import io.micronaut.core.type.Argument
 import io.micronaut.core.type.Headers
@@ -15,36 +13,28 @@ import java.io.InputStream
 import java.io.OutputStream
 
 @Singleton
-class ProtoBufferBodyHandler : MessageBodyHandler<Message> {
+class ProtoBufferBodyHandler<T> : MessageBodyHandler<T> {
 
     @Inject
     lateinit var codec: ProtoBufferCodec
 
-    @Inject
-    lateinit var extensionRegistry: ExtensionRegistry
-
     override fun read(
-        type: Argument<Message>,
+        type: Argument<T>,
         mediaType: MediaType,
         httpHeaders: Headers,
         inputStream: InputStream
-    ): Message {
-        return type.type.cast(
-            codec
-                .getBuilder(type)
-                .mergeFrom(inputStream, extensionRegistry)
-                .build()
-        )
+    ): T {
+        return codec.decode(type, inputStream)
     }
 
     override fun writeTo(
-        type: Argument<Message>,
+        type: Argument<T>,
         mediaType: MediaType,
-        obj: Message,
+        obj: T,
         outgoingHeaders: MutableHeaders,
         outputStream: OutputStream
     ) {
         outgoingHeaders.set(HttpHeaders.CONTENT_TYPE, ProtoBufferCodec.PROTO_BUFFER)
-        codec.serializeProto(obj, outputStream)
+        codec.encode(obj, outputStream)
     }
 }
