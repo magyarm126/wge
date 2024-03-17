@@ -30,6 +30,11 @@ class ProtoBufferCodec : MediaTypeCodec {
     @Inject
     lateinit var extensionRegistry: ExtensionRegistry
 
+    companion object {
+        const val PROTO_BUFFER: String = "application/x-protobuf"
+        val PROTO_BUFFER_TYPE: MediaType = MediaType(PROTO_BUFFER)
+    }
+
     override fun supportsType(type: Class<*>): Boolean {
         return Message::class.java.isAssignableFrom(type)
     }
@@ -105,6 +110,17 @@ class ProtoBufferCodec : MediaTypeCodec {
         return allocator.copiedBuffer(encode(`object`))
     }
 
+    fun serializeProto(message: Message, outputStream: OutputStream, delimited: Boolean = false) {
+        if (delimited) message.writeDelimitedTo(outputStream)
+        else message.writeTo(outputStream)
+    }
+
+    fun serializeProtos(messageList: List<Message>, outputStream: OutputStream) {
+        messageList.forEach {
+            serializeProto(it, outputStream, messageList.size > 1)
+        }
+    }
+
     fun getBuilderTyped(type: Argument<Message>): Message.Builder {
         return getBuilder(type.type)
     }
@@ -122,21 +138,6 @@ class ProtoBufferCodec : MediaTypeCodec {
         }
     }
 
-    companion object {
-        const val PROTO_BUFFER: String = "application/x-protobuf"
-        val PROTO_BUFFER_TYPE: MediaType = MediaType(PROTO_BUFFER)
-    }
-
-    fun serializeProto(message: Message, outputStream: OutputStream, delimited: Boolean = false) {
-        if (delimited) message.writeDelimitedTo(outputStream)
-        else message.writeTo(outputStream)
-    }
-
-    fun serializeProtos(messageList: List<Message>, outputStream: OutputStream) {
-        messageList.forEach {
-            serializeProto(it, outputStream, messageList.size > 1)
-        }
-    }
 }
 
 @Factory
