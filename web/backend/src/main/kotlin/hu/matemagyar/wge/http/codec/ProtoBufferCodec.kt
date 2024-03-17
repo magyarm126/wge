@@ -168,6 +168,17 @@ class ProtoBufferCodec
         val DEFAULT_MEDIA_TYPES: List<MediaType> =
             java.util.List.of(PROTOBUFFER_ENCODED_TYPE, PROTOBUFFER_ENCODED_TYPE2)
     }
+
+    fun serializeProto(message: Message, outputStream: OutputStream, delimited: Boolean) {
+        if (delimited) message.writeDelimitedTo(outputStream)
+        else message.writeTo(outputStream)
+    }
+
+    fun serializeProtos(messageList: List<Message>, outputStream: OutputStream) {
+        messageList.forEach {
+            serializeProto(it, outputStream, messageList.size > 1)
+        }
+    }
 }
 
 @Factory

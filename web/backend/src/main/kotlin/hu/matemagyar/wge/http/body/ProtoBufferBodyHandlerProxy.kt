@@ -1,5 +1,6 @@
 package hu.matemagyar.wge.http.body
 
+import com.google.protobuf.Message
 import hu.matemagyar.wge.http.codec.ProtoBufferCodec
 import io.micronaut.core.type.Argument
 import io.micronaut.core.type.Headers
@@ -26,14 +27,25 @@ class ProtoBufferBodyHandlerProxy<T> : MessageBodyHandler<T> {
     lateinit var jsonBodyHandler: NettyJsonHandler<T>
 
     @Inject
-    lateinit var protoBufferBodyHandler: ProtoBufferBodyHandler<T>
+    lateinit var protoBufferBodyHandler: ProtoBufferBodyHandler
+
+    @Inject
+    lateinit var protoBufferBodyListHandler: ProtoBufferBodyListHandler
 
     @Throws(CodecException::class)
     override fun read(type: Argument<T>, mediaType: MediaType, httpHeaders: Headers, inputStream: InputStream): T {
         if (isJson(mediaType)) {
             return jsonBodyHandler.read(type, mediaType, httpHeaders, inputStream)
         }
-        return protoBufferBodyHandler.read(type, mediaType, httpHeaders, inputStream)
+        if (type.name == "java.lang.List") {
+            return protoBufferBodyListHandler.read(
+                type as Argument<List<Message>>,
+                mediaType,
+                httpHeaders,
+                inputStream
+            ) as T
+        }
+        return protoBufferBodyHandler.read(type as Argument<Message>, mediaType, httpHeaders, inputStream) as T
     }
 
     @Throws(CodecException::class)
@@ -47,7 +59,23 @@ class ProtoBufferBodyHandlerProxy<T> : MessageBodyHandler<T> {
         if (isJson(mediaType)) {
             return jsonBodyHandler.writeTo(type, mediaType, obj, outgoingHeaders, outputStream)
         }
-        return protoBufferBodyHandler.writeTo(type, mediaType, obj, outgoingHeaders, outputStream)
+        if (Collection::class.java.isAssignableFrom(type.type)) {
+            return protoBufferBodyListHandler.writeTo(
+                type as Argument<List<Message>>,
+                mediaType,
+                obj as List<Message>,
+                outgoingHeaders,
+                outputStream
+            )
+
+        }
+        return protoBufferBodyHandler.writeTo(
+            type as Argument<Message>,
+            mediaType,
+            obj as Message,
+            outgoingHeaders,
+            outputStream
+        )
     }
 
     private fun isJson(mediaType: MediaType) = MediaType.APPLICATION_JSON == mediaType.name

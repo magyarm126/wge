@@ -22,7 +22,7 @@ import java.util.*
 @Singleton
 @Produces(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2)
 @Consumes(ProtoBufferCodec.PROTOBUFFER_ENCODED, ProtoBufferCodec.PROTOBUFFER_ENCODED2)
-class ProtoBufferBodyHandler : MessageBodyHandler<Message> {
+class ProtoBufferBodyListHandler : MessageBodyHandler<List<Message>> {
 
     @Inject
     lateinit var codec: ProtoBufferCodec
@@ -32,32 +32,25 @@ class ProtoBufferBodyHandler : MessageBodyHandler<Message> {
 
     @Throws(CodecException::class)
     override fun read(
-        type: Argument<Message>,
+        type: Argument<List<Message>>,
         mediaType: MediaType,
         httpHeaders: Headers,
         inputStream: InputStream
-    ): Message {
-        val builder = codec.getBuilder(type)
-        check(!type.hasTypeVariables()) { "Generic type arguments are not supported" }
-        try {
-            builder.mergeFrom(inputStream, extensionRegistry)
-        } catch (e: IOException) {
-            throw CodecException("Failed to read protobuf", e)
-        }
-        return type.type.cast(builder.build())
+    ): List<Message> {
+        throw RuntimeException("We can't deserialize proto lists yet" + type.type.name)
     }
 
     @Throws(CodecException::class)
     override fun writeTo(
-        type: Argument<Message>,
+        type: Argument<List<Message>>,
         mediaType: MediaType,
-        obj: Message,
+        obj: List<Message>,
         outgoingHeaders: MutableHeaders,
         outputStream: OutputStream
     ) {
         outgoingHeaders.set(HttpHeaders.CONTENT_TYPE, ProtoBufferCodec.PROTOBUFFER_ENCODED)
         try {
-            codec.serializeProto(obj, outputStream, false)
+            codec.serializeProtos(obj, outputStream)
         } catch (exception: IOException) {
             throw CodecException("Proto serialization error", exception)
         }
