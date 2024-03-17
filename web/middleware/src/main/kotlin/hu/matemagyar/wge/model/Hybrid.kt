@@ -1,6 +1,5 @@
-package hu.matemagyar.wge
+package hu.matemagyar.wge.model
 
-import hu.matemagyar.wge.model.SceneDto
 import io.micronaut.serde.annotation.Serdeable
 
 @Serdeable

@@ -1,8 +1,8 @@
 package hu.matemagyar.wge.controller
 
-import hu.matemagyar.wge.Hybrid
-import hu.matemagyar.wge.model.SceneDto
 import hu.matemagyar.wge.http.codec.ProtoBufferCodec
+import hu.matemagyar.wge.model.Hybrid
+import hu.matemagyar.wge.model.SceneDto
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Body
