@@ -45,7 +45,7 @@ class CustomMessageBodyHandlerRegistry<T> : MessageBodyHandlerRegistry {
         if (ByteBuf::class.java.isAssignableFrom(type.type)) {
             return Optional.of(byteBufRawMessageBodyHandler as MessageBodyReader<T>)
         }
-        if (Message::class.java.isAssignableFrom(type.type) || type.type.name.equals("java.util.List")) {
+        if (Message::class.java.isAssignableFrom(type.type) || Collection::class.java.isAssignableFrom(type.type)) {
             return Optional.of(protoBufferBodyHandlerProxy as MessageBodyReader<T>)
         }
         return Optional.of(nettyJsonHandler as MessageBodyReader<T>)
@@ -61,7 +61,7 @@ class CustomMessageBodyHandlerRegistry<T> : MessageBodyHandlerRegistry {
         if (ByteBuf::class.java.isAssignableFrom(type.type)) {
             return Optional.of(byteBufRawMessageBodyHandler as MessageBodyWriter<T>)
         }
-        if (Message::class.java.isAssignableFrom(type.type) || type.type.name.equals("java.util.List")) {
+        if (Message::class.java.isAssignableFrom(type.type) || Collection::class.java.isAssignableFrom(type.type)) {
             return Optional.of(protoBufferBodyHandlerProxy as MessageBodyWriter<T>)
         }
         return Optional.of(nettyJsonHandler as MessageBodyWriter<T>)
