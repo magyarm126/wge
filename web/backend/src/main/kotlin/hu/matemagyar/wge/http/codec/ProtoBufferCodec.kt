@@ -19,6 +19,7 @@ import java.io.OutputStream
 import java.lang.reflect.Method
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.function.Supplier
 
 @Singleton
 @Named("ProtoBufferCodec")
@@ -43,50 +44,19 @@ class ProtoBufferCodec : MediaTypeCodec {
         return mediaTypes
     }
 
-    @Throws(CodecException::class)
     override fun <T> decode(type: Argument<T>, inputStream: InputStream): T {
-        try {
-            val builder = getBuilder(type)
-            check(!type.hasTypeVariables()) { "Generic type arguments are not supported" }
-            builder.mergeFrom(inputStream, extensionRegistry)
-            return type.type.cast(builder.build())
-        } catch (e: Exception) {
-            throw CodecException("Error decoding Protobuff stream for type [" + type.name + "]: " + e.message, e)
-        }
+        return decode(type) { inputStream.readAllBytes() }
     }
 
-    @Throws(CodecException::class)
     override fun <T> decode(type: Argument<T>, buffer: ByteBuffer<*>): T {
-        try {
-            if (type.type == ByteArray::class.java) {
-                return buffer.toByteArray() as T
-            } else {
-                val builder = getBuilder(type)
-                check(!type.hasTypeVariables()) { "Generic type arguments are not supported" }
-                builder.mergeFrom(buffer.toByteArray(), extensionRegistry)
-                return type.type.cast(builder.build())
-            }
-        } catch (e: Exception) {
-            throw CodecException("Error decoding Protobuff bytes for type [" + type.name + "]: " + e.message, e)
-        }
+        return decode(type) { buffer.toByteArray() }
+    }
+
+    override fun <T> decode(type: Argument<T>, bytes: ByteArray): T {
+        return decode(type) { bytes }
     }
 
     @Throws(CodecException::class)
-    override fun <T> decode(type: Argument<T>, bytes: ByteArray): T {
-        try {
-            if (type.type == ByteArray::class.java) {
-                return bytes as T
-            } else {
-                val builder = getBuilder(type)
-                check(!type.hasTypeVariables()) { "Generic type arguments are not supported" }
-                builder.mergeFrom(bytes, extensionRegistry)
-                return type.type.cast(builder.build())
-            }
-        } catch (e: Exception) {
-            throw CodecException("Error decoding Protobuf bytes for type [" + type.name + "]: " + e.message, e)
-        }
-    }
-
     override fun <T> encode(obj: T, outputStream: OutputStream) {
         try {
             if (obj is Message) {
@@ -110,6 +80,7 @@ class ProtoBufferCodec : MediaTypeCodec {
         return allocator.copiedBuffer(encode(obj))
     }
 
+    @Throws(CodecException::class)
     fun getBuilder(type: Argument<*>): Message.Builder {
         val clazz = type.type
         try {
@@ -117,6 +88,23 @@ class ProtoBufferCodec : MediaTypeCodec {
             return method.invoke(clazz) as Message.Builder
         } catch (throwable: Throwable) {
             throw CodecException("Could not create message builder for class:" + clazz.simpleName, throwable)
+        }
+    }
+
+    @Throws(CodecException::class)
+    private fun <T> decode(type: Argument<T>, byteSupplier: Supplier<ByteArray>): T {
+        try {
+            val bytes = byteSupplier.get()
+            if (type.type == ByteArray::class.java) {
+                return bytes as T
+            } else {
+                val builder = getBuilder(type)
+                check(!type.hasTypeVariables()) { "Generic type arguments are not supported" }
+                builder.mergeFrom(bytes, extensionRegistry)
+                return type.type.cast(builder.build())
+            }
+        } catch (e: Exception) {
+            throw CodecException("Error decoding Protobuf bytes for type [" + type.name + "]: " + e.message, e)
         }
     }
 
