@@ -3,6 +3,18 @@ project(client)
 
 set(CMAKE_CXX_STANDARD 23)
 
+find_package(Protobuf REQUIRED)
+
+include_directories(${Protobuf_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+
+set(PROTO_SRCS ${PROJECT_SOURCE_DIR}/src)
+set(PROTO_HDRS ${PROJECT_SOURCE_DIR}/include)
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROJECT_SOURCE_DIR}/../../common/protobuf/common.proto)
+
+MESSAGE("Libs ${Protobuf_LIBRARIES}")
+
 set(SOURCES
         src/main.cpp
         src/Win32Application.cpp
@@ -23,7 +35,7 @@ set(SOURCES
         src/d3dx12/DXHelperFunctions.cpp
 )
 
-add_executable(client WIN32 ${SOURCES})
+add_executable(client WIN32 ${SOURCES} ${PROTO_SRCS} ${PROTO_HDRS})
 
 target_include_directories(client
         PRIVATE
@@ -35,6 +47,7 @@ target_link_libraries(client
         dxgi.lib
         d3d12.lib
         d3dcompiler.lib
+        ${Protobuf_LIBRARIES}
 )
 
 ADD_CUSTOM_TARGET(

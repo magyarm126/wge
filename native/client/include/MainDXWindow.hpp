@@ -85,4 +85,6 @@ private:
 
     // Window title.
     std::wstring m_title;
+
+    void testProto();
 };

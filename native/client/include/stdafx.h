@@ -15,5 +15,8 @@
 #include <string>
 #include <wrl.h>
 
+#include <common.pb.h>
+
 using namespace Microsoft::WRL;
 using namespace DirectX;
+using namespace ::hu::matemagyar::wge::model;

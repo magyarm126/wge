@@ -33,9 +33,17 @@ void MainDXWindow::keyUp(UINT8 key) {
 }
 
 void MainDXWindow::init(HWND hwnd) {
+    testProto();
     setWindowHandler(hwnd);
     LoadPipeline();
     LoadAssets();
+}
+
+void MainDXWindow::testProto() {
+    auto* player = new Player();
+    player->set_id(1);
+    player->set_name("Mate");
+    std::cout << "[ LOG ] Player:" << player->name() << " Id:"  << player->id() << std::endl;
 }
 
 void MainDXWindow::setWindowHandler(HWND hwnd) {
