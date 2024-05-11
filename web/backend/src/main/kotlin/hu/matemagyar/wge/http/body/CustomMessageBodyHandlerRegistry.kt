@@ -3,11 +3,14 @@ package hu.matemagyar.wge.http.body
 import com.google.protobuf.Message
 import io.micronaut.context.annotation.Primary
 import io.micronaut.context.annotation.Requires
+import io.micronaut.context.annotation.Secondary
 import io.micronaut.core.type.Argument
 import io.micronaut.http.MediaType
 import io.micronaut.http.body.*
 import io.micronaut.http.netty.body.ByteBufRawMessageBodyHandler
 import io.micronaut.http.netty.body.NettyJsonHandler
+import io.micronaut.http.server.netty.body.StreamFileBodyWriter
+import io.micronaut.http.server.types.files.StreamedFile
 import io.netty.buffer.ByteBuf
 import jakarta.inject.Inject
 import jakarta.inject.Named
@@ -29,6 +32,9 @@ class CustomMessageBodyHandlerRegistry<T> : MessageBodyHandlerRegistry {
     @Named("ByteBufRawMessageBodyHandler")
     @Requires(classes = [ByteBufRawMessageBodyHandler::class])
     lateinit var byteBufRawMessageBodyHandler: RawMessageBodyHandler<T>
+
+    @Inject
+    lateinit var streamFileBodyWriter: StreamFileBodyWriter
 
     @Inject
     @Named("RawStringHandler")
@@ -57,6 +63,9 @@ class CustomMessageBodyHandlerRegistry<T> : MessageBodyHandlerRegistry {
     ): Optional<MessageBodyWriter<T>> {
         if (String::class.java.isAssignableFrom(type.type)) {
             return Optional.of(rawStringHandler as MessageBodyWriter<T>)
+        }
+        if (StreamedFile::class.java.isAssignableFrom(type.type)) {
+            return Optional.of(streamFileBodyWriter as MessageBodyWriter<T>)
         }
         if (ByteBuf::class.java.isAssignableFrom(type.type)) {
             return Optional.of(byteBufRawMessageBodyHandler as MessageBodyWriter<T>)
