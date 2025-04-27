@@ -1,5 +1,7 @@
 package hu.matemagyar.wge.nes.memory
 
+import hu.matemagyar.wge.HexFormatter
+import hu.matemagyar.wge.toFormattedHexString
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -66,11 +68,11 @@ class MemoryBusTest {
         for (address in 0x4018..<0x4020) {
             Assertions.assertThrows(NotImplementedError::class.java,
             {toBeTested.writeByte(address, (address or 0b111).toByte())},
-                "APU and I/O functionality that is normally disabled, write should throw error at address ${address.toHexString()}"
+                "APU and I/O functionality that is normally disabled, write should throw error at address ${address.toFormattedHexString()}"
             )
             Assertions.assertThrows(NotImplementedError::class.java,
                 {toBeTested.readByte(address)},
-                "APU and I/O functionality that is normally disabled, read should throw error  at address ${address.toHexString()}"
+                "APU and I/O functionality that is normally disabled, read should throw error  at address ${address.toFormattedHexString()}"
             )
         }
         Mockito.verifyNoInteractions(cpuRamMock, ppuRamMock, apuRamMock)
@@ -82,11 +84,11 @@ class MemoryBusTest {
         for (address in 0x4020..<0x8000) {
             Assertions.assertThrows(NotImplementedError::class.java,
                 {toBeTested.writeByte(address, (address or 0b111).toByte())},
-                "Unmapped, write should throw error at address ${address.toHexString()}"
+                "Unmapped, write should throw error at address ${address.toFormattedHexString()}"
             )
             Assertions.assertThrows(NotImplementedError::class.java,
                 {toBeTested.readByte(address)},
-                "Unmapped, read should throw error  at address ${address.toHexString()}"
+                "Unmapped, read should throw error  at address ${address.toFormattedHexString()}"
             )
         }
         Mockito.verifyNoInteractions(cpuRamMock, ppuRamMock, apuRamMock)

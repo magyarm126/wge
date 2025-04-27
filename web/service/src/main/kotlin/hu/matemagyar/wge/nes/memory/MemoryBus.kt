@@ -1,5 +1,6 @@
 package hu.matemagyar.wge.nes.memory
 
+import hu.matemagyar.wge.toFormattedHexString
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import java.lang.IndexOutOfBoundsException
@@ -33,7 +34,6 @@ class MemoryBus: Memory {
         return 0x8000
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
     fun selectMemoryUnitToAddress(address: Int) : Pair<AbstractMemory, Int> {
         return when(address) {
             in 0..<0x800 -> cpuRam to address
@@ -41,9 +41,9 @@ class MemoryBus: Memory {
             in 0x2000..<0x2008 -> ppuRam to (address and 0b111)
             in 0x2008..<0x4000 -> ppuRam to ((address - 0x8) and 0b111)
             in 0x4000..<0x4018 -> apuRam to (address and 0x18)
-            in 0x4018..<0x4020 -> throw NotImplementedError("APU and I/O functionality that is normally disabled. Address:${address.toHexString()}")
+            in 0x4018..<0x4020 -> throw NotImplementedError("APU and I/O functionality that is normally disabled. Address:${address.toFormattedHexString()}")
             in 0x4020..<0x8000 -> throw NotImplementedError("Needs cartridge RAM/ROM implementation")
-            else -> throw IndexOutOfBoundsException("Address out of bounds: ${address.toHexString()}, max capacity: 0-${getCapacity().toHexString()}")
+            else -> throw IndexOutOfBoundsException("Address out of bounds: ${address.toFormattedHexString()}, addressable range: 0-${getCapacity().toFormattedHexString()}")
         }
     }
 }
