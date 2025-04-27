@@ -1,0 +1,7 @@
+#!/bin/sh
+cd web
+./gradlew ktlintCheck
+RESULT=$?
+echo "Formatting now!"
+./gradlew ktlintFormat
+exit $RESULT

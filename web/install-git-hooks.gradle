@@ -1,0 +1,9 @@
+tasks.register("installGitHooks", Copy) {
+    from(new File(rootProject.rootDir, "pre-commit"))
+    into(new File(rootProject.rootDir, "../.git/hooks"))
+    fileMode(0775)
+}
+
+tasks.matching { it.name != "installGitHooks" }.configureEach { Task task ->
+    task.dependsOn installGitHooks
+}
