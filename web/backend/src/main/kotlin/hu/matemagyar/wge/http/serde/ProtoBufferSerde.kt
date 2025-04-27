@@ -1,19 +1,21 @@
 package hu.matemagyar.wge.http.serde
 
-
 import com.google.protobuf.Message
 import com.google.protobuf.util.JsonFormat
 import hu.matemagyar.wge.http.codec.ProtoBufferCodec
 import io.micronaut.core.type.Argument
 import io.micronaut.json.JsonMapper
 import io.micronaut.json.tree.JsonNode
-import io.micronaut.serde.*
+import io.micronaut.serde.Decoder
+import io.micronaut.serde.Deserializer
+import io.micronaut.serde.Encoder
+import io.micronaut.serde.Serde
+import io.micronaut.serde.Serializer
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 
 @Singleton
 class ProtoBufferSerde<T : Message> : Serde<T> {
-
     @Inject
     lateinit var objectMapper: JsonMapper
 
@@ -24,13 +26,13 @@ class ProtoBufferSerde<T : Message> : Serde<T> {
         encoder: Encoder,
         context: Serializer.EncoderContext,
         type: Argument<out T>,
-        value: T
+        value: T,
     ) {
         context.findSerializer(JsonNode::class.java).serialize(
             encoder,
             context,
             Argument.of(JsonNode::class.java),
-            objectMapper.readValue(JsonFormat.printer().print(value), JsonNode::class.java)
+            objectMapper.readValue(JsonFormat.printer().print(value), JsonNode::class.java),
         )
     }
 
@@ -38,7 +40,7 @@ class ProtoBufferSerde<T : Message> : Serde<T> {
     override fun deserialize(
         decoder: Decoder,
         context: Deserializer.DecoderContext,
-        type: Argument<in T>
+        type: Argument<in T>,
     ): T {
         val rootJson: JsonNode = decoder.decodeNode()
         val writeValueAsString = objectMapper.writeValueAsString(rootJson)

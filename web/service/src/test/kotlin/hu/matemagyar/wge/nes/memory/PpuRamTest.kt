@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class PpuRamTest {
-
     lateinit var toBeTested: PpuRam
 
     @BeforeEach
@@ -38,16 +37,16 @@ class PpuRamTest {
                 Assertions.assertThrows(
                     IndexOutOfBoundsException::class.java,
                     { toBeTested.writeByte(-0b1, 0x7) },
-                    "Negative address should throw"
+                    "Negative address should throw",
                 )
             },
             {
                 Assertions.assertThrows(
                     IndexOutOfBoundsException::class.java,
                     { toBeTested.writeByte(0x8, 0x7) },
-                    "Capacity + 1 address should throw"
+                    "Capacity + 1 address should throw",
                 )
-            }
+            },
         )
     }
 }

@@ -8,12 +8,13 @@ fun Int.toFormattedHexString(): String = toHexString(format)
 class HexFormatter {
     companion object {
         @OptIn(ExperimentalStdlibApi::class)
-        var format : HexFormat = HexFormat{
-            upperCase = true
-            number {
-                prefix = "0x"
-                removeLeadingZeros = true
+        var format: HexFormat =
+            HexFormat {
+                upperCase = true
+                number {
+                    prefix = "0x"
+                    removeLeadingZeros = true
+                }
             }
-        }
     }
 }

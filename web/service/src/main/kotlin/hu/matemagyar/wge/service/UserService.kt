@@ -9,7 +9,6 @@ import java.util.stream.Collectors
 
 @Singleton
 class UserService {
-
     @Inject
     lateinit var userRepository: UserRepository
 

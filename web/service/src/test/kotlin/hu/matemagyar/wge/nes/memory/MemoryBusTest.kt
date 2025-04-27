@@ -1,6 +1,5 @@
 package hu.matemagyar.wge.nes.memory
 
-import hu.matemagyar.wge.HexFormatter
 import hu.matemagyar.wge.toFormattedHexString
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -8,7 +7,6 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 
 class MemoryBusTest {
-
     lateinit var toBeTested: MemoryBus
 
     lateinit var cpuRamMock: CpuRam
@@ -66,13 +64,17 @@ class MemoryBusTest {
     @Test
     fun writeReadApuRamDisabledFunctionality() {
         for (address in 0x4018..<0x4020) {
-            Assertions.assertThrows(NotImplementedError::class.java,
-            {toBeTested.writeByte(address, (address or 0b111).toByte())},
-                "APU and I/O functionality that is normally disabled, write should throw error at address ${address.toFormattedHexString()}"
+            Assertions.assertThrows(
+                NotImplementedError::class.java,
+                { toBeTested.writeByte(address, (address or 0b111).toByte()) },
+                "APU and I/O functionality that is normally disabled, " +
+                    "write should throw error at address ${address.toFormattedHexString()}",
             )
-            Assertions.assertThrows(NotImplementedError::class.java,
-                {toBeTested.readByte(address)},
-                "APU and I/O functionality that is normally disabled, read should throw error  at address ${address.toFormattedHexString()}"
+            Assertions.assertThrows(
+                NotImplementedError::class.java,
+                { toBeTested.readByte(address) },
+                "APU and I/O functionality that is normally disabled, " +
+                    "read should throw error  at address ${address.toFormattedHexString()}",
             )
         }
         Mockito.verifyNoInteractions(cpuRamMock, ppuRamMock, apuRamMock)
@@ -82,13 +84,15 @@ class MemoryBusTest {
     @Test
     fun writeReadUnmappedFunctionality() {
         for (address in 0x4020..<0x8000) {
-            Assertions.assertThrows(NotImplementedError::class.java,
-                {toBeTested.writeByte(address, (address or 0b111).toByte())},
-                "Unmapped, write should throw error at address ${address.toFormattedHexString()}"
+            Assertions.assertThrows(
+                NotImplementedError::class.java,
+                { toBeTested.writeByte(address, (address or 0b111).toByte()) },
+                "Unmapped, write should throw error at address ${address.toFormattedHexString()}",
             )
-            Assertions.assertThrows(NotImplementedError::class.java,
-                {toBeTested.readByte(address)},
-                "Unmapped, read should throw error  at address ${address.toFormattedHexString()}"
+            Assertions.assertThrows(
+                NotImplementedError::class.java,
+                { toBeTested.readByte(address) },
+                "Unmapped, read should throw error  at address ${address.toFormattedHexString()}",
             )
         }
         Mockito.verifyNoInteractions(cpuRamMock, ppuRamMock, apuRamMock)
@@ -108,17 +112,16 @@ class MemoryBusTest {
                 Assertions.assertThrows(
                     IndexOutOfBoundsException::class.java,
                     { toBeTested.writeByte(-0b1, 0x7) },
-                    "Negative address should throw"
+                    "Negative address should throw",
                 )
             },
             {
                 Assertions.assertThrows(
                     IndexOutOfBoundsException::class.java,
                     { toBeTested.writeByte(0x8000, 0x7) },
-                    "Capacity + 1 address should throw"
+                    "Capacity + 1 address should throw",
                 )
-            }
+            },
         )
     }
-
 }

@@ -5,20 +5,23 @@ import io.micronaut.context.annotation.Primary
 import io.micronaut.context.annotation.Requires
 import io.micronaut.core.type.Argument
 import io.micronaut.http.MediaType
-import io.micronaut.http.body.*
+import io.micronaut.http.body.DefaultMessageBodyHandlerRegistry
+import io.micronaut.http.body.MessageBodyHandlerRegistry
+import io.micronaut.http.body.MessageBodyReader
+import io.micronaut.http.body.MessageBodyWriter
+import io.micronaut.http.body.RawMessageBodyHandler
 import io.micronaut.http.netty.body.ByteBufRawMessageBodyHandler
 import io.micronaut.http.netty.body.NettyJsonHandler
 import io.netty.buffer.ByteBuf
 import jakarta.inject.Inject
 import jakarta.inject.Named
 import jakarta.inject.Singleton
-import java.util.*
+import java.util.Optional
 
 @Suppress("UNCHECKED_CAST", "MnInjectionPoints")
 @Singleton
 @Primary
 class CustomMessageBodyHandlerRegistry<T> : MessageBodyHandlerRegistry {
-
     @Inject
     lateinit var protoBufferBodyHandlerProxy: ProtoBufferBodyHandlerProxy<T>
 
@@ -37,7 +40,7 @@ class CustomMessageBodyHandlerRegistry<T> : MessageBodyHandlerRegistry {
 
     override fun <T> findReader(
         type: Argument<T>,
-        mediaType: MutableList<MediaType>
+        mediaType: MutableList<MediaType>,
     ): Optional<MessageBodyReader<T>> {
         if (String::class.java.isAssignableFrom(type.type)) {
             return Optional.of(rawStringHandler as MessageBodyReader<T>)
@@ -53,7 +56,7 @@ class CustomMessageBodyHandlerRegistry<T> : MessageBodyHandlerRegistry {
 
     override fun <T> findWriter(
         type: Argument<T>,
-        mediaType: MutableList<MediaType>
+        mediaType: MutableList<MediaType>,
     ): Optional<MessageBodyWriter<T>> {
         if (String::class.java.isAssignableFrom(type.type)) {
             return Optional.of(rawStringHandler as MessageBodyWriter<T>)

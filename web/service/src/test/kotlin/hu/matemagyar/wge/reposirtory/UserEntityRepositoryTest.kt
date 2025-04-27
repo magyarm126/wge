@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test
 
 @MicronautTest
 class UserEntityRepositoryTest {
-
     @Inject
     lateinit var userRepository: UserRepository
 

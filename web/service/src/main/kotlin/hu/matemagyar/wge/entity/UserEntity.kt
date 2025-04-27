@@ -1,13 +1,17 @@
 package hu.matemagyar.wge.entity
 
 import io.micronaut.serde.annotation.Serdeable
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 
 @Entity
 @Serdeable
 @Table(name = "tbl_user")
 class UserEntity() {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null

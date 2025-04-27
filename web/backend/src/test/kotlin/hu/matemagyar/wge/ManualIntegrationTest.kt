@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test
 
 @MicronautTest
 class ManualIntegrationTest {
-
     @Test
     @Disabled
     fun getCurrentUser() {

@@ -8,14 +8,12 @@ import org.junit.jupiter.api.Test
 
 @MicronautTest
 class NesInjectionTest {
-
     @Inject
     lateinit var memoryBus: MemoryBus
 
     @Test
     fun micronautDependencyInjection() {
-        memoryBus.writeByte(0,2)
+        memoryBus.writeByte(0, 2)
         Assertions.assertEquals(2, memoryBus.readByte(0))
     }
-
 }

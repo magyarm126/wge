@@ -12,7 +12,6 @@ import io.micronaut.http.annotation.Post
 
 @Controller
 class SceneController {
-
     @Get("/scene", processes = ["application/json", ProtoBufferCodec.PROTO_BUFFER])
     fun getScene(): SceneDto {
         return SceneDto.newBuilder().setId(1).setName("testScene").build()
@@ -29,13 +28,17 @@ class SceneController {
     }
 
     @Post("/scenePostHybrid", processes = ["application/json", ProtoBufferCodec.PROTO_BUFFER])
-    fun postSceneHybrid(@Body dto: Hybrid): Hybrid {
+    fun postSceneHybrid(
+        @Body dto: Hybrid,
+    ): Hybrid {
         println(dto)
         return dto
     }
 
     @Post("/scenePostHybrids", processes = ["application/json", ProtoBufferCodec.PROTO_BUFFER])
-    fun postSceneHybrids(@Body dto: List<Hybrid>): List<Hybrid> {
+    fun postSceneHybrids(
+        @Body dto: List<Hybrid>,
+    ): List<Hybrid> {
         println(dto)
         return dto
     }
@@ -53,7 +56,7 @@ class SceneController {
     @Get("/sceneResponse", processes = ["application/json", ProtoBufferCodec.PROTO_BUFFER])
     fun getSceneResponse(): HttpResponse<SceneDto> {
         return HttpResponse.created(
-            SceneDto.newBuilder().setId(1).setName("testScene").build()
+            SceneDto.newBuilder().setId(1).setName("testScene").build(),
         )
     }
 
@@ -61,18 +64,22 @@ class SceneController {
     fun getSceneProtos(): List<SceneDto> {
         return listOf(
             SceneDto.newBuilder().setId(1).setName("testScene").build(),
-            SceneDto.newBuilder().setId(2).setName("testScene2").build()
+            SceneDto.newBuilder().setId(2).setName("testScene2").build(),
         )
     }
 
     @Post("/scenePost", processes = [MediaType.APPLICATION_JSON, ProtoBufferCodec.PROTO_BUFFER])
-    fun postProto(@Body dto: SceneDto): SceneDto {
+    fun postProto(
+        @Body dto: SceneDto,
+    ): SceneDto {
         println(dto)
         return dto
     }
 
     @Post("/scenePosts", processes = [MediaType.APPLICATION_JSON, ProtoBufferCodec.PROTO_BUFFER])
-    fun postProtos(@Body dto: List<SceneDto>): List<SceneDto> {
+    fun postProtos(
+        @Body dto: List<SceneDto>,
+    ): List<SceneDto> {
         println(dto)
         return dto
     }

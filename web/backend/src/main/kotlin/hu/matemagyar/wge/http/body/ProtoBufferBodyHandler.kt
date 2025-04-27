@@ -14,7 +14,6 @@ import java.io.OutputStream
 
 @Singleton
 class ProtoBufferBodyHandler<T> : MessageBodyHandler<T> {
-
     @Inject
     lateinit var codec: ProtoBufferCodec
 
@@ -22,7 +21,7 @@ class ProtoBufferBodyHandler<T> : MessageBodyHandler<T> {
         type: Argument<T>,
         mediaType: MediaType,
         httpHeaders: Headers,
-        inputStream: InputStream
+        inputStream: InputStream,
     ): T {
         return codec.decode(type, inputStream)
     }
@@ -32,7 +31,7 @@ class ProtoBufferBodyHandler<T> : MessageBodyHandler<T> {
         mediaType: MediaType,
         obj: T,
         outgoingHeaders: MutableHeaders,
-        outputStream: OutputStream
+        outputStream: OutputStream,
     ) {
         outgoingHeaders.set(HttpHeaders.CONTENT_TYPE, ProtoBufferCodec.PROTO_BUFFER)
         codec.encode(obj, outputStream)

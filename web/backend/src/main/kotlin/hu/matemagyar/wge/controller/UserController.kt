@@ -9,12 +9,13 @@ import jakarta.inject.Inject
 
 @Controller
 class UserController {
-
     @Inject
     lateinit var userService: UserService
 
     @Get("/user/{id}")
-    fun getUser(@QueryValue("id") id: Long): UserDto {
+    fun getUser(
+        @QueryValue("id") id: Long,
+    ): UserDto {
         println("User request came in for Id: $id")
         return userService.getUser(id)
     }
