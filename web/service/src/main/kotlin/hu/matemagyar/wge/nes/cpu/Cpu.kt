@@ -6,8 +6,4 @@ import jakarta.inject.Inject
 class Cpu {
     @Inject
     lateinit var memoryBus: MemoryBus
-
-    fun asd() {
-        memoryBus
-    }
 }
