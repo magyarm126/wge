@@ -23,6 +23,7 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql:42.7.2")
     runtimeOnly("ch.qos.logback:logback-classic:1.5.3")
     runtimeOnly("com.h2database:h2")
+    testImplementation("org.junit.jupiter:junit-jupiter-params")
 }
 
 java {
