@@ -17,7 +17,6 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.lang.reflect.Method
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Supplier
 
@@ -44,20 +43,32 @@ class ProtoBufferCodec : MediaTypeCodec {
         return mediaTypes
     }
 
-    override fun <T> decode(type: Argument<T>, inputStream: InputStream): T {
+    override fun <T> decode(
+        type: Argument<T>,
+        inputStream: InputStream,
+    ): T {
         return decode(type) { inputStream.readAllBytes() }
     }
 
-    override fun <T> decode(type: Argument<T>, buffer: ByteBuffer<*>): T {
+    override fun <T> decode(
+        type: Argument<T>,
+        buffer: ByteBuffer<*>,
+    ): T {
         return decode(type) { buffer.toByteArray() }
     }
 
-    override fun <T> decode(type: Argument<T>, bytes: ByteArray): T {
+    override fun <T> decode(
+        type: Argument<T>,
+        bytes: ByteArray,
+    ): T {
         return decode(type) { bytes }
     }
 
     @Throws(CodecException::class)
-    override fun <T> encode(obj: T, outputStream: OutputStream) {
+    override fun <T> encode(
+        obj: T,
+        outputStream: OutputStream,
+    ) {
         try {
             if (obj is Message) {
                 obj.writeTo(outputStream)
@@ -76,7 +87,10 @@ class ProtoBufferCodec : MediaTypeCodec {
         return ByteArray(0)
     }
 
-    override fun <T, B> encode(obj: T, allocator: ByteBufferFactory<*, B>): ByteBuffer<B> {
+    override fun <T, B> encode(
+        obj: T,
+        allocator: ByteBufferFactory<*, B>,
+    ): ByteBuffer<B> {
         return allocator.copiedBuffer(encode(obj))
     }
 
@@ -92,7 +106,10 @@ class ProtoBufferCodec : MediaTypeCodec {
     }
 
     @Throws(CodecException::class)
-    private fun <T> decode(type: Argument<T>, byteSupplier: Supplier<ByteArray>): T {
+    private fun <T> decode(
+        type: Argument<T>,
+        byteSupplier: Supplier<ByteArray>,
+    ): T {
         try {
             val bytes = byteSupplier.get()
             if (type.type == ByteArray::class.java) {
@@ -107,7 +124,6 @@ class ProtoBufferCodec : MediaTypeCodec {
             throw CodecException("Error decoding Protobuf bytes for type [" + type.name + "]: " + e.message, e)
         }
     }
-
 }
 
 @Factory

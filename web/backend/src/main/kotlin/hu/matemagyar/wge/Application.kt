@@ -2,7 +2,6 @@ package hu.matemagyar.wge
 
 import io.micronaut.runtime.Micronaut
 
-
 /**
  * If we need to add the mainClass to Micronaut, wrap it inside a companion object and use the @JvmStatic annotation.
  *

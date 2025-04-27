@@ -14,14 +14,12 @@ import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import java.io.InputStream
 import java.io.OutputStream
-import java.util.*
 
 @Singleton
 @Suppress("MnInjectionPoints")
 @Produces(ProtoBufferCodec.PROTO_BUFFER, ProtoBufferCodec.PROTO_BUFFER, MediaType.APPLICATION_JSON)
 @Consumes(ProtoBufferCodec.PROTO_BUFFER, ProtoBufferCodec.PROTO_BUFFER, MediaType.APPLICATION_JSON)
 class ProtoBufferBodyHandlerProxy<T> : MessageBodyHandler<T> {
-
     @Inject
     lateinit var jsonBodyHandler: NettyJsonHandler<T>
 
@@ -29,7 +27,12 @@ class ProtoBufferBodyHandlerProxy<T> : MessageBodyHandler<T> {
     lateinit var protoBufferBodyHandler: ProtoBufferBodyHandler<T>
 
     @Throws(CodecException::class)
-    override fun read(type: Argument<T>, mediaType: MediaType, httpHeaders: Headers, inputStream: InputStream): T {
+    override fun read(
+        type: Argument<T>,
+        mediaType: MediaType,
+        httpHeaders: Headers,
+        inputStream: InputStream,
+    ): T {
         return when (isJson(mediaType)) {
             true -> jsonBodyHandler
             false -> protoBufferBodyHandler
@@ -42,7 +45,7 @@ class ProtoBufferBodyHandlerProxy<T> : MessageBodyHandler<T> {
         mediaType: MediaType,
         obj: T,
         outgoingHeaders: MutableHeaders,
-        outputStream: OutputStream
+        outputStream: OutputStream,
     ) {
         return when (isJson(mediaType)) {
             true -> jsonBodyHandler

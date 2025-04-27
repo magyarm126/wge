@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test
 
 @MicronautTest
 class UserControllerTest {
-
     @Inject
     @Client("/")
     lateinit var client: HttpClient

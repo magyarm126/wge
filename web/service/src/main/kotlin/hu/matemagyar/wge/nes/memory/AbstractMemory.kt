@@ -7,7 +7,10 @@ abstract class AbstractMemory(size: Int) : Memory {
         return memory[rawAddress]
     }
 
-    override fun writeByte(rawAddress: Int, data: Byte) {
+    override fun writeByte(
+        rawAddress: Int,
+        data: Byte,
+    ) {
         memory[rawAddress] = data
     }
 

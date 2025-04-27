@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test
 
 @MicronautTest
 class WgeTest {
-
     @Inject
     lateinit var application: EmbeddedApplication<*>
 
@@ -16,5 +15,4 @@ class WgeTest {
     fun testItWorks() {
         Assertions.assertTrue(application.isRunning)
     }
-
 }
