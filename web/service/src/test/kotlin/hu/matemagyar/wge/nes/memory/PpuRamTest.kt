@@ -1,30 +1,30 @@
-package hu.matemagyar.wge.nes.cpu
+package hu.matemagyar.wge.nes.memory
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class RAMTest {
+class PpuRamTest {
 
-    lateinit var toBeTested: RAM
+    lateinit var toBeTested: PpuRam
 
     @BeforeEach
     fun setUp() {
-        toBeTested = RAM()
+        toBeTested = PpuRam()
     }
 
     @Test
     fun ramCapacity() {
-        Assertions.assertEquals(0x800, toBeTested.getCapacity())
+        Assertions.assertEquals(0x8, toBeTested.getCapacity())
     }
 
     @Test
     fun writeReadForAllAddressableRange() {
-        for (address in 0..<0x800) {
+        for (address in 0..<0x8) {
             toBeTested.writeByte(address, (address or 0b111).toByte())
         }
 
-        for (address in 0..<0x800) {
+        for (address in 0..<0x8) {
             Assertions.assertEquals((address or 0b111).toByte(), toBeTested.readByte(address))
             toBeTested.writeByte(address, (address or 0b111).toByte())
         }
@@ -44,7 +44,7 @@ class RAMTest {
             {
                 Assertions.assertThrows(
                     IndexOutOfBoundsException::class.java,
-                    { toBeTested.writeByte(0x800, 0x7) },
+                    { toBeTested.writeByte(0x8, 0x7) },
                     "Capacity + 1 address should throw"
                 )
             }

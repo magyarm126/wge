@@ -24,6 +24,7 @@ dependencies {
     runtimeOnly("ch.qos.logback:logback-classic:1.5.3")
     runtimeOnly("com.h2database:h2")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
+    testImplementation("org.mockito:mockito-core")
 }
 
 java {

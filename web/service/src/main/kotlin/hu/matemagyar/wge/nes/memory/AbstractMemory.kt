@@ -1,6 +1,6 @@
-package hu.matemagyar.wge.nes.cpu
+package hu.matemagyar.wge.nes.memory
 
-abstract class Memory(size: Int) : IMemory {
+abstract class AbstractMemory(size: Int) : Memory {
     var memory: ByteArray = ByteArray(size)
 
     override fun readByte(rawAddress: Int): Byte {
