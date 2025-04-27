@@ -9,4 +9,5 @@ allprojects {
         mavenCentral()
     }
     apply { plugin("org.jlleitschuh.gradle.ktlint") }
+    apply { from(rootProject.file("install-git-hooks.gradle")) }
 }
