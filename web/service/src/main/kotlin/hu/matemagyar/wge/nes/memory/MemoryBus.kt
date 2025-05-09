@@ -1,14 +1,14 @@
 package hu.matemagyar.wge.nes.memory
 
 import hu.matemagyar.wge.toFormattedHexString
+import io.micronaut.context.annotation.Prototype
 import jakarta.inject.Inject
-import jakarta.inject.Singleton
 import java.lang.IndexOutOfBoundsException
 
 /**
  * @see <a href="https://www.nesdev.org/wiki/CPU_memory_map">CPU Memory Map</a>
  */
-@Singleton
+@Prototype
 class MemoryBus : Memory {
     private var cpuRam: CpuRam
     private var ppuRam: PpuRam

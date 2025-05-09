@@ -1,6 +1,6 @@
 package hu.matemagyar.wge.nes.memory
 
-import jakarta.inject.Singleton
+import io.micronaut.context.annotation.Prototype
 
-@Singleton
+@Prototype
 class ApuRam : AbstractMemory(0x18)
