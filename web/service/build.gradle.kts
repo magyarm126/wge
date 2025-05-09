@@ -25,10 +25,17 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testImplementation("org.mockito:mockito-core")
+    testImplementation("org.mockito:mockito-junit-jupiter")
 }
 
 java {
     sourceCompatibility = JavaVersion.toVersion("21")
+}
+
+tasks {
+    test {
+        jvmArgs = listOf("-XX:+EnableDynamicAgentLoading", "-Xshare:off")
+    }
 }
 
 micronaut {

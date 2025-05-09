@@ -2,24 +2,22 @@ package hu.matemagyar.wge.nes.memory
 
 import hu.matemagyar.wge.toFormattedHexString
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.InjectMocks
+import org.mockito.Mock
 import org.mockito.Mockito
+import org.mockito.junit.jupiter.MockitoExtension
 
+@ExtendWith(MockitoExtension::class)
 class MemoryBusTest {
-    lateinit var toBeTested: MemoryBus
+    @InjectMocks lateinit var toBeTested: MemoryBus
 
-    lateinit var cpuRamMock: CpuRam
-    lateinit var ppuRamMock: PpuRam
-    lateinit var apuRamMock: ApuRam
+    @Mock lateinit var cpuRamMock: CpuRam
 
-    @BeforeEach
-    fun setUp() {
-        cpuRamMock = Mockito.mock(CpuRam::class.java)
-        ppuRamMock = Mockito.mock(PpuRam::class.java)
-        apuRamMock = Mockito.mock(ApuRam::class.java)
-        toBeTested = MemoryBus(cpuRamMock, ppuRamMock, apuRamMock)
-    }
+    @Mock lateinit var ppuRamMock: PpuRam
+
+    @Mock lateinit var apuRamMock: ApuRam
 
     @Test
     fun writeReadCpuRam() {

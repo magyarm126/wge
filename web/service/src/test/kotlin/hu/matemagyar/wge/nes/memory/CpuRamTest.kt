@@ -1,16 +1,14 @@
 package hu.matemagyar.wge.nes.memory
 
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.InjectMocks
+import org.mockito.junit.jupiter.MockitoExtension
 
+@ExtendWith(MockitoExtension::class)
 class CpuRamTest {
-    lateinit var toBeTested: CpuRam
-
-    @BeforeEach
-    fun setUp() {
-        toBeTested = CpuRam()
-    }
+    @InjectMocks lateinit var toBeTested: CpuRam
 
     @Test
     fun ramCapacity() {
