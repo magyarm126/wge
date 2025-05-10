@@ -1,13 +1,18 @@
 package hu.matemagyar.wge.nes.memory
 
 import hu.matemagyar.wge.toFormattedHexString
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
+import strikt.api.expect
+import strikt.api.expectThat
+import strikt.api.expectThrows
+import strikt.assertions.isA
+import strikt.assertions.isEqualTo
+import strikt.assertions.isFailure
 
 @ExtendWith(MockitoExtension::class)
 class MemoryBusTest {
@@ -62,18 +67,16 @@ class MemoryBusTest {
     @Test
     fun writeReadApuRamDisabledFunctionality() {
         for (address in 0x4018..<0x4020) {
-            Assertions.assertThrows(
-                NotImplementedError::class.java,
-                { toBeTested.writeByte(address, (address or 0b111).toByte()) },
-                "APU and I/O functionality that is normally disabled, " +
-                    "write should throw error at address ${address.toFormattedHexString()}",
-            )
-            Assertions.assertThrows(
-                NotImplementedError::class.java,
-                { toBeTested.readByte(address) },
-                "APU and I/O functionality that is normally disabled, " +
-                    "read should throw error  at address ${address.toFormattedHexString()}",
-            )
+            expect {
+                catching { toBeTested.writeByte(address, (address or 0b111).toByte()) }.describedAs(
+                    "APU and I/O functionality that is normally disabled, " +
+                        "write should throw error at address ${address.toFormattedHexString()}",
+                ).isFailure().isA<NotImplementedError>()
+                catching { toBeTested.readByte(address) }.describedAs(
+                    "APU and I/O functionality that is normally disabled, " +
+                        "read should throw error  at address ${address.toFormattedHexString()}",
+                ).isFailure().isA<NotImplementedError>()
+            }
         }
         Mockito.verifyNoInteractions(cpuRamMock, ppuRamMock, apuRamMock)
     }
@@ -82,44 +85,31 @@ class MemoryBusTest {
     @Test
     fun writeReadUnmappedFunctionality() {
         for (address in 0x4020..<0x8000) {
-            Assertions.assertThrows(
-                NotImplementedError::class.java,
-                { toBeTested.writeByte(address, (address or 0b111).toByte()) },
-                "Unmapped, write should throw error at address ${address.toFormattedHexString()}",
-            )
-            Assertions.assertThrows(
-                NotImplementedError::class.java,
-                { toBeTested.readByte(address) },
-                "Unmapped, read should throw error  at address ${address.toFormattedHexString()}",
-            )
+            expect {
+                catching { toBeTested.writeByte(address, (address or 0b111).toByte()) }.describedAs(
+                    "Unmapped, write should throw error at address ${address.toFormattedHexString()}",
+                ).isFailure().isA<NotImplementedError>()
+                catching { toBeTested.readByte(address) }.describedAs(
+                    "Unmapped, read should throw error  at address ${address.toFormattedHexString()}",
+                ).isFailure().isA<NotImplementedError>()
+            }
         }
         Mockito.verifyNoInteractions(cpuRamMock, ppuRamMock, apuRamMock)
     }
 
     @Test
     fun getCapacity() {
-        Assertions.assertEquals(0x8000, toBeTested.getCapacity())
+        expectThat(toBeTested.getCapacity()).isEqualTo(0x8000)
         Mockito.verifyNoInteractions(cpuRamMock, ppuRamMock, apuRamMock)
     }
 
     @Test
-    fun selectMemoryUnitToAddress() {
-        Assertions.assertAll(
-            "Out of bounds",
-            {
-                Assertions.assertThrows(
-                    IndexOutOfBoundsException::class.java,
-                    { toBeTested.writeByte(-0b1, 0x7) },
-                    "Negative address should throw",
-                )
-            },
-            {
-                Assertions.assertThrows(
-                    IndexOutOfBoundsException::class.java,
-                    { toBeTested.writeByte(0x8000, 0x7) },
-                    "Capacity + 1 address should throw",
-                )
-            },
-        )
+    fun negativeAddressShouldThrowException() {
+        expectThrows<IndexOutOfBoundsException> { toBeTested.writeByte(-0b1, 0x7) }
+    }
+
+    @Test
+    fun oneOverCapacityAddressShouldThrowException() {
+        expectThrows<IndexOutOfBoundsException> { toBeTested.writeByte(0x8000, 0x7) }
     }
 }
