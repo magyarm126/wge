@@ -21,15 +21,15 @@ class MemoryBus : Memory {
         this.apuRam = apuRam
     }
 
-    override fun readByte(address: Int): Byte {
-        selectMemoryUnitToAddress(address).apply { return first.readByte(second) }
+    override fun readByte(rawAddress: Int): Byte {
+        selectMemoryUnitToAddress(rawAddress).apply { return first.readByte(second) }
     }
 
     override fun writeByte(
-        address: Int,
+        rawAddress: Int,
         data: Byte,
     ) {
-        selectMemoryUnitToAddress(address).apply { return first.writeByte(second, data) }
+        selectMemoryUnitToAddress(rawAddress).apply { return first.writeByte(second, data) }
     }
 
     override fun getCapacity(): Int {
