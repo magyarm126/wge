@@ -1,4 +1,4 @@
-package hu.matemagyar.wge.nes.cpu
+package hu.matemagyar.wge.nes.cpu.register
 
 import hu.matemagyar.wge.toFormattedHexString
 import java.util.function.Supplier

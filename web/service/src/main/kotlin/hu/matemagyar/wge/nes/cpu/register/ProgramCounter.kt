@@ -1,8 +1,10 @@
-package hu.matemagyar.wge.nes.cpu
+package hu.matemagyar.wge.nes.cpu.register
 
 import hu.matemagyar.wge.toFormattedHexString
+import io.micronaut.context.annotation.Prototype
 import java.util.function.Supplier
 
+@Prototype
 class ProgramCounter {
     var data: UShort = 0u
 

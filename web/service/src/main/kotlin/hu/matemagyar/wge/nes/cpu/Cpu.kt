@@ -1,5 +1,8 @@
 package hu.matemagyar.wge.nes.cpu
 
+import hu.matemagyar.wge.nes.cpu.register.Generic8BitRegister
+import hu.matemagyar.wge.nes.cpu.register.ProgramCounter
+import hu.matemagyar.wge.nes.cpu.register.StatusRegister
 import hu.matemagyar.wge.nes.memory.MemoryBus
 import io.micronaut.context.annotation.Prototype
 import jakarta.inject.Inject

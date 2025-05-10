@@ -1,4 +1,4 @@
-package hu.matemagyar.wge.nes.cpu
+package hu.matemagyar.wge.nes.cpu.register
 
 import io.micronaut.context.annotation.Prototype
 import java.util.function.Supplier
