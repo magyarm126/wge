@@ -37,6 +37,6 @@ class PpuRamTest {
 
     @Test
     fun oneOverCapacityAddressShouldThrowException() {
-        expectThrows<IndexOutOfBoundsException> { toBeTested.writeByte(0x800, 0x7) }
+        expectThrows<IndexOutOfBoundsException> { toBeTested.writeByte(0x8, 0x7) }
     }
 }
