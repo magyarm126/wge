@@ -1,10 +1,10 @@
 package hu.matemagyar.wge.nes
 
 import io.micronaut.context.ApplicationContext
-import io.micronaut.context.annotation.Factory
 import jakarta.inject.Inject
+import jakarta.inject.Singleton
 
-@Factory
+@Singleton
 class NesFactory {
     @Inject
     private lateinit var applicationContext: ApplicationContext
