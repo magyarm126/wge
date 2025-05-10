@@ -1,12 +1,12 @@
 package hu.matemagyar.wge.nes.memory
 
 interface Memory {
-    fun readByte(rawAddress: Int): Byte
+    fun readByte(rawAddress: UShort): UByte
 
     fun writeByte(
-        rawAddress: Int,
-        data: Byte,
+        rawAddress: UShort,
+        data: UByte,
     )
 
-    fun getCapacity(): Int
+    fun getCapacity(): UShort
 }

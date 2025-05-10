@@ -1,20 +1,21 @@
 package hu.matemagyar.wge.nes.memory
 
-abstract class AbstractMemory(size: Int) : Memory {
-    var memory: ByteArray = ByteArray(size)
+@OptIn(ExperimentalUnsignedTypes::class)
+abstract class AbstractMemory(size: UShort) : Memory {
+    var memory: UByteArray = UByteArray(size.toInt())
 
-    override fun readByte(rawAddress: Int): Byte {
-        return memory[rawAddress]
+    override fun readByte(rawAddress: UShort): UByte {
+        return memory[rawAddress.toInt()]
     }
 
     override fun writeByte(
-        rawAddress: Int,
-        data: Byte,
+        rawAddress: UShort,
+        data: UByte,
     ) {
-        memory[rawAddress] = data
+        memory[rawAddress.toInt()] = data
     }
 
-    override fun getCapacity(): Int {
-        return memory.size
+    override fun getCapacity(): UShort {
+        return memory.size.toUShort()
     }
 }

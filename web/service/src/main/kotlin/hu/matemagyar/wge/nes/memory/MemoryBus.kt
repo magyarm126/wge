@@ -21,32 +21,32 @@ class MemoryBus : Memory {
         this.apuRam = apuRam
     }
 
-    override fun readByte(rawAddress: Int): Byte {
+    override fun readByte(rawAddress: UShort): UByte {
         selectMemoryUnitToAddress(rawAddress).apply { return first.readByte(second) }
     }
 
     override fun writeByte(
-        rawAddress: Int,
-        data: Byte,
+        rawAddress: UShort,
+        data: UByte,
     ) {
         selectMemoryUnitToAddress(rawAddress).apply { return first.writeByte(second, data) }
     }
 
-    override fun getCapacity(): Int {
-        return 0x8000
+    override fun getCapacity(): UShort {
+        return 0x8000u
     }
 
-    fun selectMemoryUnitToAddress(address: Int): Pair<AbstractMemory, Int> {
+    fun selectMemoryUnitToAddress(address: UShort): Pair<AbstractMemory, UShort> {
         return when (address) {
-            in 0..<0x800 -> cpuRam to address
-            in 0x800..<0x2000 -> cpuRam to ((address and 0x7FF) + 0x800)
-            in 0x2000..<0x2008 -> ppuRam to (address and 0b111)
-            in 0x2008..<0x4000 -> ppuRam to ((address - 0x8) and 0b111)
-            in 0x4000..<0x4018 -> apuRam to (address and 0x18)
-            in 0x4018..<0x4020 -> throw NotImplementedError(
+            in 0u..<0x800u -> cpuRam to address
+            in 0x800u..<0x2000u -> cpuRam to ((address and 0x7FFu) + 0x800u).toUShort()
+            in 0x2000u..<0x2008u -> ppuRam to (address and 0b111u)
+            in 0x2008u..<0x4000u -> ppuRam to ((address - 0x8u) and 0b111u).toUShort()
+            in 0x4000u..<0x4018u -> apuRam to (address and 0x18u)
+            in 0x4018u..<0x4020u -> throw NotImplementedError(
                 "APU and I/O functionality that is normally disabled. Address:${address.toFormattedHexString()}",
             )
-            in 0x4020..<0x8000 -> throw NotImplementedError("Needs cartridge RAM/ROM implementation")
+            in 0x4020u..<0x8000u -> throw NotImplementedError("Needs cartridge RAM/ROM implementation")
             else -> throw IndexOutOfBoundsException(
                 "Address out of bounds: ${address.toFormattedHexString()}, addressable range: 0-${getCapacity().toFormattedHexString()}",
             )

@@ -26,6 +26,8 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testImplementation("org.mockito:mockito-core")
     testImplementation("org.mockito:mockito-junit-jupiter")
+    testImplementation("org.mockito:mockito-junit-jupiter")
+    testImplementation("org.mockito.kotlin", "mockito-kotlin", "5.4.0")
     testImplementation("io.strikt", "strikt-core", "0.35.1")
 }
 

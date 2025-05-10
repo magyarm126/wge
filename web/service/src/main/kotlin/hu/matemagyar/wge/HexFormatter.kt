@@ -3,7 +3,7 @@ package hu.matemagyar.wge
 import hu.matemagyar.wge.HexFormatter.Companion.format
 
 @OptIn(ExperimentalStdlibApi::class)
-fun Int.toFormattedHexString(): String = toHexString(format)
+fun UShort.toFormattedHexString(): String = toHexString(format)
 
 class HexFormatter {
     companion object {

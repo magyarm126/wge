@@ -7,6 +7,7 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
 import strikt.api.expect
 import strikt.api.expectThat
 import strikt.api.expectThrows
@@ -26,55 +27,55 @@ class MemoryBusTest {
 
     @Test
     fun writeReadCpuRam() {
-        for (address in 0..<0x2000) {
-            toBeTested.writeByte(address, (address or 0b111).toByte())
-            toBeTested.readByte(address)
+        for (address in 0u..<0x2000u) {
+            toBeTested.writeByte(address.toUShort(), (address or 0b111u).toUByte())
+            toBeTested.readByte(address.toUShort())
         }
         Mockito.verify(cpuRamMock, Mockito.times(0x2000))
-            .readByte(Mockito.anyInt())
+            .readByte(any())
         Mockito.verify(cpuRamMock, Mockito.times(0x2000))
-            .writeByte(Mockito.anyInt(), Mockito.anyByte())
+            .writeByte(any(), any())
         Mockito.verifyNoInteractions(ppuRamMock, apuRamMock)
     }
 
     @Test
     fun writeReadPpuRam() {
-        for (address in 0x2000..<0x4000) {
-            toBeTested.writeByte(address, (address or 0b111).toByte())
-            toBeTested.readByte(address)
+        for (address in 0x2000u..<0x4000u) {
+            toBeTested.writeByte(address.toUShort(), (address or 0b111u).toUByte())
+            toBeTested.readByte(address.toUShort())
         }
         Mockito.verify(ppuRamMock, Mockito.times(0x2000))
-            .readByte(Mockito.anyInt())
+            .readByte(any())
         Mockito.verify(ppuRamMock, Mockito.times(0x2000))
-            .writeByte(Mockito.anyInt(), Mockito.anyByte())
+            .writeByte(any(), any())
         Mockito.verifyNoInteractions(cpuRamMock, apuRamMock)
     }
 
     @Test
     fun writeReadApuRam() {
-        for (address in 0x4000..<0x4018) {
-            toBeTested.writeByte(address, (address or 0b111).toByte())
-            toBeTested.readByte(address)
+        for (address in 0x4000u..<0x4018u) {
+            toBeTested.writeByte(address.toUShort(), (address or 0b111u).toUByte())
+            toBeTested.readByte(address.toUShort())
         }
         Mockito.verify(apuRamMock, Mockito.times(0x18))
-            .readByte(Mockito.anyInt())
+            .readByte(any())
         Mockito.verify(apuRamMock, Mockito.times(0x18))
-            .writeByte(Mockito.anyInt(), Mockito.anyByte())
+            .writeByte(any(), any())
         Mockito.verifyNoInteractions(cpuRamMock, ppuRamMock)
     }
 
     @OptIn(ExperimentalStdlibApi::class)
     @Test
     fun writeReadApuRamDisabledFunctionality() {
-        for (address in 0x4018..<0x4020) {
+        for (address in 0x4018u..<0x4020u) {
             expect {
-                catching { toBeTested.writeByte(address, (address or 0b111).toByte()) }.describedAs(
+                catching { toBeTested.writeByte(address.toUShort(), (address or 0b111u).toUByte()) }.describedAs(
                     "APU and I/O functionality that is normally disabled, " +
-                        "write should throw error at address ${address.toFormattedHexString()}",
+                        "write should throw error at address ${address.toUShort().toFormattedHexString()}",
                 ).isFailure().isA<NotImplementedError>()
-                catching { toBeTested.readByte(address) }.describedAs(
+                catching { toBeTested.readByte(address.toUShort()) }.describedAs(
                     "APU and I/O functionality that is normally disabled, " +
-                        "read should throw error  at address ${address.toFormattedHexString()}",
+                        "read should throw error  at address ${address.toUShort().toFormattedHexString()}",
                 ).isFailure().isA<NotImplementedError>()
             }
         }
@@ -84,13 +85,13 @@ class MemoryBusTest {
     @OptIn(ExperimentalStdlibApi::class)
     @Test
     fun writeReadUnmappedFunctionality() {
-        for (address in 0x4020..<0x8000) {
+        for (address in 0x4020u..<0x8000u) {
             expect {
-                catching { toBeTested.writeByte(address, (address or 0b111).toByte()) }.describedAs(
-                    "Unmapped, write should throw error at address ${address.toFormattedHexString()}",
+                catching { toBeTested.writeByte(address.toUShort(), (address or 0b111u).toUByte()) }.describedAs(
+                    "Unmapped, write should throw error at address ${address.toUShort().toFormattedHexString()}",
                 ).isFailure().isA<NotImplementedError>()
-                catching { toBeTested.readByte(address) }.describedAs(
-                    "Unmapped, read should throw error  at address ${address.toFormattedHexString()}",
+                catching { toBeTested.readByte(address.toUShort()) }.describedAs(
+                    "Unmapped, read should throw error  at address ${address.toUShort().toFormattedHexString()}",
                 ).isFailure().isA<NotImplementedError>()
             }
         }
@@ -99,17 +100,12 @@ class MemoryBusTest {
 
     @Test
     fun getCapacity() {
-        expectThat(toBeTested.getCapacity()).isEqualTo(0x8000)
+        expectThat(toBeTested.getCapacity()).isEqualTo(0x8000u)
         Mockito.verifyNoInteractions(cpuRamMock, ppuRamMock, apuRamMock)
     }
 
     @Test
-    fun negativeAddressShouldThrowException() {
-        expectThrows<IndexOutOfBoundsException> { toBeTested.writeByte(-0b1, 0x7) }
-    }
-
-    @Test
     fun oneOverCapacityAddressShouldThrowException() {
-        expectThrows<IndexOutOfBoundsException> { toBeTested.writeByte(0x8000, 0x7) }
+        expectThrows<IndexOutOfBoundsException> { toBeTested.writeByte(0x8000u, 0x7u) }
     }
 }

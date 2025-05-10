@@ -19,15 +19,15 @@ class NesInjectionTest {
         val nes2 = nesFactory.createNesInstance()
         val nes3 = nesFactory.createNesInstance()
 
-        nes.cpu.memoryBus.writeByte(0, 0b001)
-        nes2.cpu.memoryBus.writeByte(0, 0b010)
-        nes3.cpu.memoryBus.writeByte(0, 0b100)
+        nes.cpu.memoryBus.writeByte(0u, 0b001u)
+        nes2.cpu.memoryBus.writeByte(0u, 0b010u)
+        nes3.cpu.memoryBus.writeByte(0u, 0b100u)
 
-        expectThat(nes.cpu.memoryBus.readByte(0))
-            .isEqualTo(0b001)
-        expectThat(nes2.cpu.memoryBus.readByte(0))
-            .isEqualTo(0b010)
-        expectThat(nes3.cpu.memoryBus.readByte(0))
-            .isEqualTo(0b100)
+        expectThat(nes.cpu.memoryBus.readByte(0u))
+            .isEqualTo(0b001u)
+        expectThat(nes2.cpu.memoryBus.readByte(0u))
+            .isEqualTo(0b010u)
+        expectThat(nes3.cpu.memoryBus.readByte(0u))
+            .isEqualTo(0b100u)
     }
 }

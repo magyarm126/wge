@@ -7,6 +7,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import strikt.api.expectThat
 import strikt.api.expectThrows
 import strikt.assertions.isEqualTo
+import kotlin.toUShort
 
 @ExtendWith(MockitoExtension::class)
 class CpuRamTest {
@@ -14,28 +15,23 @@ class CpuRamTest {
 
     @Test
     fun ramCapacity() {
-        expectThat(toBeTested.getCapacity()).isEqualTo(0x800)
+        expectThat(toBeTested.getCapacity()).isEqualTo(0x800u)
     }
 
     @Test
     fun writeReadForAllAddressableRange() {
-        for (address in 0..<0x800) {
-            toBeTested.writeByte(address, (address or 0b111).toByte())
+        for (address in 0u..<0x800u) {
+            toBeTested.writeByte(address.toUShort(), (address or 0b111u).toUByte())
         }
 
-        for (address in 0..<0x800) {
-            expectThat(toBeTested.readByte(address)).isEqualTo((address or 0b111).toByte())
-            toBeTested.writeByte(address, (address or 0b111).toByte())
+        for (address in 0u..<0x800u) {
+            expectThat(toBeTested.readByte(address.toUShort())).isEqualTo((address or 0b111u).toUByte())
+            toBeTested.writeByte(address.toUShort(), (address or 0b111u).toUByte())
         }
-    }
-
-    @Test
-    fun negativeAddressShouldThrowException() {
-        expectThrows<IndexOutOfBoundsException> { toBeTested.writeByte(-0b1, 0x7) }
     }
 
     @Test
     fun oneOverCapacityAddressShouldThrowException() {
-        expectThrows<IndexOutOfBoundsException> { toBeTested.writeByte(0x800, 0x7) }
+        expectThrows<IndexOutOfBoundsException> { toBeTested.writeByte(0x800u, 0x7u) }
     }
 }
