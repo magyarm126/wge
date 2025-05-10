@@ -60,3 +60,9 @@ micronaut {
         optimizeNetty.set(true)
     }
 }
+
+tasks.jar {
+    manifest {
+        attributes["Description"] = "WGE fat jar"
+    }
+}

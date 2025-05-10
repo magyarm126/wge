@@ -1,9 +1,3 @@
-liquibase:
-  datasources:
-    default:
-      enabled: true
-      change-log: 'classpath:db/liquibase-changelog.xml'
-
 datasources:
   default:
     password: ${JDBC_PASSWORD:""}

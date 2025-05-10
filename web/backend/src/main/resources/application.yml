@@ -9,9 +9,23 @@ micronaut:
         mapping: /**
         paths: classpath:static/wge/browser
 
+#lazyness to install docker
+#datasources:
+    #  default:
+    #password: ${POSTGRES_PASSWORD:wge_password}
+    #url: ${POSTGRES_URL:`jdbc:postgresql://localhost:5432/postgres`}
+    #username: ${POSTGRES_USER:wge_user}
+    #driver-class-name: ${POSTGRES_DRIVER:org.postgresql.Driver}
+
 datasources:
   default:
-    password: ${POSTGRES_PASSWORD:wge_password}
-    url: ${POSTGRES_URL:`jdbc:postgresql://localhost:5432/postgres`}
-    username: ${POSTGRES_USER:wge_user}
-    driver-class-name: ${POSTGRES_DRIVER:org.postgresql.Driver}
+    password: ${JDBC_PASSWORD:""}
+    url: ${JDBC_URL:`jdbc:h2:mem:default;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE`}
+    username: ${JDBC_USER:sa}
+    driver-class-name: ${JDBC_DRIVER:org.h2.Driver}
+
+liquibase:
+  datasources:
+    default:
+      enabled: true
+      change-log: 'classpath:db/liquibase-changelog.xml'
