@@ -13,22 +13,22 @@ class Cpu {
     lateinit var memoryBus: MemoryBus
 
     @Inject
-    lateinit var a: Generic8BitRegister
+    lateinit var accumulator: Generic8BitRegister
 
     @Inject
-    lateinit var x: Generic8BitRegister
+    lateinit var indX: Generic8BitRegister
 
     @Inject
-    lateinit var y: Generic8BitRegister
+    lateinit var indY: Generic8BitRegister
 
     @Inject
-    lateinit var s: Generic8BitRegister
+    lateinit var stackPointer: Generic8BitRegister
 
     @Inject
-    lateinit var p: StatusRegister
+    lateinit var statusRegister: StatusRegister
 
     @Inject
-    lateinit var pc: ProgramCounter
+    lateinit var programCounter: ProgramCounter
 
     var cycleCounter: Int = 0
 
@@ -37,19 +37,19 @@ class Cpu {
         addressingMode: AddressingMode,
     ) {
         val result: UInt =
-            a.data +
-                p.getFlagValue(
+            accumulator.data +
+                statusRegister.getFlagValue(
                     StatusRegister.StatusFlags.CARRY,
                 ) + memoryBus.readByte(address)
-        p.assign(StatusRegister.StatusFlags.CARRY, result > UByte.MAX_VALUE)
-        p.assign(StatusRegister.StatusFlags.ZERO, result == 0u)
-        p.assign(StatusRegister.StatusFlags.NEGATIVE, result or 0b01000000u == 0b01000000u)
+        statusRegister.assign(StatusRegister.StatusFlags.CARRY, result > UByte.MAX_VALUE)
+        statusRegister.assign(StatusRegister.StatusFlags.ZERO, result == 0u)
+        statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, result or 0b01000000u == 0b01000000u)
 
         // todo: OVERFLOW
         // todo: add cycle
         if (addressingMode == AddressingMode.ZERO_PAGE) {
             cycleCounter++ // todo actually implement it
         }
-        a.data = result.toUByte()
+        accumulator.data = result.toUByte()
     }
 }
