@@ -4,7 +4,7 @@ import io.micronaut.context.annotation.Prototype
 import java.util.function.Supplier
 
 @Prototype
-class StatusRegister : Cpu8BitRegister<StatusRegister.StatusFlags>() {
+class StatusRegister : AbstractBitRegister<StatusRegister.StatusFlags>() {
     enum class StatusFlags(val byteLocation: UByte) : Supplier<UByte> {
         CARRY(0u),
         ZERO(1u),

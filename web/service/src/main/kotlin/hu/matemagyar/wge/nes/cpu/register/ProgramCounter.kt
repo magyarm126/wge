@@ -31,7 +31,7 @@ class ProgramCounter {
         data = data.and(getRegisterMask(statusFlagProvider.get()).xor(0b1111111111111111u))
     }
 
-    protected fun getRegisterMask(bitIndex: UShort): UShort {
+    private fun getRegisterMask(bitIndex: UShort): UShort {
         val registerMask = bitMaskMap[bitIndex]
         if (registerMask != null) {
             return registerMask

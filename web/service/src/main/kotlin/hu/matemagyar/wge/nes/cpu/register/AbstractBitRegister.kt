@@ -3,7 +3,7 @@ package hu.matemagyar.wge.nes.cpu.register
 import hu.matemagyar.wge.toFormattedHexString
 import java.util.function.Supplier
 
-abstract class Cpu8BitRegister<T : Supplier<UByte>> {
+abstract class AbstractBitRegister<T : Supplier<UByte>> {
     var data: UByte = 0u
 
     fun set(statusFlagProvider: T) {

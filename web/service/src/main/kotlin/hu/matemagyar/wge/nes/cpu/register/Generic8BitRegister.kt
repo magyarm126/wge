@@ -4,7 +4,7 @@ import io.micronaut.context.annotation.Prototype
 import java.util.function.Supplier
 
 @Prototype
-class Generic8BitRegister : Cpu8BitRegister<Generic8BitRegister.GenericBits>() {
+class Generic8BitRegister : AbstractBitRegister<Generic8BitRegister.GenericBits>() {
     enum class GenericBits(val byteLocation: UByte) : Supplier<UByte> {
         BIT0(0u),
         BIT1(1u),
