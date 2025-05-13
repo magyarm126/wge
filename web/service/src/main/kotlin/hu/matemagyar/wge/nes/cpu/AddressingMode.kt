@@ -9,4 +9,11 @@ enum class AddressingMode {
     ABSOLUTE_Y,
     INDIRECT_X,
     INDIRECT_Y,
+    ;
+
+    companion object {
+        fun fromNumber(number: Int): AddressingMode {
+            return AddressingMode.entries[number]
+        }
+    }
 }
