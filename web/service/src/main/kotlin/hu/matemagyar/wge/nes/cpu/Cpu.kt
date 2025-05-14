@@ -34,9 +34,11 @@ class Cpu {
     var cycleCounter: Int = 0
 
     fun adc(
-        address: UShort,
+        address: UShort?,
         addressingMode: AddressingMode,
     ) {
+        if (address == null) throw NullPointerException("address cannot be null")
+
         val memory = memoryBus.readByte(address)
         val result: UByte =
             (
@@ -63,16 +65,16 @@ class Cpu {
         programCounter.data++
 
         // read some magic to get this
-        val address: UShort = 0u
+        val addressingMode = AddressingMode.fromNumber(addressingModes[opcode.toInt()])
+        val address: UShort? = getAddress(addressingMode)
 
         opCodeFunctions[opcode.toInt()].invoke(
             address,
-            AddressingMode.fromNumber(addressingModes[opcode.toInt()]),
+            addressingMode,
         )
     }
 
-    fun getAddress(opcode: UByte): UShort {
-        val addressMode = AddressingMode.fromNumber(addressingModes[opcode.toInt()])
+    fun getAddress(addressMode: AddressingMode): UShort? {
         when (addressMode) {
             AddressingMode.IMMEDIATE -> return (programCounter.data + 1u).toUShort()
             AddressingMode.ZERO_PAGE -> return memoryBus.readByte(((programCounter.data + 1u).toUShort())).toUShort()
@@ -88,18 +90,44 @@ class Cpu {
                         indY.data
                 ) and 0xFFu
             ).toUShort()
-            AddressingMode.ABSOLUTE -> TODO()
-            AddressingMode.ABSOLUTE_X -> TODO()
-            AddressingMode.ABSOLUTE_Y -> TODO()
-            AddressingMode.INDIRECT -> TODO()
-            AddressingMode.INDIRECT_X -> TODO()
-            AddressingMode.INDIRECT_Y -> TODO()
-            AddressingMode.RELATIVE -> TODO()
-            AddressingMode.ACCUMULATOR -> TODO()
+            AddressingMode.ABSOLUTE -> return memoryBus.read16Bit(((programCounter.data + 1u).toUShort()))
+            AddressingMode.ABSOLUTE_X -> return memoryBus.read16Bit(((programCounter.data + indX.data).toUShort()))
+            AddressingMode.ABSOLUTE_Y -> return memoryBus.read16Bit(((programCounter.data + indY.data).toUShort()))
+            AddressingMode.INDIRECT -> {
+                val pointer = memoryBus.read16Bit((programCounter.data + 1u).toUShort())
+                val lo = memoryBus.readByte(pointer)
+                val hi =
+                    if (pointer.toUByte() == 0xFF.toUByte()) {
+                        // Simulate 6502 page wrap bug
+                        memoryBus.readByte((pointer and 0xFF00u))
+                    } else {
+                        memoryBus.readByte((pointer + 1u).toUShort())
+                    }
+                return ((hi.toInt() shl 8) or lo.toInt()).toUShort()
+            }
+            AddressingMode.INDIRECT_X -> {
+                val base = memoryBus.readByte((programCounter.data + 1u).toUShort())
+                val addr = ((base + indX.data) and 0xFFu).toUByte()
+                val lo = memoryBus.readByte(addr.toUShort())
+                val hi = memoryBus.readByte(((addr + 1u) and 0xFFu).toUShort())
+                return ((hi.toInt() shl 8) or lo.toInt()).toUShort()
+            }
+            AddressingMode.INDIRECT_Y -> {
+                val base = memoryBus.readByte((programCounter.data + 1u).toUShort())
+                val lo = memoryBus.readByte(base.toUShort())
+                val hi = memoryBus.readByte(((base + 1u) and 0xFFu).toUShort())
+                val addr = ((hi.toInt() shl 8) or lo.toInt()) + indY.data.toInt()
+                return addr.toUShort()
+            }
+            AddressingMode.RELATIVE -> return (
+                programCounter.data.toInt() +
+                    (memoryBus.readByte((programCounter.data + 1u).toUShort())).toByte().toInt()
+            ).toUShort()
+            AddressingMode.ACCUMULATOR -> return null
         }
     }
 
-    var opCodeFunctions: Array<KFunction2<UShort, AddressingMode, Unit>> =
+    var opCodeFunctions: Array<KFunction2<UShort?, AddressingMode, Unit>> =
         arrayOf(
             // _0   0x_1   0x_2   0x_3   0x_4   0x_5   0x_6   0x_7   0x_8   0x_9   0x_a   0x_b   0x_c   0x_d   0x_e   0x_f
             // 0x0_

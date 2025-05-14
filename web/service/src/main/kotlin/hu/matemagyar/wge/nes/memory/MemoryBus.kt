@@ -25,6 +25,10 @@ class MemoryBus : Memory {
         selectMemoryUnitToAddress(rawAddress).apply { return first.readByte(second) }
     }
 
+    fun read16Bit(rawAddress: UShort): UShort {
+        selectMemoryUnitToAddress(rawAddress).apply { return first.readByte(second).toUShort() } // TODO actually implement, this is wrong
+    }
+
     override fun writeByte(
         rawAddress: UShort,
         data: UByte,
