@@ -74,56 +74,122 @@ class Cpu {
         )
     }
 
+    /**
+     * Resolves the effective memory address for the specified 6502 addressing mode.
+     *
+     * Note: The PC points to the opcode byte. Operand bytes follow immediately after.
+     *
+     * @param addressMode The addressing mode used by the instruction.
+     * @return The resolved memory address, or `null` if the mode doesn't use a memory address (e.g. ACCUMULATOR).
+     */
     fun getAddress(addressMode: AddressingMode): UShort? {
-        when (addressMode) {
-            AddressingMode.IMMEDIATE -> return (programCounter.data + 1u).toUShort()
-            AddressingMode.ZERO_PAGE -> return memoryBus.readByte(((programCounter.data + 1u).toUShort())).toUShort()
-            AddressingMode.ZERO_PAGE_X -> return (
-                (
-                    memoryBus.readByte((programCounter.data + 1u).toUShort()) +
-                        indX.data
-                ) and 0xFFu
-            ).toUShort()
-            AddressingMode.ZERO_PAGE_Y -> return (
-                (
-                    memoryBus.readByte((programCounter.data + 1u).toUShort()) +
-                        indY.data
-                ) and 0xFFu
-            ).toUShort()
-            AddressingMode.ABSOLUTE -> return memoryBus.read16Bit(((programCounter.data + 1u).toUShort()))
-            AddressingMode.ABSOLUTE_X -> return memoryBus.read16Bit(((programCounter.data + indX.data).toUShort()))
-            AddressingMode.ABSOLUTE_Y -> return memoryBus.read16Bit(((programCounter.data + indY.data).toUShort()))
+        val pc = programCounter.data
+
+        return when (addressMode) {
+            /**
+             * IMMEDIATE (#$nn): 1 operand byte follows opcode.
+             * Operand is the next byte itself, not a memory address.
+             */
+            AddressingMode.IMMEDIATE ->
+                (pc + 1u).toUShort() // operand at PC+1
+
+            /**
+             * ZERO PAGE ($nn): 1 operand byte.
+             * Operand byte is an 8-bit zero page address.
+             */
+            AddressingMode.ZERO_PAGE ->
+                memoryBus.readByte((pc + 1u).toUShort()).toUShort()
+
+            /**
+             * ZERO PAGE,X ($nn,X): 1 operand byte.
+             * Add X register to zero page address, wrap at 0xFF.
+             */
+            AddressingMode.ZERO_PAGE_X ->
+                ((memoryBus.readByte((pc + 1u).toUShort()) + indX.data) and 0xFFu).toUShort()
+
+            /**
+             * ZERO PAGE,Y ($nn,Y): 1 operand byte.
+             * Add Y register to zero page address, wrap at 0xFF.
+             */
+            AddressingMode.ZERO_PAGE_Y ->
+                ((memoryBus.readByte((pc + 1u).toUShort()) + indY.data) and 0xFFu).toUShort()
+
+            /**
+             * ABSOLUTE ($nnnn): 2 operand bytes.
+             * 16-bit absolute address follows opcode (low byte at PC+1, high byte at PC+2).
+             */
+            AddressingMode.ABSOLUTE ->
+                memoryBus.read16Bit((pc + 1u).toUShort())
+
+            /**
+             * ABSOLUTE,X ($nnnn,X): 2 operand bytes.
+             * 16-bit base address plus X register.
+             */
+            AddressingMode.ABSOLUTE_X ->
+                (memoryBus.read16Bit((pc + 1u).toUShort()).toInt() + indX.data.toInt()).toUShort()
+
+            /**
+             * ABSOLUTE,Y ($nnnn,Y): 2 operand bytes.
+             * 16-bit base address plus Y register.
+             */
+            AddressingMode.ABSOLUTE_Y ->
+                (memoryBus.read16Bit((pc + 1u).toUShort()).toInt() + indY.data.toInt()).toUShort()
+
+            /**
+             * INDIRECT ($nnnn): 2 operand bytes.
+             * Used only by JMP. Reads a 16-bit pointer, then reads target address from that pointer.
+             * Emulates 6502 bug when pointer ends at 0xFF.
+             */
             AddressingMode.INDIRECT -> {
-                val pointer = memoryBus.read16Bit((programCounter.data + 1u).toUShort())
+                val pointer = memoryBus.read16Bit((pc + 1u).toUShort())
                 val lo = memoryBus.readByte(pointer)
                 val hi =
-                    if (pointer.toUByte() == 0xFF.toUByte()) {
-                        // Simulate 6502 page wrap bug
+                    if (pointer.toUByte() == 0xFFu.toUByte()) {
                         memoryBus.readByte((pointer and 0xFF00u))
                     } else {
                         memoryBus.readByte((pointer + 1u).toUShort())
                     }
-                return ((hi.toInt() shl 8) or lo.toInt()).toUShort()
+                ((hi.toInt() shl 8) or lo.toInt()).toUShort()
             }
+
+            /**
+             * INDEXED INDIRECT ( ($nn,X) ): 1 operand byte.
+             * Add X register to zero-page operand, then read 16-bit pointer from that address.
+             */
             AddressingMode.INDIRECT_X -> {
-                val base = memoryBus.readByte((programCounter.data + 1u).toUShort())
+                val base = memoryBus.readByte((pc + 1u).toUShort())
                 val addr = ((base + indX.data) and 0xFFu).toUByte()
                 val lo = memoryBus.readByte(addr.toUShort())
                 val hi = memoryBus.readByte(((addr + 1u) and 0xFFu).toUShort())
-                return ((hi.toInt() shl 8) or lo.toInt()).toUShort()
+                ((hi.toInt() shl 8) or lo.toInt()).toUShort()
             }
+
+            /**
+             * INDIRECT INDEXED ( ($nn),Y ): 1 operand byte.
+             * Read 16-bit pointer from zero-page operand, then add Y register.
+             */
             AddressingMode.INDIRECT_Y -> {
-                val base = memoryBus.readByte((programCounter.data + 1u).toUShort())
+                val base = memoryBus.readByte((pc + 1u).toUShort())
                 val lo = memoryBus.readByte(base.toUShort())
                 val hi = memoryBus.readByte(((base + 1u) and 0xFFu).toUShort())
                 val addr = ((hi.toInt() shl 8) or lo.toInt()) + indY.data.toInt()
-                return addr.toUShort()
+                addr.toUShort()
             }
-            AddressingMode.RELATIVE -> return (
-                programCounter.data.toInt() +
-                    (memoryBus.readByte((programCounter.data + 1u).toUShort())).toByte().toInt()
-            ).toUShort()
-            AddressingMode.ACCUMULATOR -> return null
+
+            /**
+             * RELATIVE ($±nn): 1 operand byte.
+             * Signed offset for branching, relative to PC+2 (opcode + operand).
+             */
+            AddressingMode.RELATIVE -> {
+                val offset = memoryBus.readByte((pc + 1u).toUShort()).toByte().toInt()
+                (pc.toInt() + offset).toUShort()
+            }
+
+            /**
+             * ACCUMULATOR (A): No operand bytes.
+             * Instruction operates directly on the accumulator register.
+             */
+            AddressingMode.ACCUMULATOR -> null
         }
     }
 
