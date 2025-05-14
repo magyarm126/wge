@@ -79,17 +79,18 @@ class Cpu {
             AddressingMode.ZERO_PAGE_X -> return (
                 (
                     memoryBus.readByte((programCounter.data + 1u).toUShort()) +
+                        indX.data
+                ) and 0xFFu
+            ).toUShort()
+            AddressingMode.ZERO_PAGE_Y -> return (
+                (
+                    memoryBus.readByte((programCounter.data + 1u).toUShort()) +
                         indY.data
                 ) and 0xFFu
             ).toUShort()
-            AddressingMode.ZERO_PAGE_Y -> TODO()
-            AddressingMode.ZERO_PAGE_INDEXED_X -> TODO()
-            AddressingMode.ZERO_PAGE_INDEXED_Y -> TODO()
             AddressingMode.ABSOLUTE -> TODO()
             AddressingMode.ABSOLUTE_X -> TODO()
             AddressingMode.ABSOLUTE_Y -> TODO()
-            AddressingMode.ABSOLUTE_INDEXED_X -> TODO()
-            AddressingMode.ABSOLUTE_INDEXED_Y -> TODO()
             AddressingMode.INDIRECT -> TODO()
             AddressingMode.INDIRECT_X -> TODO()
             AddressingMode.INDIRECT_Y -> TODO()
