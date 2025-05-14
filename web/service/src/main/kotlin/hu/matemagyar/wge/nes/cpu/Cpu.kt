@@ -60,6 +60,7 @@ class Cpu {
 
     fun cpuStep() {
         val opcode: UByte = memoryBus.readByte(programCounter.data)
+        programCounter.data++
 
         // read some magic to get this
         val address: UShort = 0u
@@ -68,6 +69,33 @@ class Cpu {
             address,
             AddressingMode.fromNumber(addressingModes[opcode.toInt()]),
         )
+    }
+
+    fun getAddress(opcode: UByte): UShort {
+        val addressMode = AddressingMode.fromNumber(addressingModes[opcode.toInt()])
+        when (addressMode) {
+            AddressingMode.IMMEDIATE -> return (programCounter.data + 1u).toUShort()
+            AddressingMode.ZERO_PAGE -> return memoryBus.readByte(((programCounter.data + 1u).toUShort())).toUShort()
+            AddressingMode.ZERO_PAGE_X -> return (
+                (
+                    memoryBus.readByte((programCounter.data + 1u).toUShort()) +
+                        indY.data
+                ) and 0xFFu
+            ).toUShort()
+            AddressingMode.ZERO_PAGE_Y -> TODO()
+            AddressingMode.ZERO_PAGE_INDEXED_X -> TODO()
+            AddressingMode.ZERO_PAGE_INDEXED_Y -> TODO()
+            AddressingMode.ABSOLUTE -> TODO()
+            AddressingMode.ABSOLUTE_X -> TODO()
+            AddressingMode.ABSOLUTE_Y -> TODO()
+            AddressingMode.ABSOLUTE_INDEXED_X -> TODO()
+            AddressingMode.ABSOLUTE_INDEXED_Y -> TODO()
+            AddressingMode.INDIRECT -> TODO()
+            AddressingMode.INDIRECT_X -> TODO()
+            AddressingMode.INDIRECT_Y -> TODO()
+            AddressingMode.RELATIVE -> TODO()
+            AddressingMode.ACCUMULATOR -> TODO()
+        }
     }
 
     var opCodeFunctions: Array<KFunction2<UShort, AddressingMode, Unit>> =
