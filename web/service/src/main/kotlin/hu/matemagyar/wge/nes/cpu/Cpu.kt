@@ -6,7 +6,6 @@ import hu.matemagyar.wge.nes.cpu.register.StatusRegister
 import hu.matemagyar.wge.nes.memory.MemoryBus
 import io.micronaut.context.annotation.Prototype
 import jakarta.inject.Inject
-import kotlin.reflect.KFunction2
 
 @Prototype
 class Cpu {
@@ -193,7 +192,7 @@ class Cpu {
         }
     }
 
-    var opCodeFunctions: Array<KFunction2<UShort?, AddressingMode, Unit>> =
+    var opCodeFunctions: Array<Function2<UShort?, AddressingMode, Unit>> =
         arrayOf(
             // _0   0x_1   0x_2   0x_3   0x_4   0x_5   0x_6   0x_7   0x_8   0x_9   0x_a   0x_b   0x_c   0x_d   0x_e   0x_f
             // 0x0_
