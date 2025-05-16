@@ -21,6 +21,13 @@ abstract class AbstractBitRegister<T : Supplier<UByte>> {
         }
     }
 
+    fun assign(
+        statusFlagProvider: T,
+        shouldSet: UByte,
+    ) {
+        if (shouldSet > 0u) assign(statusFlagProvider, true) else assign(statusFlagProvider, false)
+    }
+
     fun getFlagValue(statusFlagProvider: T): Boolean {
         return data.and(getRegisterMask(statusFlagProvider.get())) > 0u
     }

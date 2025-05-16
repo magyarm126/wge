@@ -36,15 +36,12 @@ class Cpu {
         address: UShort?,
         addressingMode: AddressingMode,
     ) {
-        if (address == null) throw NullPointerException("address cannot be null")
-
-        val memory = memoryBus.readByte(address)
+        val memory = memoryBus.readByte(address!!)
         val result: UByte = (accumulator.data + statusRegister.getFlagValueAsNumber(StatusRegister.StatusFlags.CARRY) + memory).toUByte()
         statusRegister.assign(StatusRegister.StatusFlags.CARRY, result > UByte.MAX_VALUE)
         statusRegister.assign(StatusRegister.StatusFlags.ZERO, 0u.equals(result))
-        statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, result and 0b01000000u.toUByte() == 0b01000000u.toUByte())
-        val overflowCalculation = (result xor accumulator.data) and (result xor memory) and 0x80u
-        statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, 0x80u.equals(overflowCalculation))
+        statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, result and 0b010000000u.toUByte())
+        statusRegister.assign(StatusRegister.StatusFlags.OVERFLOW, (result xor accumulator.data) and (result xor memory) and 0x80u)
 
         // todo: add cycle
         if (addressingMode == AddressingMode.ZERO_PAGE) {

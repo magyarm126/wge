@@ -12,6 +12,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
+import strikt.assertions.isFalse
 import strikt.assertions.isNull
 import strikt.assertions.isTrue
 
@@ -57,8 +58,8 @@ class CpuTest {
 
         val expected = (100u + 1u + 50u).toUByte() // carry is 1
         expectThat(cpu.accumulator.data).isEqualTo(expected)
-        // expectThat(cpu.statusRegister.getFlagValue(StatusRegister.StatusFlags.CARRY)).isFalse() // no overflow here
-        // expectThat(cpu.statusRegister.getFlagValue(StatusRegister.StatusFlags.ZERO)).isFalse()
+        expectThat(cpu.statusRegister.getFlagValue(StatusRegister.StatusFlags.CARRY)).isFalse() // no overflow here
+        expectThat(cpu.statusRegister.getFlagValue(StatusRegister.StatusFlags.ZERO)).isFalse()
     }
 
     @Test
@@ -70,7 +71,7 @@ class CpuTest {
         cpu.adc(0x20u, AddressingMode.ZERO_PAGE)
 
         expectThat(cpu.accumulator.data).isEqualTo(0u)
-        // expectThat(cpu.statusRegister.getFlagValue(StatusRegister.StatusFlags.CARRY)).isTrue()
+        expectThat(cpu.statusRegister.getFlagValue(StatusRegister.StatusFlags.CARRY)).isTrue()
     }
 
     @Test
@@ -82,7 +83,7 @@ class CpuTest {
         cpu.adc(0x30u, AddressingMode.ZERO_PAGE)
 
         expectThat(cpu.accumulator.data).isEqualTo(0u)
-        // expectThat(cpu.statusRegister.getFlagValue(StatusRegister.StatusFlags.ZERO)).isTrue()
+        expectThat(cpu.statusRegister.getFlagValue(StatusRegister.StatusFlags.ZERO)).isTrue()
     }
 
     @Test
@@ -93,7 +94,7 @@ class CpuTest {
 
         cpu.adc(0x40u, AddressingMode.ZERO_PAGE)
 
-        // expectThat(cpu.statusRegister.getFlagValue(StatusRegister.StatusFlags.NEGATIVE)).isTrue()
+        expectThat(cpu.statusRegister.getFlagValue(StatusRegister.StatusFlags.NEGATIVE)).isTrue()
     }
 
     @Test
