@@ -23,8 +23,19 @@ class ProgramCounter {
         }
     }
 
-    fun getFlagValue(statusFlagProvider: ProgramCounterBits): UShort {
-        return data.and(getRegisterMask(statusFlagProvider.get()))
+    fun assign(
+        statusFlagProvider: ProgramCounterBits,
+        shouldSet: UByte,
+    ) {
+        if (shouldSet > 0u) assign(statusFlagProvider, true) else assign(statusFlagProvider, false)
+    }
+
+    fun getFlagValue(statusFlagProvider: ProgramCounterBits): Boolean {
+        return data.and(getRegisterMask(statusFlagProvider.get())) > 0u
+    }
+
+    fun getFlagValueAsNumber(statusFlagProvider: ProgramCounterBits): UByte {
+        return if (getFlagValue(statusFlagProvider)) 1u else 0u
     }
 
     fun unset(statusFlagProvider: ProgramCounterBits) {
