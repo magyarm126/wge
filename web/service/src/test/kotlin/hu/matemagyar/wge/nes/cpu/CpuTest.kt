@@ -2,9 +2,7 @@ package hu.matemagyar.wge.nes.cpu
 
 import hu.matemagyar.wge.nes.cpu.register.StatusRegister
 import hu.matemagyar.wge.nes.memory.MemoryBus
-import io.micronaut.context.annotation.Factory
-import io.micronaut.context.annotation.Primary
-import io.micronaut.context.annotation.Requires
+import io.micronaut.context.annotation.Replaces
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
@@ -21,16 +19,6 @@ import strikt.assertions.isFalse
 import strikt.assertions.isNull
 import strikt.assertions.isTrue
 
-@Factory
-@Requires(env = ["test"])
-class MockStorageFactory {
-    @Singleton
-    @Primary
-    fun createMemoryBus(): MemoryBus {
-        return mock(MemoryBus::class.java)
-    }
-}
-
 @MicronautTest
 class CpuTest {
     @Inject
@@ -38,6 +26,15 @@ class CpuTest {
 
     @Inject
     lateinit var memoryBus: MemoryBus
+
+    @Singleton
+    @Replaces(MemoryBus::class)
+    fun mockMemoryBus(): MemoryBus {
+        return mock(MemoryBus::class.java)
+    }
+
+    // @Singleton
+    //    @Replaces(MemoryBus::class)
 
     @BeforeEach
     fun setup() {

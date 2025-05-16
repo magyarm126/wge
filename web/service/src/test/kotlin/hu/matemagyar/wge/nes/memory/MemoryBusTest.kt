@@ -17,7 +17,7 @@ import strikt.assertions.isFailure
 
 @ExtendWith(MockitoExtension::class)
 class MemoryBusTest {
-    @InjectMocks lateinit var toBeTested: MemoryBus
+    @InjectMocks lateinit var toBeTested: MemoryBusImpl
 
     @Mock lateinit var cpuRamMock: CpuRam
 
