@@ -39,13 +39,7 @@ class Cpu {
         if (address == null) throw NullPointerException("address cannot be null")
 
         val memory = memoryBus.readByte(address)
-        val result: UByte =
-            (
-                accumulator.data +
-                    statusRegister.getFlagValue(
-                        StatusRegister.StatusFlags.CARRY,
-                    ) + memory
-            ).toUByte()
+        val result: UByte = (accumulator.data + statusRegister.getFlagValueAsNumber(StatusRegister.StatusFlags.CARRY) + memory).toUByte()
         statusRegister.assign(StatusRegister.StatusFlags.CARRY, result > UByte.MAX_VALUE)
         statusRegister.assign(StatusRegister.StatusFlags.ZERO, 0u.equals(result))
         statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, result and 0b01000000u.toUByte() == 0b01000000u.toUByte())

@@ -21,8 +21,12 @@ abstract class AbstractBitRegister<T : Supplier<UByte>> {
         }
     }
 
-    fun getFlagValue(statusFlagProvider: T): UByte {
-        return data.and(getRegisterMask(statusFlagProvider.get()))
+    fun getFlagValue(statusFlagProvider: T): Boolean {
+        return data.and(getRegisterMask(statusFlagProvider.get())) > 0u
+    }
+
+    fun getFlagValueAsNumber(statusFlagProvider: T): UByte {
+        return if (getFlagValue(statusFlagProvider)) 1u else 0u
     }
 
     fun unset(statusFlagProvider: T) {
