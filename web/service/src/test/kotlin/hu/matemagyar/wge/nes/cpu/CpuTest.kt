@@ -33,9 +33,6 @@ class CpuTest {
         return mock(MemoryBus::class.java)
     }
 
-    // @Singleton
-    //    @Replaces(MemoryBus::class)
-
     @BeforeEach
     fun setup() {
         reset(memoryBus)

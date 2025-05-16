@@ -113,6 +113,7 @@ class ProtoBufferCodec : MediaTypeCodec {
         try {
             val bytes = byteSupplier.get()
             if (type.type == ByteArray::class.java) {
+                @Suppress("UNCHECKED_CAST")
                 return bytes as T
             } else {
                 val builder = getBuilder(type)
