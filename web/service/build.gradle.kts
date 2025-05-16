@@ -4,6 +4,7 @@ plugins {
     id("io.micronaut.library")
     id("io.micronaut.aot")
     id("org.jetbrains.dokka")
+    kotlin("plugin.allopen")
 }
 
 version = "0.1"
@@ -24,7 +25,6 @@ dependencies {
     runtimeOnly("ch.qos.logback:logback-classic:1.5.3")
     runtimeOnly("com.h2database:h2")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
-    testImplementation("org.mockito:mockito-core")
     testImplementation("org.mockito:mockito-junit-jupiter")
     testImplementation("org.mockito:mockito-junit-jupiter")
     testImplementation("org.mockito.kotlin", "mockito-kotlin", "5.4.0")
@@ -33,6 +33,14 @@ dependencies {
 
 java {
     sourceCompatibility = JavaVersion.toVersion("21")
+}
+
+allOpen {
+    annotation("jakarta.inject.Singleton")
+    annotation("jakarta.inject.Inject")
+    annotation("io.micronaut.http.annotation.Controller")
+    annotation("io.micronaut.context.annotation.Factory")
+    annotation("io.micronaut.context.annotation.Bean")
 }
 
 tasks {

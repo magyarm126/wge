@@ -10,16 +10,14 @@ import java.lang.IndexOutOfBoundsException
  */
 @Prototype
 class MemoryBus : Memory {
-    private var cpuRam: CpuRam
-    private var ppuRam: PpuRam
-    private var apuRam: ApuRam
+    @Inject
+    private lateinit var cpuRam: CpuRam
 
     @Inject
-    constructor(cpuRam: CpuRam, ppuRam: PpuRam, apuRam: ApuRam) {
-        this.cpuRam = cpuRam
-        this.ppuRam = ppuRam
-        this.apuRam = apuRam
-    }
+    private lateinit var ppuRam: PpuRam
+
+    @Inject
+    private lateinit var apuRam: ApuRam
 
     override fun readByte(rawAddress: UShort): UByte {
         selectMemoryUnitToAddress(rawAddress).apply { return first.readByte(second) }
@@ -54,7 +52,8 @@ class MemoryBus : Memory {
             )
             in 0x4020u..<0x8000u -> throw NotImplementedError("Needs cartridge RAM/ROM implementation")
             else -> throw IndexOutOfBoundsException(
-                "Address out of bounds: ${address.toFormattedHexString()}, addressable range: 0-${getCapacity().toFormattedHexString()}",
+                "Address out of bounds: ${address.toFormattedHexString()}" +
+                    ", addressable range: 0-${getCapacity().toFormattedHexString()}",
             )
         }
     }

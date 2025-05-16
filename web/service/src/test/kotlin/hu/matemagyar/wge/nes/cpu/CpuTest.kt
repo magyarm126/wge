@@ -1,14 +1,19 @@
 package hu.matemagyar.wge.nes.cpu
 
-import hu.matemagyar.wge.nes.cpu.register.Generic8BitRegister
-import hu.matemagyar.wge.nes.cpu.register.ProgramCounter
 import hu.matemagyar.wge.nes.cpu.register.StatusRegister
 import hu.matemagyar.wge.nes.memory.MemoryBus
+import io.micronaut.context.annotation.Factory
+import io.micronaut.context.annotation.Primary
+import io.micronaut.context.annotation.Requires
+import io.micronaut.test.extensions.junit5.annotation.MicronautTest
+import jakarta.inject.Inject
+import jakarta.inject.Singleton
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
-import org.mockito.kotlin.mock
+import org.mockito.kotlin.reset
 import org.mockito.kotlin.whenever
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
@@ -16,29 +21,27 @@ import strikt.assertions.isFalse
 import strikt.assertions.isNull
 import strikt.assertions.isTrue
 
+@Factory
+@Requires(env = ["test"])
+class MockStorageFactory {
+    @Singleton
+    @Primary
+    fun createMemoryBus(): MemoryBus {
+        return mock(MemoryBus::class.java)
+    }
+}
+
+@MicronautTest
 class CpuTest {
-    private lateinit var cpu: Cpu
-    private lateinit var memoryBus: MemoryBus
+    @Inject
+    lateinit var cpu: Cpu
+
+    @Inject
+    lateinit var memoryBus: MemoryBus
 
     @BeforeEach
     fun setup() {
-        cpu = Cpu()
-        memoryBus = mock()
-        cpu.memoryBus = memoryBus
-        cpu.accumulator = Generic8BitRegister()
-        cpu.indX = Generic8BitRegister()
-        cpu.indY = Generic8BitRegister()
-        cpu.stackPointer = Generic8BitRegister()
-        cpu.statusRegister = StatusRegister()
-        cpu.programCounter = ProgramCounter()
-
-        // Initialize registers to zero for consistent baseline
-        cpu.accumulator.data = 0u
-        cpu.indX.data = 0u
-        cpu.indY.data = 0u
-        cpu.stackPointer.data = 0u
-        cpu.programCounter.data = 0u
-        cpu.cycleCounter = 0
+        reset(memoryBus)
     }
 
     @Test
