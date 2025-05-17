@@ -364,4 +364,22 @@ class Cpu {
             programCounter.data = (programCounter.data + 2u).toUShort()
         }
     }
+
+    fun bvc(ctx: CpuContext) {
+        if (!statusRegister.getFlagValue(StatusRegister.StatusFlags.OVERFLOW)) {
+            programCounter.data = (programCounter.data.toInt() + 2 + memoryBus.readByte(ctx.address!!).toByte().toInt()).toUShort()
+            cycleCounter++
+        } else {
+            programCounter.data = (programCounter.data + 2u).toUShort()
+        }
+    }
+
+    fun bvs(ctx: CpuContext) {
+        if (statusRegister.getFlagValue(StatusRegister.StatusFlags.OVERFLOW)) {
+            programCounter.data = (programCounter.data.toInt() + 2 + memoryBus.readByte(ctx.address!!).toByte().toInt()).toUShort()
+            cycleCounter++
+        } else {
+            programCounter.data = (programCounter.data + 2u).toUShort()
+        }
+    }
 }
