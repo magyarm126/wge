@@ -151,7 +151,7 @@ class Cpu {
              */
             AddressingMode.RELATIVE -> {
                 val offset = memoryBus.readByte((pc + 1u).toUShort()).toByte().toInt()
-                (pc.toInt() + offset).toUShort()
+                (pc.toInt() + offset).toUShort() // todo is this correct?
             }
 
             /**
@@ -311,81 +311,57 @@ class Cpu {
         }
     }
 
-    fun bit(ctx: CpuContext) {}
+    fun bcc(ctx: CpuContext) {
+        if (!statusRegister.getFlagValue(StatusRegister.StatusFlags.CARRY)) {
+            programCounter.data = (programCounter.data.toInt() + 2 + memoryBus.readByte(ctx.address!!).toByte().toInt()).toUShort()
+            cycleCounter++
+        } else {
+            programCounter.data = (programCounter.data + 2u).toUShort()
+        }
+    }
 
-    fun brk(ctx: CpuContext) {}
+    fun bcs(ctx: CpuContext) {
+        if (statusRegister.getFlagValue(StatusRegister.StatusFlags.CARRY)) {
+            programCounter.data = (programCounter.data.toInt() + 2 + memoryBus.readByte(ctx.address!!).toByte().toInt()).toUShort()
+            cycleCounter++
+        } else {
+            programCounter.data = (programCounter.data + 2u).toUShort()
+        }
+    }
 
-    fun clc(ctx: CpuContext) {}
+    fun beq(ctx: CpuContext) {
+        if (statusRegister.getFlagValue(StatusRegister.StatusFlags.ZERO)) {
+            programCounter.data = (programCounter.data.toInt() + 2 + memoryBus.readByte(ctx.address!!).toByte().toInt()).toUShort()
+            cycleCounter++
+        } else {
+            programCounter.data = (programCounter.data + 2u).toUShort()
+        }
+    }
 
-    fun cld(ctx: CpuContext) {}
+    fun bne(ctx: CpuContext) {
+        if (!statusRegister.getFlagValue(StatusRegister.StatusFlags.ZERO)) {
+            programCounter.data = (programCounter.data.toInt() + 2 + memoryBus.readByte(ctx.address!!).toByte().toInt()).toUShort()
+            cycleCounter++
+        } else {
+            programCounter.data = (programCounter.data + 2u).toUShort()
+        }
+    }
 
-    fun cli(ctx: CpuContext) {}
+    fun bpl(ctx: CpuContext) {
+        if (!statusRegister.getFlagValue(StatusRegister.StatusFlags.NEGATIVE)) {
+            programCounter.data = (programCounter.data.toInt() + 2 + memoryBus.readByte(ctx.address!!).toByte().toInt()).toUShort()
+            cycleCounter++
+        } else {
+            programCounter.data = (programCounter.data + 2u).toUShort()
+        }
+    }
 
-    fun clv(ctx: CpuContext) {}
-
-    fun cmp(ctx: CpuContext) {}
-
-    fun cpx(ctx: CpuContext) {}
-
-    fun cpy(ctx: CpuContext) {}
-
-    fun dec(ctx: CpuContext) {}
-
-    fun dex(ctx: CpuContext) {}
-
-    fun dey(ctx: CpuContext) {}
-
-    fun eor(ctx: CpuContext) {}
-
-    fun inc(ctx: CpuContext) {}
-
-    fun inx(ctx: CpuContext) {}
-
-    fun iny(ctx: CpuContext) {}
-
-    fun jmp(ctx: CpuContext) {}
-
-    fun jsr(ctx: CpuContext) {}
-
-    fun lda(ctx: CpuContext) {}
-
-    fun ldx(ctx: CpuContext) {}
-
-    fun ldy(ctx: CpuContext) {}
-
-    fun lsr(ctx: CpuContext) {}
-
-    fun nop(ctx: CpuContext) {}
-
-    fun ora(ctx: CpuContext) {}
-
-    fun rol(ctx: CpuContext) {}
-
-    fun ror(ctx: CpuContext) {}
-
-    fun rti(ctx: CpuContext) {}
-
-    fun rts(ctx: CpuContext) {}
-
-    fun sbc(ctx: CpuContext) {}
-
-    fun sec(ctx: CpuContext) {}
-
-    fun sei(ctx: CpuContext) {}
-
-    fun sed(ctx: CpuContext) {}
-
-    fun sta(ctx: CpuContext) {}
-
-    fun stx(ctx: CpuContext) {}
-
-    fun sty(ctx: CpuContext) {}
-
-    fun tax(ctx: CpuContext) {}
-
-    fun tay(ctx: CpuContext) {}
-
-    fun txa(ctx: CpuContext) {}
-
-    fun tya(ctx: CpuContext) {}
+    fun bmi(ctx: CpuContext) {
+        if (statusRegister.getFlagValue(StatusRegister.StatusFlags.NEGATIVE)) {
+            programCounter.data = (programCounter.data.toInt() + 2 + memoryBus.readByte(ctx.address!!).toByte().toInt()).toUShort()
+            cycleCounter++
+        } else {
+            programCounter.data = (programCounter.data + 2u).toUShort()
+        }
+    }
 }
