@@ -43,12 +43,40 @@ class Cpu {
         statusRegister.assign(StatusRegister.StatusFlags.ZERO, 0u.toUByte() == result)
         statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, result and 0b010000000u.toUByte())
         statusRegister.assign(StatusRegister.StatusFlags.OVERFLOW, (result xor accumulator.data) and (result xor memory) and 0x80u)
-
-        // todo: add cycle
-        if (addressingMode == AddressingMode.ZERO_PAGE) {
-            cycleCounter++ // todo actually implement it
-        }
         accumulator.data = result
+    }
+
+    fun and(
+        address: UShort?,
+        addressingMode: AddressingMode,
+    ) {
+        val memory = memoryBus.readByte(address!!)
+        val result = memory and accumulator.data
+        statusRegister.assign(StatusRegister.StatusFlags.ZERO, 0u.toUByte() == result)
+        statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, result and 0b010000000u.toUByte())
+        accumulator.data = result
+    }
+
+    fun asl(
+        address: UShort?,
+        addressingMode: AddressingMode,
+    ) {
+        val memory =
+            if (addressingMode == AddressingMode.ACCUMULATOR) {
+                accumulator.data
+            } else {
+                memoryBus.readByte(address!!)
+            }
+        val rawResult = memory.toUInt() shl 1
+        val result = rawResult.toUByte()
+        statusRegister.assign(StatusRegister.StatusFlags.ZERO, 0u.toUByte() == result)
+        statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, result and 0b010000000u.toUByte())
+        statusRegister.assign(StatusRegister.StatusFlags.CARRY, memory and 0b010000000u.toUByte())
+        if (addressingMode == AddressingMode.ACCUMULATOR) {
+            accumulator.data = result
+        } else {
+            memoryBus.writeByte(address!!, result)
+        }
     }
 
     fun cpuStep() {
@@ -188,13 +216,13 @@ class Cpu {
         arrayOf(
             // _0   0x_1   0x_2   0x_3   0x_4   0x_5   0x_6   0x_7   0x_8   0x_9   0x_a   0x_b   0x_c   0x_d   0x_e   0x_f
             // 0x0_
-            ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc,
+            ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::asl, ::adc, ::adc, ::adc, ::asl, ::adc, ::adc, ::adc, ::asl, ::adc,
             // 0x1_
-            ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc,
+            ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::asl, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::asl, ::adc,
             // 0x2_
-            ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc,
+            ::adc, ::and, ::adc, ::adc, ::adc, ::and, ::adc, ::adc, ::adc, ::and, ::adc, ::adc, ::adc, ::and, ::adc, ::adc,
             // 0x3_
-            ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc,
+            ::adc, ::and, ::adc, ::adc, ::adc, ::and, ::adc, ::adc, ::adc, ::and, ::adc, ::adc, ::adc, ::and, ::adc, ::adc,
             // 0x4_
             ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc, ::adc,
             // 0x5_
