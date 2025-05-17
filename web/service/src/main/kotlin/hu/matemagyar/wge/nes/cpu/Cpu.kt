@@ -32,11 +32,8 @@ class Cpu {
 
     var cycleCounter: Int = 0
 
-    fun adc(
-        address: UShort?,
-        addressingMode: AddressingMode,
-    ) {
-        val memory = memoryBus.readByte(address!!)
+    fun adc(ctx: CpuContext) {
+        val memory = memoryBus.readByte(ctx.address!!)
         val rawResult: UInt = (accumulator.data + statusRegister.getFlagValueAsNumber(StatusRegister.StatusFlags.CARRY) + memory)
         val result: UByte = rawResult.toUByte()
         statusRegister.assign(StatusRegister.StatusFlags.CARRY, rawResult > UByte.MAX_VALUE)
@@ -46,36 +43,30 @@ class Cpu {
         accumulator.data = result
     }
 
-    fun and(
-        address: UShort?,
-        addressingMode: AddressingMode,
-    ) {
-        val memory = memoryBus.readByte(address!!)
+    fun and(ctx: CpuContext) {
+        val memory = memoryBus.readByte(ctx.address!!)
         val result = memory and accumulator.data
         statusRegister.assign(StatusRegister.StatusFlags.ZERO, 0u.toUByte() == result)
         statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, result and 0b010000000u.toUByte())
         accumulator.data = result
     }
 
-    fun asl(
-        address: UShort?,
-        addressingMode: AddressingMode,
-    ) {
+    fun asl(ctx: CpuContext) {
         val memory =
-            if (addressingMode == AddressingMode.ACCUMULATOR) {
+            if (ctx.addressingMode == AddressingMode.ACCUMULATOR) {
                 accumulator.data
             } else {
-                memoryBus.readByte(address!!)
+                memoryBus.readByte(ctx.address!!)
             }
         val rawResult = memory.toUInt() shl 1
         val result = rawResult.toUByte()
         statusRegister.assign(StatusRegister.StatusFlags.ZERO, 0u.toUByte() == result)
         statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, result and 0b010000000u.toUByte())
         statusRegister.assign(StatusRegister.StatusFlags.CARRY, memory and 0b010000000u.toUByte())
-        if (addressingMode == AddressingMode.ACCUMULATOR) {
+        if (ctx.addressingMode == AddressingMode.ACCUMULATOR) {
             accumulator.data = result
         } else {
-            memoryBus.writeByte(address!!, result)
+            memoryBus.writeByte(ctx.address!!, result)
         }
     }
 
@@ -87,10 +78,7 @@ class Cpu {
         val addressingMode = AddressingMode.fromNumber(addressingModes[opcode.toInt()])
         val address: UShort? = getAddress(addressingMode)
 
-        opCodeFunctions[opcode.toInt()].invoke(
-            address,
-            addressingMode,
-        )
+        instructions[opcode.toInt()].invoke(CpuContext(address, addressingMode))
     }
 
     /**
@@ -212,7 +200,7 @@ class Cpu {
         }
     }
 
-    var opCodeFunctions: Array<Function2<UShort?, AddressingMode, Unit>> =
+    var instructions: Array<Instruction> =
         arrayOf(
             // _0   0x_1   0x_2   0x_3   0x_4   0x_5   0x_6   0x_7   0x_8   0x_9   0x_a   0x_b   0x_c   0x_d   0x_e   0x_f
             // 0x0_

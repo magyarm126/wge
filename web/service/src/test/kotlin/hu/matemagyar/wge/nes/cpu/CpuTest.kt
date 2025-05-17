@@ -41,7 +41,7 @@ class CpuTest {
     @Test
     fun `adc throws exception if address is null`() {
         assertThrows<NullPointerException> {
-            cpu.adc(null, AddressingMode.ZERO_PAGE)
+            cpu.adc(CpuContext(null, AddressingMode.ZERO_PAGE))
         }
     }
 
@@ -51,11 +51,11 @@ class CpuTest {
         cpu.statusRegister.assign(StatusRegister.StatusFlags.CARRY, true)
         whenever(memoryBus.readByte(0x10u)).thenReturn(50u)
 
-        cpu.adc(0x10u, AddressingMode.ZERO_PAGE)
+        cpu.adc(CpuContext(0x10u, AddressingMode.ZERO_PAGE))
 
         val expected = (100u + 1u + 50u).toUByte() // carry is 1
         expectThat(cpu.accumulator.data).isEqualTo(expected)
-        expectThat(cpu.statusRegister.getFlagValue(StatusRegister.StatusFlags.CARRY)).isFalse() // no overflow here
+        expectThat(cpu.statusRegister.getFlagValue(StatusRegister.StatusFlags.CARRY)).isFalse()
         expectThat(cpu.statusRegister.getFlagValue(StatusRegister.StatusFlags.ZERO)).isFalse()
     }
 
@@ -65,7 +65,7 @@ class CpuTest {
         cpu.statusRegister.assign(StatusRegister.StatusFlags.CARRY, false)
         whenever(memoryBus.readByte(0x20u)).thenReturn(1u)
 
-        cpu.adc(0x20u, AddressingMode.ZERO_PAGE)
+        cpu.adc(CpuContext(0x20u, AddressingMode.ZERO_PAGE))
 
         expectThat(cpu.accumulator.data).isEqualTo(0u)
         expectThat(cpu.statusRegister.getFlagValue(StatusRegister.StatusFlags.CARRY)).isTrue()
@@ -77,7 +77,7 @@ class CpuTest {
         cpu.statusRegister.assign(StatusRegister.StatusFlags.CARRY, false)
         whenever(memoryBus.readByte(0x30u)).thenReturn(0u)
 
-        cpu.adc(0x30u, AddressingMode.ZERO_PAGE)
+        cpu.adc(CpuContext(0x30u, AddressingMode.ZERO_PAGE))
 
         expectThat(cpu.accumulator.data).isEqualTo(0u)
         expectThat(cpu.statusRegister.getFlagValue(StatusRegister.StatusFlags.ZERO)).isTrue()
@@ -89,7 +89,7 @@ class CpuTest {
         cpu.statusRegister.assign(StatusRegister.StatusFlags.CARRY, false)
         whenever(memoryBus.readByte(0x40u)).thenReturn(0x40u)
 
-        cpu.adc(0x40u, AddressingMode.ZERO_PAGE)
+        cpu.adc(CpuContext(0x40u, AddressingMode.ZERO_PAGE))
 
         expectThat(cpu.statusRegister.getFlagValue(StatusRegister.StatusFlags.NEGATIVE)).isTrue()
     }
@@ -143,7 +143,7 @@ class CpuTest {
 
         val address = cpu.getAddress(AddressingMode.INDIRECT)
 
-        expectThat(address).isEqualTo(0xBBAAu) // High byte from 0x3000, low byte from 0x30FF (emulated 6502 bug)
+        expectThat(address).isEqualTo(0xBBAAu)
     }
 
     @Test
@@ -154,10 +154,10 @@ class CpuTest {
         whenever(memoryBus.readByte(cpu.programCounter.data)).thenReturn(opcode.toUByte())
 
         var invoked = false
-        cpu.opCodeFunctions[opcode.toInt()] = { addr, mode ->
+        cpu.instructions[opcode.toInt()] = { context ->
             invoked = true
-            expectThat(AddressingMode.fromNumber(cpu.addressingModes[opcode.toInt()])).isEqualTo(mode)
-            assert(addr != null)
+            expectThat(AddressingMode.fromNumber(cpu.addressingModes[opcode.toInt()])).isEqualTo(context.addressingMode)
+            assert(context.address != null)
         }
 
         cpu.cpuStep()
