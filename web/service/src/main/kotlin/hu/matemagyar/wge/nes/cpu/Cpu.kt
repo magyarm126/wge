@@ -32,44 +32,6 @@ class Cpu {
 
     var cycleCounter: Int = 0
 
-    fun adc(ctx: CpuContext) {
-        val memory = memoryBus.readByte(ctx.address!!)
-        val rawResult: UInt = (accumulator.data + statusRegister.getFlagValueAsNumber(StatusRegister.StatusFlags.CARRY) + memory)
-        val result: UByte = rawResult.toUByte()
-        statusRegister.assign(StatusRegister.StatusFlags.CARRY, rawResult > UByte.MAX_VALUE)
-        statusRegister.assign(StatusRegister.StatusFlags.ZERO, 0u.toUByte() == result)
-        statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, result and 0b010000000u.toUByte())
-        statusRegister.assign(StatusRegister.StatusFlags.OVERFLOW, (result xor accumulator.data) and (result xor memory) and 0x80u)
-        accumulator.data = result
-    }
-
-    fun and(ctx: CpuContext) {
-        val memory = memoryBus.readByte(ctx.address!!)
-        val result = memory and accumulator.data
-        statusRegister.assign(StatusRegister.StatusFlags.ZERO, 0u.toUByte() == result)
-        statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, result and 0b010000000u.toUByte())
-        accumulator.data = result
-    }
-
-    fun asl(ctx: CpuContext) {
-        val memory =
-            if (ctx.addressingMode == AddressingMode.ACCUMULATOR) {
-                accumulator.data
-            } else {
-                memoryBus.readByte(ctx.address!!)
-            }
-        val rawResult = memory.toUInt() shl 1
-        val result = rawResult.toUByte()
-        statusRegister.assign(StatusRegister.StatusFlags.ZERO, 0u.toUByte() == result)
-        statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, result and 0b010000000u.toUByte())
-        statusRegister.assign(StatusRegister.StatusFlags.CARRY, memory and 0b010000000u.toUByte())
-        if (ctx.addressingMode == AddressingMode.ACCUMULATOR) {
-            accumulator.data = result
-        } else {
-            memoryBus.writeByte(ctx.address!!, result)
-        }
-    }
-
     fun cpuStep() {
         val opcode: UByte = memoryBus.readByte(programCounter.data)
         programCounter.data++
@@ -310,4 +272,120 @@ class Cpu {
             // 0xf_
             0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7,
         )
+
+    fun adc(ctx: CpuContext) {
+        val memory = memoryBus.readByte(ctx.address!!)
+        val rawResult: UInt = (accumulator.data + statusRegister.getFlagValueAsNumber(StatusRegister.StatusFlags.CARRY) + memory)
+        val result: UByte = rawResult.toUByte()
+        statusRegister.assign(StatusRegister.StatusFlags.CARRY, rawResult > UByte.MAX_VALUE)
+        statusRegister.assign(StatusRegister.StatusFlags.ZERO, 0u.toUByte() == result)
+        statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, result and 0b010000000u.toUByte())
+        statusRegister.assign(StatusRegister.StatusFlags.OVERFLOW, (result xor accumulator.data) and (result xor memory) and 0x80u)
+        accumulator.data = result
+    }
+
+    fun and(ctx: CpuContext) {
+        val memory = memoryBus.readByte(ctx.address!!)
+        val result = memory and accumulator.data
+        statusRegister.assign(StatusRegister.StatusFlags.ZERO, 0u.toUByte() == result)
+        statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, result and 0b010000000u.toUByte())
+        accumulator.data = result
+    }
+
+    fun asl(ctx: CpuContext) {
+        val memory =
+            if (ctx.addressingMode == AddressingMode.ACCUMULATOR) {
+                accumulator.data
+            } else {
+                memoryBus.readByte(ctx.address!!)
+            }
+        val rawResult = memory.toUInt() shl 1
+        val result = rawResult.toUByte()
+        statusRegister.assign(StatusRegister.StatusFlags.ZERO, 0u.toUByte() == result)
+        statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, result and 0b010000000u.toUByte())
+        statusRegister.assign(StatusRegister.StatusFlags.CARRY, memory and 0b010000000u.toUByte())
+        if (ctx.addressingMode == AddressingMode.ACCUMULATOR) {
+            accumulator.data = result
+        } else {
+            memoryBus.writeByte(ctx.address!!, result)
+        }
+    }
+
+    fun bit(ctx: CpuContext) {}
+
+    fun brk(ctx: CpuContext) {}
+
+    fun clc(ctx: CpuContext) {}
+
+    fun cld(ctx: CpuContext) {}
+
+    fun cli(ctx: CpuContext) {}
+
+    fun clv(ctx: CpuContext) {}
+
+    fun cmp(ctx: CpuContext) {}
+
+    fun cpx(ctx: CpuContext) {}
+
+    fun cpy(ctx: CpuContext) {}
+
+    fun dec(ctx: CpuContext) {}
+
+    fun dex(ctx: CpuContext) {}
+
+    fun dey(ctx: CpuContext) {}
+
+    fun eor(ctx: CpuContext) {}
+
+    fun inc(ctx: CpuContext) {}
+
+    fun inx(ctx: CpuContext) {}
+
+    fun iny(ctx: CpuContext) {}
+
+    fun jmp(ctx: CpuContext) {}
+
+    fun jsr(ctx: CpuContext) {}
+
+    fun lda(ctx: CpuContext) {}
+
+    fun ldx(ctx: CpuContext) {}
+
+    fun ldy(ctx: CpuContext) {}
+
+    fun lsr(ctx: CpuContext) {}
+
+    fun nop(ctx: CpuContext) {}
+
+    fun ora(ctx: CpuContext) {}
+
+    fun rol(ctx: CpuContext) {}
+
+    fun ror(ctx: CpuContext) {}
+
+    fun rti(ctx: CpuContext) {}
+
+    fun rts(ctx: CpuContext) {}
+
+    fun sbc(ctx: CpuContext) {}
+
+    fun sec(ctx: CpuContext) {}
+
+    fun sei(ctx: CpuContext) {}
+
+    fun sed(ctx: CpuContext) {}
+
+    fun sta(ctx: CpuContext) {}
+
+    fun stx(ctx: CpuContext) {}
+
+    fun sty(ctx: CpuContext) {}
+
+    fun tax(ctx: CpuContext) {}
+
+    fun tay(ctx: CpuContext) {}
+
+    fun txa(ctx: CpuContext) {}
+
+    fun tya(ctx: CpuContext) {}
 }
