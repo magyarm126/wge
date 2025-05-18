@@ -382,4 +382,76 @@ class Cpu {
             programCounter.data = (programCounter.data + 2u).toUShort()
         }
     }
+
+    fun bit(ctx: CpuContext) {
+        val result = accumulator.data and memoryBus.readByte(ctx.address!!)
+        statusRegister.assign(StatusRegister.StatusFlags.OVERFLOW, result and 0b01000000u.toUByte())
+        statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, result and 0b010000000u.toUByte())
+        statusRegister.assign(StatusRegister.StatusFlags.ZERO, 0u.toUByte() == result)
+    }
+
+    fun clc(ctx: CpuContext) {
+        statusRegister.assign(StatusRegister.StatusFlags.CARRY, false)
+    }
+
+    fun cld(ctx: CpuContext) {
+        statusRegister.assign(StatusRegister.StatusFlags.DECIMAL, false)
+    }
+
+    fun cli(ctx: CpuContext) {
+        statusRegister.assign(StatusRegister.StatusFlags.INTERRUPT_DISABLE, false)
+    }
+
+    fun clv(ctx: CpuContext) {
+        statusRegister.assign(StatusRegister.StatusFlags.OVERFLOW, false)
+    }
+
+    fun cmp(ctx: CpuContext) {
+        val memory = memoryBus.readByte(ctx.address!!)
+        statusRegister.assign(StatusRegister.StatusFlags.CARRY, accumulator.data >= memory)
+        statusRegister.assign(StatusRegister.StatusFlags.ZERO, accumulator.data == memory)
+        statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, memory and 0b010000000u.toUByte())
+    }
+
+    fun cmx(ctx: CpuContext) {
+        val memory = memoryBus.readByte(ctx.address!!)
+        statusRegister.assign(StatusRegister.StatusFlags.CARRY, indX.data >= memory)
+        statusRegister.assign(StatusRegister.StatusFlags.ZERO, indX.data == memory)
+        statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, memory and 0b010000000u.toUByte())
+    }
+
+    fun cmy(ctx: CpuContext) {
+        val memory = memoryBus.readByte(ctx.address!!)
+        statusRegister.assign(StatusRegister.StatusFlags.CARRY, indY.data >= memory)
+        statusRegister.assign(StatusRegister.StatusFlags.ZERO, indY.data == memory)
+        statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, memory and 0b010000000u.toUByte())
+    }
+
+    fun dex(ctx: CpuContext) {
+        val result = (indX.data - 1u).toUByte()
+        indX.data = result
+        statusRegister.assign(StatusRegister.StatusFlags.ZERO, 0u.toUByte() == result)
+        statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, result and 0b010000000u.toUByte())
+    }
+
+    fun dey(ctx: CpuContext) {
+        val result = (indY.data - 1u).toUByte()
+        indY.data = result
+        statusRegister.assign(StatusRegister.StatusFlags.ZERO, 0u.toUByte() == result)
+        statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, result and 0b010000000u.toUByte())
+    }
+
+    fun inx(ctx: CpuContext) {
+        val result = (indX.data + 1u).toUByte()
+        indX.data = result
+        statusRegister.assign(StatusRegister.StatusFlags.ZERO, 0u.toUByte() == result)
+        statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, result and 0b010000000u.toUByte())
+    }
+
+    fun iny(ctx: CpuContext) {
+        val result = (indY.data + 1u).toUByte()
+        indY.data = result
+        statusRegister.assign(StatusRegister.StatusFlags.ZERO, 0u.toUByte() == result)
+        statusRegister.assign(StatusRegister.StatusFlags.NEGATIVE, result and 0b010000000u.toUByte())
+    }
 }
