@@ -63,7 +63,6 @@ void MainDXWindow::update() {
         )
     )
     .OperationName("MapVertexBuffer")
-    .Log()
     .ThrowIfFailed();
 
     memcpy(
