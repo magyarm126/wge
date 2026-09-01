@@ -1,3 +1,4 @@
+#include <thread>
 #include <Win32Application.hpp>
 
 /**
@@ -11,6 +12,20 @@
 // ReSharper disable CppParameterMayBeConst
 // ReSharper disable CppParameterNeverUsed
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine, int nShowCmd) {
+
+#if 1
+    int result = 0;
+
+    std::thread appThread([&]() {
+        Win32Application winApp(hInstance, nShowCmd);
+        result = winApp.Run();
+    });
+
+    appThread.join();
+
+    return result;
+#else
     const auto winApp = new Win32Application(hInstance, nShowCmd);
     return winApp->Run();
+#endif
 }
