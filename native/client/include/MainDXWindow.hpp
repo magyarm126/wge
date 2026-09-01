@@ -61,7 +61,8 @@ private:
     ComPtr<ID3D12GraphicsCommandList> m_commandList;
     UINT m_rtvDescriptorSize;
     std::vector<Vertex> m_triangleVertices;
-    std::chrono::steady_clock::time_point m_last_update = std::chrono::high_resolution_clock::now();
+    bool up = true;
+    std::chrono::steady_clock::time_point m_last_update = std::chrono::steady_clock::now();
 
     // App resources.
     ComPtr<ID3D12Resource> m_vertexBuffer;

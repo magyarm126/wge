@@ -1,5 +1,6 @@
 #include <chrono>
 #include <MainDXWindow.hpp>
+#include <thread>
 
 MainDXWindow::MainDXWindow(UINT width, UINT height, std::wstring name) {
     m_width = width;
@@ -25,23 +26,30 @@ MainDXWindow::~MainDXWindow() {
 }
 
 void MainDXWindow::update() {
-
-    const auto currentTime = std::chrono::high_resolution_clock::now();
+    const auto currentTime = std::chrono::steady_clock::now();
 
     const float dt = std::chrono::duration<float>(
         currentTime - m_last_update
     ).count();
 
     const float fps = 1.0f / dt;
+
+    //std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+
 #ifdef _DEBUG
     std::cout << "dt: " << dt << " FPS: " << fps << '\n';
 #endif
 
     m_last_update = currentTime;
 
-    m_triangleVertices[0].position.y += 0.2f * dt;
-    m_triangleVertices[1].position.y += 0.2f * dt;
-    m_triangleVertices[2].position.y += 0.2f * dt;
+    if (std::abs(m_triangleVertices[0].position.y) >= 1.0 || std::abs(m_triangleVertices[1].position.y) >= 1.0 || std::abs(m_triangleVertices[2].position.y) >= 1.0){
+        up = !up;
+    }
+
+    m_triangleVertices[0].position.y += 0.2f * dt * (up ? 1 : -1);
+    m_triangleVertices[1].position.y += 0.2f * dt * (up ? 1 : -1);
+    m_triangleVertices[2].position.y += 0.2f * dt * (up ? 1 : -1);
 
     UINT8* pVertexDataBegin = nullptr;
 
