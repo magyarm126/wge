@@ -1,3 +1,4 @@
+#include <chrono>
 #include <MainDXWindow.hpp>
 
 MainDXWindow::MainDXWindow(UINT width, UINT height, std::wstring name) {
@@ -24,6 +25,45 @@ MainDXWindow::~MainDXWindow() {
 }
 
 void MainDXWindow::update() {
+
+    const auto currentTime = std::chrono::high_resolution_clock::now();
+
+    const float dt = std::chrono::duration<float>(
+        currentTime - m_last_update
+    ).count();
+
+    const float fps = 1.0f / dt;
+    std::cout << "dt: " << dt << " FPS: " << fps << '\n';
+
+    m_last_update = currentTime;
+
+    m_triangleVertices[0].position.y += 0.2f * dt;
+    m_triangleVertices[1].position.y += 0.2f * dt;
+    m_triangleVertices[2].position.y += 0.2f * dt;
+
+    UINT8* pVertexDataBegin = nullptr;
+
+    CD3DX12_RANGE readRange(0, 0);
+
+    HResultExceptionHandler(
+        m_vertexBuffer->Map(
+            0,
+            &readRange,
+            reinterpret_cast<void**>(&pVertexDataBegin)
+        )
+    )
+    .OperationName("MapVertexBuffer")
+    .Log()
+    .ThrowIfFailed();
+
+    memcpy(
+        pVertexDataBegin,
+        m_triangleVertices.data(),
+        m_triangleVertices.size() * sizeof(Vertex)
+    );
+
+    m_vertexBuffer->Unmap(0, nullptr);
+
 }
 
 void MainDXWindow::keyDown(UINT8 key) {
@@ -290,6 +330,8 @@ void MainDXWindow::LoadAssets() {
             {{0.25f, -0.25f * m_aspectRatio, 0.0f}, {0.0f, 1.0f, 0.0f, 1.0f}},
             {{-0.25f, -0.25f * m_aspectRatio, 0.0f}, {0.0f, 0.0f, 1.0f, 1.0f}}
         };
+
+        m_triangleVertices.assign(std::begin(triangleVertices),std::end(triangleVertices));
 
         const UINT vertexBufferSize = sizeof(triangleVertices);
 
