@@ -35,7 +35,9 @@ void HResultExceptionHandler::ThrowIfFailed() {
         throw std::runtime_error(ToString());
     }
     if (_log) {
+#ifdef _DEBUG
         std::cout << ToString() << std::endl;
+#endif
     }
 }
 
@@ -52,7 +54,9 @@ HResultExceptionHandler HResultExceptionHandler::OperationName(const std::string
 HRESULT HResultExceptionHandler::GetResult() {
     if (_lambda_functor && !_lambda_resolved) {
         if (_log) {
+#ifdef _DEBUG
             std::cout << "[ LOG ] HResult for \"" << _operation_name << "\" - Preparing context" << std::endl;
+#endif
         }
         _hresult = _lambda_functor();
         _lambda_resolved = true;

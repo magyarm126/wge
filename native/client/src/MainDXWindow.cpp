@@ -33,7 +33,9 @@ void MainDXWindow::update() {
     ).count();
 
     const float fps = 1.0f / dt;
+#ifdef _DEBUG
     std::cout << "dt: " << dt << " FPS: " << fps << '\n';
+#endif
 
     m_last_update = currentTime;
 
